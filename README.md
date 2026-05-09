@@ -77,6 +77,10 @@ Optional: `npm run db:studio` opens Drizzle Studio against `POSTGRES_URL`.
 
 Content and auth APIs return `503` with a clear message until `FLAMINGO_REBUILD_DB=1` and `POSTGRES_URL` are set.
 
+### Vercel (Production / Preview)
+
+When both `FLAMINGO_REBUILD_DB=1` and `POSTGRES_URL` are present in the build environment, `npm run build` runs **`drizzle-kit migrate` first** (see `scripts/migrate-if-configured.mjs`), then `next build`. CI and local builds **without** those variables skip migration and only run `next build`. After changing the Drizzle schema, commit new files under `./drizzle` from `npm run db:generate` so deploys apply them.
+
 ## CRM & Provisioning
 
 `/admin/crm` is reachable **without** tenant login (middleware exception) so internal staff can manage prospects on a fresh machine. Tenant-facing admin (`/admin`, `/admin/pages`, …) still requires `/admin/login`.
