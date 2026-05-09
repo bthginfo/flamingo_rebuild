@@ -2,10 +2,10 @@ import Link from 'next/link';
 import { AdminLogoutButton } from '@/admin/AdminLogoutButton';
 
 const adminAreas = [
-  ['Seiten', '/admin/pages', 'Seiten erstellen, Abschnitte pflegen und Vorschau öffnen.'],
-  ['Inhalte', '/admin/collections', 'Leistungen, Zimmer, Kurse, Team, FAQ und weitere Collections.'],
+  ['Seiten', '/admin/pages', 'Abschnitte pflegen und Vorschau — Entwurf speichern oder live veröffentlichen.'],
+  ['Inhalte', '/admin/collections', 'Collections mit demselben Entwurf- und Veröffentlichen-Muster wie die Seiten.'],
   ['Navigation & Footer', '/admin/navigation', 'Menüs, Footer und globale Hinweisleisten.'],
-  ['Medien', '/admin/media', 'Bilder hochladen und verwalten.'],
+  ['Medien', '/admin/media', 'Bilder vorerst per URL; sichtbar auf der Live-Site nach Veröffentlichen.'],
   ['SEO & Sichtbarkeit', '/admin/seo', 'Seitentitel, Beschreibungen und Indexierung.'],
   ['CRM', '/admin/crm', 'Prospects anlegen und neue Tenants provisionieren.']
 ] as const;

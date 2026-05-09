@@ -41,6 +41,10 @@ export default async function AdminCollectionsPage() {
       <div className="shell">
         <p className="eyebrow">CMS</p>
         <h1 style={{ fontFamily: 'Georgia, serif', fontSize: 52 }}>Inhalte</h1>
+        <p style={{ color: 'var(--muted)', maxWidth: 720, lineHeight: 1.55, marginBottom: 8 }}>
+          Collection-Einträge (z.&nbsp;B. Speisekarte): gleiches Speichern wie bei den Seiten — Entwurf speichern,
+          speichern &amp; veröffentlichen oder Entwurf verwerfen.
+        </p>
         <p style={{ color: 'var(--muted)', marginBottom: 24 }}>
           Collections für <strong>{industry.label}</strong> — Tenant <strong>{tenantSlug}</strong>.
         </p>

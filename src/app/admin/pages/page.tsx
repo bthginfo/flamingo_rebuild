@@ -46,6 +46,10 @@ export default async function AdminPagesPage() {
       <div className="shell">
         <p className="eyebrow">CMS</p>
         <h1 style={{ fontFamily: 'Georgia, serif', fontSize: 52 }}>Seiten</h1>
+        <p style={{ color: 'var(--muted)', maxWidth: 720, lineHeight: 1.55 }}>
+          In den Seiten-Editoren: Entwurf speichern, speichern &amp; veröffentlichen oder Entwurf verwerfen — wie bei
+          Navigation und SEO. Die öffentliche Site zeigt erst nach Veröffentlichen die neuen Inhalte.
+        </p>
         <p style={{ color: 'var(--muted)' }}>
           Blueprint aus der Template-Registry für <strong>{industry.label}</strong> ({profile.styleKey}) — Tenant{' '}
           <strong>{tenantSlug}</strong>.

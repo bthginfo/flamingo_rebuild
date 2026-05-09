@@ -26,7 +26,16 @@ const STYLE_LABELS: Record<StyleKey, string> = {
   bold: 'Bold'
 };
 
-type EditorStatus = 'loading' | 'clean' | 'dirty' | 'saved' | 'published' | 'error';
+type EditorStatus =
+  | 'loading'
+  | 'clean'
+  | 'dirty'
+  | 'saving'
+  | 'publishing'
+  | 'discarding'
+  | 'saved'
+  | 'published'
+  | 'error';
 
 export function RestaurantMenuEditor({
   initialSeed,
@@ -131,11 +140,12 @@ export function RestaurantMenuEditor({
 
   async function handleSave() {
     if (contentState.mode === 'api' && contentState.tenantSlug) {
+      setStatus('saving');
+      setMessage('');
       try {
         await saveAdminDraft(contentState.tenantSlug, seed);
         setDraftExists(true);
         setStatus('saved');
-        setMessage('');
       } catch (error) {
         setStatus('error');
         setMessage(error instanceof Error ? error.message : 'Entwurf konnte nicht gespeichert werden.');
@@ -150,15 +160,16 @@ export function RestaurantMenuEditor({
 
   async function handlePublish() {
     if (contentState.mode === 'api' && contentState.tenantSlug) {
+      setStatus('publishing');
+      setMessage('');
       try {
         await saveAdminDraft(contentState.tenantSlug, seed);
         await publishAdminDraft(contentState.tenantSlug);
         setDraftExists(false);
         setStatus('published');
-        setMessage('');
       } catch (error) {
         setStatus('error');
-        setMessage(error instanceof Error ? error.message : 'Entwurf konnte nicht veroeffentlicht werden.');
+        setMessage(error instanceof Error ? error.message : 'Entwurf konnte nicht veröffentlicht werden.');
       }
       return;
     }
@@ -170,12 +181,13 @@ export function RestaurantMenuEditor({
 
   async function handleDiscard() {
     if (contentState.mode === 'api' && contentState.tenantSlug) {
+      setStatus('discarding');
+      setMessage('');
       try {
         await discardAdminDraft(contentState.tenantSlug);
         setSeed(await loadAdminDocument(contentState.tenantSlug, false));
         setDraftExists(false);
         setStatus('clean');
-        setMessage('');
       } catch (error) {
         setStatus('error');
         setMessage(error instanceof Error ? error.message : 'Entwurf konnte nicht verworfen werden.');
@@ -224,10 +236,28 @@ export function RestaurantMenuEditor({
           <a className="button secondary" href={previewHref(contentState, seed)} target="_blank" rel="noreferrer">
             Vorschau
           </a>
-          <button className="button secondary" onClick={handleDiscard} type="button">Entwurf verwerfen</button>
-          <button className="button secondary" onClick={handleReset} type="button">Demo zurücksetzen</button>
-          <button className="button secondary" onClick={handleSave} type="button">Speichern</button>
-          <button className="button" onClick={handlePublish} type="button">Veröffentlichen</button>
+          <button
+            className="button secondary"
+            onClick={() => void handleDiscard()}
+            type="button"
+            disabled={toolbarBusy(status)}
+          >
+            {status === 'discarding' ? 'Verwerfen…' : 'Entwurf verwerfen'}
+          </button>
+          <button className="button secondary" onClick={handleReset} type="button" disabled={toolbarBusy(status)}>
+            Demo zurücksetzen
+          </button>
+          <button
+            className="button secondary"
+            onClick={() => void handleSave()}
+            type="button"
+            disabled={toolbarBusy(status)}
+          >
+            {status === 'saving' ? 'Speichert…' : 'Entwurf speichern'}
+          </button>
+          <button className="button" onClick={() => void handlePublish()} type="button" disabled={toolbarBusy(status)}>
+            {status === 'publishing' ? 'Veröffentlicht…' : 'Speichern & veröffentlichen'}
+          </button>
         </div>
       </div>
 
@@ -285,14 +315,21 @@ function TextArea({ label, value, onChange }: { label: string; value: string; on
   );
 }
 
+function toolbarBusy(status: EditorStatus): boolean {
+  return status === 'loading' || status === 'saving' || status === 'publishing' || status === 'discarding';
+}
+
 function statusLabel(status: EditorStatus, draftExists: boolean, contentState: AdminContentState): string {
   if (status === 'loading') return 'Inhalte werden geladen.';
+  if (status === 'saving') return 'Entwurf wird gespeichert …';
+  if (status === 'publishing') return 'Wird veröffentlicht …';
+  if (status === 'discarding') return 'Entwurf wird verworfen …';
   if (status === 'error') return 'Aktion fehlgeschlagen.';
   if (status === 'dirty') return 'Ungespeicherte Änderungen.';
   if (status === 'saved') return 'Entwurf gespeichert. Noch nicht live.';
   if (status === 'published') return 'Änderungen veröffentlicht.';
   if (draftExists) return 'Es gibt einen gespeicherten Entwurf.';
-  return contentState.mode === 'api' ? `Live-Version fuer ${contentState.tenantSlug} geladen.` : 'Demo-Modus: Live-Version lokal geladen.';
+  return contentState.mode === 'api' ? `Live-Version für ${contentState.tenantSlug} geladen.` : 'Demo-Modus: Live-Version lokal geladen.';
 }
 
 function previewHref(contentState: AdminContentState, seed: SiteSeed): string {
