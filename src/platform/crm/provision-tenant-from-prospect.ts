@@ -44,7 +44,13 @@ function personalizeSeed(seed: SiteSeed, tenantName: string): SiteSeed {
     tenantName,
     global: {
       ...seed.global,
-      brand: { ...seed.global.brand, name: tenantName }
+      brand: { ...seed.global.brand, name: tenantName },
+      integrations: {
+        ...seed.global.integrations,
+        cookieUi: 'full',
+        privacyHref: '/datenschutz',
+        imprintHref: '/impressum'
+      }
     }
   };
 }

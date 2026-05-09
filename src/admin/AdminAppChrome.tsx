@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Boxes,
+  Code2,
   ImageIcon,
   LayoutDashboard,
   Link2,
@@ -18,6 +19,7 @@ const GLOBAL_NAV = [
   { href: '/admin', label: 'Übersicht', icon: LayoutDashboard },
   { href: '/admin/navigation', label: 'Navigation & Footer', icon: Link2 },
   { href: '/admin/seo', label: 'SEO & Sichtbarkeit', icon: Search },
+  { href: '/admin/integrations', label: 'SMTP & Skripte', icon: Code2 },
   { href: '/admin/media', label: 'Medien', icon: ImageIcon },
   { href: '/admin/collections', label: 'Inhalte', icon: Boxes },
   { href: '/admin/crm', label: 'CRM', icon: Users }

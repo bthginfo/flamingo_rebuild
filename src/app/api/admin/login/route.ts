@@ -1,39 +1,44 @@
 import bcrypt from 'bcryptjs';
-import { NextRequest, NextResponse } from 'next/server';
-import { isDatabaseConfigured } from '@/db/client';
+import { NextResponse, type NextRequest } from 'next/server';
 import { getTenantAuthRecord } from '@/db/auth-repository';
 import { ADMIN_SESSION_COOKIE, signAdminSession } from '@/platform/auth/admin-session';
 
+export const runtime = 'nodejs';
+
 export async function POST(request: NextRequest) {
-  if (!isDatabaseConfigured()) {
-    return NextResponse.json({ error: 'Rebuild database is not configured.' }, { status: 503 });
+  let body: { tenant?: string; password?: string };
+  try {
+    body = (await request.json()) as { tenant?: string; password?: string };
+  } catch {
+    return NextResponse.json({ error: 'Ungültiger Request-Body.' }, { status: 400 });
   }
 
-  const body = await request.json() as { tenant?: string; password?: string };
-  const tenantSlug = body.tenant?.trim().toLowerCase();
-  if (!tenantSlug || !body.password) {
-    return NextResponse.json({ error: 'Tenant and password are required.' }, { status: 400 });
+  const tenant = String(body.tenant ?? '')
+    .trim()
+    .toLowerCase();
+  const password = String(body.password ?? '');
+  if (!tenant || !password) {
+    return NextResponse.json({ error: 'Tenant und Passwort sind erforderlich.' }, { status: 400 });
   }
 
-  const tenant = await getTenantAuthRecord(tenantSlug);
-  if (!tenant || tenant.status !== 'active' || !tenant.passwordHash) {
-    return NextResponse.json({ error: 'Invalid credentials.' }, { status: 401 });
+  const record = await getTenantAuthRecord(tenant);
+  if (!record || record.status !== 'active' || !record.passwordHash) {
+    return NextResponse.json({ error: 'Zugangsdaten ungültig.' }, { status: 401 });
   }
 
-  const valid = await bcrypt.compare(body.password, tenant.passwordHash);
-  if (!valid) {
-    return NextResponse.json({ error: 'Invalid credentials.' }, { status: 401 });
+  const ok = await bcrypt.compare(password, record.passwordHash);
+  if (!ok) {
+    return NextResponse.json({ error: 'Zugangsdaten ungültig.' }, { status: 401 });
   }
 
-  const response = NextResponse.json({ ok: true, tenantSlug });
-  response.cookies.set({
-    name: ADMIN_SESSION_COOKIE,
-    value: signAdminSession({ tenantSlug, role: 'owner', issuedAt: Date.now() }),
+  const token = signAdminSession({ tenantSlug: tenant, role: 'owner', issuedAt: Date.now() });
+  const res = NextResponse.json({ ok: true });
+  res.cookies.set(ADMIN_SESSION_COOKIE, token, {
     httpOnly: true,
-    sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
     path: '/',
     maxAge: 60 * 60 * 24 * 7
   });
-  return response;
+  return res;
 }

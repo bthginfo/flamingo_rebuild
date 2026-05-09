@@ -21,7 +21,7 @@ export function validateSiteDocument(document: SiteSeed): string[] {
         errors.push(`Section ${section.sectionKey} is not allowed on page ${page.key}.`);
       }
 
-      if (Array.isArray(section.data.items)) {
+      if (Array.isArray(section.data?.items)) {
         for (const rawId of section.data.items) {
           if (typeof rawId !== 'string') continue;
           if (!collectionIds.has(rawId)) {

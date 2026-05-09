@@ -1,4 +1,6 @@
 import type { MetadataRoute } from 'next';
+import { isDatabaseConfigured } from '@/db/client';
+import { listPublishedTenantSlugs } from '@/db/site-document-repository';
 import { getSiteOrigin } from '@/lib/site-url';
 
 const paths = [
@@ -13,13 +15,30 @@ const paths = [
   '/admin-demo'
 ];
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const origin = getSiteOrigin();
   const lastModified = new Date();
-  return paths.map((path) => ({
+  const staticEntries: MetadataRoute.Sitemap = paths.map((path) => ({
     url: `${origin}${path}`,
     lastModified,
     changeFrequency: path === '/' ? 'weekly' : 'monthly',
     priority: path === '/' ? 1 : 0.7
   }));
+
+  if (!isDatabaseConfigured()) {
+    return staticEntries;
+  }
+
+  try {
+    const slugs = await listPublishedTenantSlugs();
+    const tenantEntries: MetadataRoute.Sitemap = slugs.map((slug) => ({
+      url: `${origin}/site/${slug}`,
+      lastModified,
+      changeFrequency: 'weekly',
+      priority: 0.55
+    }));
+    return [...staticEntries, ...tenantEntries];
+  } catch {
+    return staticEntries;
+  }
 }

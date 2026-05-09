@@ -1,5 +1,7 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { agency, marqueeItems } from './data';
+import { CookieNotice } from '@/ui/marketing/CookieNotice';
 
 const navItems = [
   { href: '/templates', label: 'Templates' },
@@ -24,7 +26,7 @@ export function MarketingShell({ children }: { children: React.ReactNode }) {
       <header className="marketing-header">
         <div className="shell header-inner">
           <Link href="/" className="brand-link" aria-label={agency.fullName}>
-            <img src={agency.logo} alt={agency.name} />
+            <Image src={agency.logo} alt={agency.name} width={200} height={56} className="brand-link__img" unoptimized />
           </Link>
           <nav className="main-nav" aria-label="Hauptnavigation">
             {navItems.map((item) => (
@@ -42,7 +44,14 @@ export function MarketingShell({ children }: { children: React.ReactNode }) {
       <footer className="marketing-footer">
         <div className="shell footer-grid">
           <div>
-            <img src={agency.logoFull} alt={agency.name} className="footer-logo" />
+            <Image
+              src={agency.logoFull}
+              alt={agency.name}
+              width={190}
+              height={48}
+              className="footer-logo"
+              unoptimized
+            />
             <p>{agency.tagline}</p>
           </div>
           <div>
@@ -66,6 +75,7 @@ export function MarketingShell({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </footer>
+      <CookieNotice />
     </div>
   );
 }

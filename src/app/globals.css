@@ -55,6 +55,180 @@ body {
   color: #fff;
 }
 
+/* Tenant site: full cookie banner (ConsentProvider) */
+.fm-tenant-cookie {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 9998;
+  padding: 16px;
+  pointer-events: none;
+}
+
+.fm-tenant-cookie__panel {
+  pointer-events: auto;
+  max-width: 1040px;
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 12px 40px rgba(20, 17, 26, 0.12);
+  padding: 20px 22px;
+}
+
+.fm-tenant-cookie__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.fm-tenant-cookie__text h2 {
+  margin: 0 0 8px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.25rem;
+}
+
+.fm-tenant-cookie__text p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  max-width: 640px;
+}
+
+.fm-tenant-cookie__link {
+  text-decoration: underline;
+  color: var(--accent);
+}
+
+.fm-tenant-cookie__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.fm-tenant-cookie__btn {
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid var(--line);
+  background: #fff;
+}
+
+.fm-tenant-cookie__btn--primary {
+  background: var(--fg);
+  color: #fff;
+  border-color: var(--fg);
+}
+
+.fm-tenant-cookie__btn--ghost:hover {
+  background: var(--bg);
+}
+
+.fm-tenant-cookie__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(11, 8, 16, 0.45);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 16px;
+}
+
+@media (min-width: 768px) {
+  .fm-tenant-cookie__overlay {
+    align-items: center;
+  }
+}
+
+.fm-tenant-cookie__modal {
+  background: #fff;
+  border-radius: 18px;
+  width: 100%;
+  max-width: 520px;
+  padding: 22px;
+  box-shadow: 0 20px 60px rgba(11, 8, 16, 0.2);
+}
+
+.fm-tenant-cookie__modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.fm-tenant-cookie__modal-head h3 {
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.fm-tenant-cookie__close {
+  border: none;
+  background: transparent;
+  font-size: 1.25rem;
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.fm-tenant-cookie__list {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+}
+
+.fm-tenant-cookie__list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.fm-tenant-cookie__cat {
+  margin: 0;
+  font-weight: 700;
+}
+
+.fm-tenant-cookie__desc {
+  margin: 6px 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.fm-tenant-cookie__badge {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+
+.fm-tenant-cookie__switch input {
+  width: 18px;
+  height: 18px;
+}
+
+.fm-tenant-cookie__modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.marketing-root .brand-link img,
+.marketing-root .brand-link .brand-link__img {
+  height: auto;
+  max-height: 52px;
+  width: auto;
+  max-width: min(200px, 42vw);
+}
+
 a {
   color: inherit;
   text-decoration: none;

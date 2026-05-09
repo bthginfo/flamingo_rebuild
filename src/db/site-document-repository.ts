@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { and, asc, desc, eq } from 'drizzle-orm';
 import type { PageInstance, SectionInstance } from '@/template-engine/model';
-import type { CollectionSeedItem, SiteSeed } from '@/template-engine/seeds/model';
+import type { CollectionSeedItem, SiteGlobalIntegrations, SiteSeed, TenantCustomScript, TenantMailSmtpSettings } from '@/template-engine/seeds/model';
 import { getDb } from './client';
 import { collectionItems, globalSettings, pages, sectionInstances, siteVersions, tenants } from './schema';
 
@@ -52,7 +52,12 @@ export async function loadSiteDocumentByTenantSlug(tenantSlug: string, status: E
     global: {
       brand: asBrand(settings?.brand),
       navigation: asNavigation(settings?.navigation),
-      contact: settings?.contact ?? {}
+      contact: settings?.contact ?? {},
+      integrations: integrationsFromGlobalRow(
+        settings
+          ? { tracking: settings.tracking as unknown, legal: settings.legal as unknown }
+          : undefined
+      )
     },
     pages: pageRows.map((page): PageInstance => ({
       id: page.id,
@@ -89,6 +94,15 @@ export async function saveDraftSiteDocument(tenantSlug: string, inputDocument: S
   }
 
   const document = normalizeCollectionIdsForPersist(inputDocument);
+  const publishedLegalMail = await loadPublishedMailFromLegal(db, tenant.id);
+  const mergedIntegrations = mergeMailPasswordIntoIntegrations(publishedLegalMail, document.global.integrations);
+  const documentWithSecrets: SiteSeed = {
+    ...document,
+    global: {
+      ...document.global,
+      integrations: mergedIntegrations
+    }
+  };
 
   const versions = await db
     .select()
@@ -113,17 +127,17 @@ export async function saveDraftSiteDocument(tenantSlug: string, inputDocument: S
   await db.insert(globalSettings).values({
     tenantId: tenant.id,
     versionId: version.id,
-    brand: document.global.brand,
-    navigation: { items: document.global.navigation },
+    brand: documentWithSecrets.global.brand,
+    navigation: { items: documentWithSecrets.global.navigation },
     footer: { items: [] },
-    contact: document.global.contact,
+    contact: documentWithSecrets.global.contact,
     seoDefaults: {},
-    legal: {},
-    tracking: {},
+    legal: legalJsonFromIntegrations(mergedIntegrations),
+    tracking: trackingJsonFromIntegrations(mergedIntegrations),
     announcement: {}
   });
 
-  for (const [pageIndex, page] of document.pages.entries()) {
+  for (const [pageIndex, page] of documentWithSecrets.pages.entries()) {
     const [pageRow] = await db
       .insert(pages)
       .values({
@@ -152,7 +166,7 @@ export async function saveDraftSiteDocument(tenantSlug: string, inputDocument: S
     }
   }
 
-  for (const item of document.collections) {
+  for (const item of documentWithSecrets.collections) {
     await db.insert(collectionItems).values({
       id: item.id,
       tenantId: tenant.id,
@@ -165,6 +179,170 @@ export async function saveDraftSiteDocument(tenantSlug: string, inputDocument: S
       seo: {}
     });
   }
+}
+
+export async function listPublishedTenantSlugs(): Promise<string[]> {
+  const db = getDb();
+  const rows = await db
+    .select({ slug: tenants.slug })
+    .from(tenants)
+    .innerJoin(siteVersions, eq(siteVersions.tenantId, tenants.id))
+    .where(eq(siteVersions.status, 'published'));
+  return [...new Set(rows.map((row) => row.slug))];
+}
+
+/** Removes SMTP password before sending a site document to the browser. */
+export function stripSiteSeedForAdminApi(document: SiteSeed): SiteSeed {
+  const integ = document.global.integrations;
+  if (!integ?.mail) return document;
+  const mailWithoutPass = { ...integ.mail };
+  delete mailWithoutPass.pass;
+  const passPresent =
+    integ.mail.passPresent === true || (typeof integ.mail.pass === 'string' && integ.mail.pass.length > 0);
+  return {
+    ...document,
+    global: {
+      ...document.global,
+      integrations: {
+        ...integ,
+        mail: { ...mailWithoutPass, passPresent }
+      }
+    }
+  };
+}
+
+function asRecord(value: unknown): Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value) ? (value as Record<string, unknown>) : {};
+}
+
+function integrationsFromGlobalRow(
+  settings: { tracking: unknown; legal: unknown } | undefined
+): SiteGlobalIntegrations | undefined {
+  if (!settings) return undefined;
+  const tracking = asRecord(settings.tracking);
+  const legal = asRecord(settings.legal);
+  const rawScripts = tracking.customScripts;
+  const scripts = Array.isArray(rawScripts)
+    ? rawScripts.filter(isRecord).map(normalizeScript).filter((s): s is TenantCustomScript => Boolean(s))
+    : [];
+  const mail = parseMailForClient(legal.mail);
+  const cookieUi = parseCookieUiMode(legal.cookieUi);
+  const privacyHref = typeof legal.privacyHref === 'string' ? legal.privacyHref : undefined;
+  const imprintHref = typeof legal.imprintHref === 'string' ? legal.imprintHref : undefined;
+  if (scripts.length === 0 && !mail && !cookieUi && !privacyHref && !imprintHref) return undefined;
+  return {
+    customScripts: scripts.length ? scripts : undefined,
+    mail,
+    cookieUi,
+    privacyHref,
+    imprintHref
+  };
+}
+
+function trackingJsonFromIntegrations(integrations: SiteGlobalIntegrations | undefined): Record<string, unknown> {
+  const scripts = integrations?.customScripts ?? [];
+  return { customScripts: scripts };
+}
+
+function legalJsonFromIntegrations(integrations: SiteGlobalIntegrations | undefined): Record<string, unknown> {
+  const mail = integrations?.mail;
+  const persistMail = mail
+    ? (() => {
+        const m = { ...mail };
+        delete m.passPresent;
+        return m;
+      })()
+    : {};
+  return {
+    mail: persistMail,
+    cookieUi: integrations?.cookieUi ?? 'off',
+    privacyHref: integrations?.privacyHref ?? '/datenschutz',
+    imprintHref: integrations?.imprintHref ?? '/impressum'
+  };
+}
+
+async function loadPublishedMailFromLegal(
+  db: ReturnType<typeof getDb>,
+  tenantId: string
+): Promise<TenantMailSmtpSettings | undefined> {
+  const [pubVer] = await db
+    .select()
+    .from(siteVersions)
+    .where(and(eq(siteVersions.tenantId, tenantId), eq(siteVersions.status, 'published')))
+    .orderBy(desc(siteVersions.versionNumber))
+    .limit(1);
+  if (!pubVer) return undefined;
+  const [gs] = await db.select().from(globalSettings).where(eq(globalSettings.versionId, pubVer.id)).limit(1);
+  const legal = asRecord(gs?.legal);
+  const mail = legal.mail;
+  if (!isRecord(mail)) return undefined;
+  return mail as TenantMailSmtpSettings;
+}
+
+/** Server-only: SMTP inkl. Passwort aus der veröffentlichten Version (für Test-Mail). */
+export async function loadPublishedSmtpSecretsByTenantSlug(tenantSlug: string): Promise<TenantMailSmtpSettings | undefined> {
+  const db = getDb();
+  const [tenant] = await db.select().from(tenants).where(eq(tenants.slug, tenantSlug)).limit(1);
+  if (!tenant) return undefined;
+  return loadPublishedMailFromLegal(db, tenant.id);
+}
+
+function mergeMailPasswordIntoIntegrations(
+  prevPublishedMail: TenantMailSmtpSettings | undefined,
+  integrations: SiteGlobalIntegrations | undefined
+): SiteGlobalIntegrations | undefined {
+  if (!integrations?.mail) return integrations;
+  const incomingPass = integrations.mail.pass;
+  if (typeof incomingPass === 'string' && incomingPass.length > 0) return integrations;
+  if (!prevPublishedMail?.pass || typeof prevPublishedMail.pass !== 'string' || prevPublishedMail.pass.length === 0) {
+    const rest = { ...integrations.mail };
+    delete rest.pass;
+    return { ...integrations, mail: rest };
+  }
+  return { ...integrations, mail: { ...integrations.mail, pass: prevPublishedMail.pass } };
+}
+
+function parseCookieUiMode(value: unknown): SiteGlobalIntegrations['cookieUi'] {
+  if (value === 'full' || value === 'simple' || value === 'off') return value;
+  return undefined;
+}
+
+function parseMailForClient(mail: unknown): TenantMailSmtpSettings | undefined {
+  if (!isRecord(mail)) return undefined;
+  const pass = typeof mail.pass === 'string' ? mail.pass : '';
+  const rest = { ...mail };
+  delete rest.pass;
+  const passPresent = pass.length > 0;
+  const cleaned = { ...rest } as TenantMailSmtpSettings;
+  if (passPresent) cleaned.passPresent = true;
+  const meaningful =
+    cleaned.enabled === true ||
+    (typeof cleaned.host === 'string' && cleaned.host.length > 0) ||
+    (typeof cleaned.user === 'string' && cleaned.user.length > 0) ||
+    passPresent;
+  if (!meaningful) return undefined;
+  return cleaned;
+}
+
+function normalizeScript(raw: Record<string, unknown>): TenantCustomScript | undefined {
+  const id = typeof raw.id === 'string' ? raw.id : '';
+  const name = typeof raw.name === 'string' ? raw.name : '';
+  const code = typeof raw.code === 'string' ? raw.code : '';
+  const category = raw.category;
+  const placement = raw.placement;
+  if (!id || !name) return undefined;
+  if (category !== 'necessary' && category !== 'functional' && category !== 'analytics' && category !== 'marketing') {
+    return undefined;
+  }
+  if (placement !== 'head' && placement !== 'body') return undefined;
+  return {
+    id,
+    name,
+    category,
+    code,
+    enabled: raw.enabled !== false,
+    placement
+  };
 }
 
 function isUuid(value: string): boolean {
