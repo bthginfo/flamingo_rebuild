@@ -531,6 +531,170 @@ const BENTO_BY_INDUSTRY: Record<IndustryKey, { eyebrow: string; headline: { plai
   }
 };
 
+function withPageEyebrow(eyebrow: string, ctx?: WowPageContext): string {
+  if (ctx?.pageTitle && ctx.pageTitle.length > 0) return `${eyebrow} · ${ctx.pageTitle}`;
+  return eyebrow;
+}
+
+const QUOTE_PACK: Record<IndustryKey, { quote: string; name: string; role: string }[]> = {
+  restaurant: [
+    { quote: '„Endlich eine Website, die genauso warm wirkt wie unser Lokal.“', name: 'Gästefeedback', role: 'Google Reviews' },
+    { quote: '„Reservierungen laufen spürbar smoother — ohne extra Tool-Chaos.“', name: 'Service', role: 'Operations' },
+    { quote: '„Die Bildsprache trifft unsere Küche auf den Punkt.“', name: 'Team', role: 'Service' }
+  ],
+  hotel: [
+    { quote: '„Buchungsanfragen kommen jetzt gebündelt und hochwertig.“', name: 'Front Office', role: 'Reservierung' },
+    { quote: '„Unsere Gäste finden Spa & Zimmer auf einen Blick.“', name: 'Wellness', role: 'Marketing' },
+    { quote: '„Design fühlt sich luxuriös an, bleibt aber schnell.“', name: 'GM', role: 'Leadership' }
+  ],
+  tourism: [
+    { quote: '„Touren wirken professioneller — Vertrauen steigt vor der Buchung.“', name: 'Guide Team', role: 'Outdoor' },
+    { quote: '„Wir erzählen unsere Geschichte endlich visuell stark.“', name: 'Founder', role: 'Brand' },
+    { quote: '„Mobile Nutzung ist endlich first-class.“', name: 'Ops', role: 'Logistik' }
+  ],
+  salon: [
+    { quote: '„Kund:innen verstehen unsere Treatments sofort.“', name: 'Salon Lead', role: 'Styling' },
+    { quote: '„Looks wirken hochwertig — wie im Editorial.“', name: 'Color', role: 'Creative' },
+    { quote: '„Termin-CTA ist klar, ohne Druck.“', name: 'Owner', role: 'Studio' }
+  ],
+  tradesman: [
+    { quote: '„Anfragen sind besser qualifiziert — weniger Leerlauf.“', name: 'Meister', role: 'Betrieb' },
+    { quote: '„Referenzen wirken jetzt wie ein echtes Portfolio.“', name: 'Projekt', role: 'Bau' },
+    { quote: '„Vertrauen auf der Startseite — sofort spürbar.“', name: 'Inhaber', role: 'Service' }
+  ],
+  consulting: [
+    { quote: '„Cases wirken seriös, ohne steif zu werden.“', name: 'Partner', role: 'Strategy' },
+    { quote: '„Unsere Expertise liest man in Sekunden.“', name: 'Principal', role: 'Advisory' },
+    { quote: '„Perfekt für Executive First Impressions.“', name: 'BD', role: 'Growth' }
+  ],
+  medical: [
+    { quote: '„Patient:innen finden Leistungen und Wege klarer.“', name: 'Praxismanager', role: 'Admin' },
+    { quote: '„Vertrauen entsteht durch Ruhe und Struktur.“', name: 'Ärztin', role: 'Fachbereich' },
+    { quote: '„Terminwege sind endlich verständlich erklärt.“', name: 'Team', role: 'Care' }
+  ],
+  fitness: [
+    { quote: '„Energy, ohne zu schreien — genau unsere Marke.“', name: 'Head Coach', role: 'Training' },
+    { quote: '„Kurse und Trainer sind endlich im gleichen Look.“', name: 'Studio', role: 'Brand' },
+    { quote: '„Probetraining-CTA performt spürbar besser.“', name: 'Sales', role: 'Membership' }
+  ],
+  wedding: [
+    { quote: '„Unsere Gäste haben alles an einem Ort — pure Freude.“', name: 'Brautpaar', role: 'Feedback' },
+    { quote: '„RSVP und Story fühlen sich premium an.“', name: 'Planner', role: 'Day-of' },
+    { quote: '„Fotos und Typografie — wie aus dem Magazin.“', name: 'Foto', role: 'Creative' }
+  ]
+};
+
+function buildPremiumWowSections(
+  idBase: string,
+  industryKey: IndustryKey,
+  styleKey: StyleKey,
+  ctx: WowPageContext | undefined,
+  mode: 'full' | 'compact'
+): SectionInstance[] {
+  const statsBlock = STATS_BY_INDUSTRY[industryKey];
+  const iconItems = statsBlock.items.slice(0, 4).map((it) => ({
+    icon: it.value,
+    title: it.label,
+    body: it.hint,
+    cta: { label: '', link: { type: 'page' as const, pageKey: 'home', href: '/' } }
+  }));
+
+  const iconHead = adaptTrustHeadlineForStyle(
+    {
+      eyebrow: withPageEyebrow('Signature', ctx),
+      headline: statsBlock.headline
+    },
+    styleKey
+  );
+
+  const steps = [
+    {
+      label: '01',
+      title: 'Discovery',
+      body: `Wir synchronisieren Ziele, Zielgruppe und Angebote — speziell für ${industryKey === 'hotel' ? 'Gäste' : 'deine Marke'}.`
+    },
+    {
+      label: '02',
+      title: 'Design System',
+      body: 'UI, Motion-Regeln und Content-Hierarchie werden zu einem stimmigen Auftritt.'
+    },
+    {
+      label: '03',
+      title: 'Build & QA',
+      body: 'Performance, A11y-Basics, Tracking — alles technisch sauber verdrahtet.'
+    },
+    {
+      label: '04',
+      title: 'Launch & Growth',
+      body: 'Go-live, Feinschliff, Übergabe ins CMS — damit du selbst weiterbauen kannst.'
+    }
+  ];
+
+  const timelineHead = adaptTrustHeadlineForStyle(
+    {
+      eyebrow: withPageEyebrow('Prozess', ctx),
+      headline: { plain: 'So arbeiten', accent: 'wir mit dir.' }
+    },
+    styleKey
+  );
+
+  const bentoHero = BENTO_BY_INDUSTRY[industryKey].items[0];
+  const heroImg = String(bentoHero?.image ?? '');
+  const mediaHead = adaptTrustHeadlineForStyle(
+    {
+      eyebrow: withPageEyebrow('Spotlight', ctx),
+      headline: BENTO_BY_INDUSTRY[industryKey].headline
+    },
+    styleKey
+  );
+  const mood = styleKey === 'bold' ? 'stark' : 'soft';
+
+  const quoteHead = adaptTrustHeadlineForStyle(
+    {
+      eyebrow: withPageEyebrow('Stimmen', ctx),
+      headline: { plain: 'Was man', accent: 'über uns sagt.' }
+    },
+    styleKey
+  );
+
+  const quotes = [...QUOTE_PACK[industryKey], ...QUOTE_PACK[industryKey]];
+
+  const iconSection = section(`${idBase}-icons`, 'global.iconHighlights', 0, {
+    eyebrow: iconHead.eyebrow,
+    headline: iconHead.headline,
+    intro: 'Kurz, klar, messerscharf — die Werte, die deine Gäste und Kund:innen sofort verstehen.',
+    items: iconItems
+  });
+
+  const timelineSection = section(`${idBase}-timeline`, 'global.storyTimeline', 0, {
+    eyebrow: timelineHead.eyebrow,
+    headline: timelineHead.headline,
+    steps
+  });
+
+  const mediaSection = section(`${idBase}-media`, 'global.mediaSpotlight', 0, {
+    eyebrow: mediaHead.eyebrow,
+    headline: mediaHead.headline,
+    subline: String(bentoHero?.body ?? ''),
+    image: heroImg,
+    mood,
+    primaryCta: { label: 'Mehr erfahren', link: { type: 'page', pageKey: 'home', href: '/' } },
+    secondaryCta: { label: 'Kontakt', link: { type: 'page', pageKey: 'home', href: '/' } }
+  });
+
+  const quoteSection = section(`${idBase}-quotes`, 'global.quoteMarquee', 0, {
+    eyebrow: quoteHead.eyebrow,
+    headline: quoteHead.headline,
+    items: quotes
+  });
+
+  if (mode === 'compact') {
+    return [iconSection, quoteSection];
+  }
+
+  return [iconSection, timelineSection, mediaSection, quoteSection];
+}
+
 /** Unterseiten: nur ein WOW-Block, rotiert nach Seite → weniger Wiederholung, mehr Variation. */
 function subpageWowSlot(pageKey: string): 0 | 1 | 2 {
   let h = 2166136261 >>> 0;
@@ -593,9 +757,11 @@ export function buildWowSectionInstances(
     })
   ];
 
+  const premium = buildPremiumWowSections(id, industryKey, styleKey, page, page === undefined ? 'full' : 'compact');
+
   if (page === undefined) {
-    return triple;
+    return [...triple, ...premium];
   }
 
-  return [triple[subpageWowSlot(page.pageKey)]];
+  return [triple[subpageWowSlot(page.pageKey)], ...premium];
 }

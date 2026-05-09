@@ -204,5 +204,90 @@ export const globalSections: readonly SectionDefinition[] = [
         field.cta('cta', 'Button (optional)')
       ])
     ]
+  },
+  {
+    key: 'global.iconHighlights',
+    label: 'Icon-Highlights (Karten)',
+    industries: 'all',
+    styles: 'all',
+    allowedPageKinds: ['core', 'custom', 'collectionDetail'],
+    repeatable: true,
+    fields: [
+      field.text('eyebrow', 'Eyebrow'),
+      field.splitHeading('headline', 'Überschrift'),
+      field.textarea('intro', 'Einleitung'),
+      field.repeater(
+        'items',
+        'Karten',
+        [
+          field.text('icon', 'Icon / Emoji'),
+          field.text('title', 'Titel', { required: true }),
+          field.textarea('body', 'Text'),
+          field.cta('cta', 'Button (optional)')
+        ],
+        { required: true }
+      )
+    ]
+  },
+  {
+    key: 'global.storyTimeline',
+    label: 'Story-Timeline',
+    industries: 'all',
+    styles: 'all',
+    allowedPageKinds: ['core', 'custom', 'collectionDetail'],
+    repeatable: true,
+    fields: [
+      field.text('eyebrow', 'Eyebrow'),
+      field.splitHeading('headline', 'Überschrift'),
+      field.repeater(
+        'steps',
+        'Schritte',
+        [
+          field.text('label', 'Schritt-Label'),
+          field.text('title', 'Titel', { required: true }),
+          field.textarea('body', 'Text', { required: true })
+        ],
+        { required: true }
+      )
+    ]
+  },
+  {
+    key: 'global.mediaSpotlight',
+    label: 'Media Spotlight',
+    industries: 'all',
+    styles: 'all',
+    allowedPageKinds: ['core', 'custom', 'collectionDetail'],
+    repeatable: true,
+    fields: [
+      field.text('eyebrow', 'Eyebrow'),
+      field.splitHeading('headline', 'Überschrift'),
+      field.textarea('subline', 'Untertitel'),
+      field.image('image', 'Key-Visual', { required: true }),
+      field.text('mood', 'Stimmung (soft oder stark)'),
+      field.cta('primaryCta', 'Primärer Button'),
+      field.cta('secondaryCta', 'Sekundärer Button')
+    ]
+  },
+  {
+    key: 'global.quoteMarquee',
+    label: 'Zitat-Marquee',
+    industries: 'all',
+    styles: 'all',
+    allowedPageKinds: ['core', 'custom', 'collectionDetail'],
+    repeatable: true,
+    fields: [
+      field.text('eyebrow', 'Eyebrow'),
+      field.splitHeading('headline', 'Überschrift'),
+      field.repeater(
+        'items',
+        'Zitate',
+        [
+          field.text('quote', 'Zitat', { required: true }),
+          field.text('name', 'Name'),
+          field.text('role', 'Rolle / Ort')
+        ],
+        { required: true }
+      )
+    ]
   }
 ];

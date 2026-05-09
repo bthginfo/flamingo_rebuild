@@ -15,7 +15,11 @@ const globalAllowed = [
   'global.statsBand',
   'global.trustLogos',
   'global.bentoHighlights',
-  'global.scrollerHighlights'
+  'global.scrollerHighlights',
+  'global.iconHighlights',
+  'global.storyTimeline',
+  'global.mediaSpotlight',
+  'global.quoteMarquee'
 ] as const;
 
 export const industries: readonly IndustryDefinition[] = [

@@ -199,6 +199,30 @@ function SectionRenderer({
           domSectionId={domSectionId}
         />
       );
+    case 'global.iconHighlights':
+      return (
+        <IconHighlightsSection
+          section={section}
+          styleKey={styleKey}
+          previewBasePath={previewBasePath}
+          seed={seed}
+          domSectionId={domSectionId}
+        />
+      );
+    case 'global.storyTimeline':
+      return <StoryTimelineSection section={section} styleKey={styleKey} domSectionId={domSectionId} />;
+    case 'global.mediaSpotlight':
+      return (
+        <MediaSpotlightSection
+          section={section}
+          styleKey={styleKey}
+          previewBasePath={previewBasePath}
+          seed={seed}
+          domSectionId={domSectionId}
+        />
+      );
+    case 'global.quoteMarquee':
+      return <QuoteMarqueeSection section={section} styleKey={styleKey} domSectionId={domSectionId} />;
     default:
       return (
         <section className="tenant-section" id={domSectionId}>
@@ -818,6 +842,162 @@ function ScrollerHighlightsSection({
               </article>
             );
           })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function IconHighlightsSection({
+  section,
+  styleKey,
+  previewBasePath,
+  seed,
+  domSectionId
+}: {
+  section: SectionInstance;
+  styleKey: StyleKey;
+  previewBasePath: string;
+  seed: SiteSeed;
+  domSectionId: string;
+}) {
+  const items = arrayItems(section.data.items);
+  const headline = asSplit(section.data.headline);
+  return (
+    <section className={`tenant-pro-icon tenant-pro-icon--${styleKey}`} id={domSectionId}>
+      <div className="shell">
+        <header className="tenant-pro-icon__head">
+          {asString(section.data.eyebrow) ? <p className="eyebrow">{asString(section.data.eyebrow)}</p> : null}
+          <h2 className="tenant-section-title">
+            <SplitHeading plain={headline.plain} accent={headline.accent} />
+          </h2>
+          {asString(section.data.intro) ? <p className="tenant-pro-icon__intro">{asString(section.data.intro)}</p> : null}
+        </header>
+        <div className="tenant-pro-icon__grid" data-stagger-cards>
+          {items.map((row, i) => (
+            <article key={i} className="tenant-pro-icon__card">
+              <span className="tenant-pro-icon__glyph" aria-hidden>
+                {asString(row.icon)}
+              </span>
+              <h3>{asString(row.title)}</h3>
+              {asString(row.body) ? <p>{asString(row.body)}</p> : null}
+              <CtaButton value={row.cta} previewBasePath={previewBasePath} seed={seed} />
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function StoryTimelineSection({
+  section,
+  styleKey,
+  domSectionId
+}: {
+  section: SectionInstance;
+  styleKey: StyleKey;
+  domSectionId: string;
+}) {
+  const steps = arrayItems(section.data.steps);
+  const headline = asSplit(section.data.headline);
+  return (
+    <section className={`tenant-pro-timeline tenant-pro-timeline--${styleKey}`} id={domSectionId}>
+      <div className="shell tenant-pro-timeline__layout">
+        <header className="tenant-pro-timeline__head">
+          {asString(section.data.eyebrow) ? <p className="eyebrow">{asString(section.data.eyebrow)}</p> : null}
+          <h2 className="tenant-section-title">
+            <SplitHeading plain={headline.plain} accent={headline.accent} />
+          </h2>
+        </header>
+        <ol className="tenant-pro-timeline__list">
+          {steps.map((row, i) => (
+            <li key={i} className="tenant-pro-timeline__item">
+              <span className="tenant-pro-timeline__node" aria-hidden />
+              <div className="tenant-pro-timeline__body">
+                {asString(row.label) ? <p className="tenant-pro-timeline__label">{asString(row.label)}</p> : null}
+                <h3>{asString(row.title)}</h3>
+                <p>{asString(row.body)}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  );
+}
+
+function MediaSpotlightSection({
+  section,
+  styleKey,
+  previewBasePath,
+  seed,
+  domSectionId
+}: {
+  section: SectionInstance;
+  styleKey: StyleKey;
+  previewBasePath: string;
+  seed: SiteSeed;
+  domSectionId: string;
+}) {
+  const headline = asSplit(section.data.headline);
+  const img = asString(section.data.image);
+  const mood = asString(section.data.mood).toLowerCase().includes('stark') ? 'stark' : 'soft';
+  return (
+    <section
+      className={`tenant-pro-media tenant-pro-media--${styleKey} tenant-pro-media--mood-${mood}`}
+      id={domSectionId}
+    >
+      <div className="tenant-pro-media__visual">
+        {img ? <img src={img} alt="" loading="lazy" /> : null}
+        <div className="tenant-pro-media__veil" aria-hidden />
+      </div>
+      <div className="shell tenant-pro-media__content">
+        {asString(section.data.eyebrow) ? <p className="tenant-pro-media__eyebrow">{asString(section.data.eyebrow)}</p> : null}
+        <h2 className="tenant-pro-media__title">
+          <SplitHeading plain={headline.plain} accent={headline.accent} />
+        </h2>
+        {asString(section.data.subline) ? <p className="tenant-pro-media__sub">{asString(section.data.subline)}</p> : null}
+        <div className="tenant-pro-media__ctas">
+          <CtaButton value={section.data.primaryCta} previewBasePath={previewBasePath} seed={seed} />
+          <CtaButton value={section.data.secondaryCta} secondary previewBasePath={previewBasePath} seed={seed} />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function QuoteMarqueeSection({
+  section,
+  styleKey,
+  domSectionId
+}: {
+  section: SectionInstance;
+  styleKey: StyleKey;
+  domSectionId: string;
+}) {
+  const items = arrayItems(section.data.items);
+  const headline = asSplit(section.data.headline);
+  const loop = [...items, ...items];
+  return (
+    <section className={`tenant-pro-quote tenant-pro-quote--${styleKey}`} id={domSectionId}>
+      <div className="shell tenant-pro-quote__head">
+        {asString(section.data.eyebrow) ? <p className="eyebrow">{asString(section.data.eyebrow)}</p> : null}
+        <h2 className="tenant-section-title">
+          <SplitHeading plain={headline.plain} accent={headline.accent} />
+        </h2>
+      </div>
+      <div className="tenant-pro-quote__viewport" role="region" aria-label="Zitate">
+        <div className="tenant-pro-quote__track">
+          {loop.map((row, i) => (
+            <figure key={`${asString(row.quote)}-${i}`} className="tenant-pro-quote__card">
+              <blockquote>{asString(row.quote)}</blockquote>
+              <figcaption>
+                <strong>{asString(row.name)}</strong>
+                {asString(row.role) ? <span>{asString(row.role)}</span> : null}
+              </figcaption>
+            </figure>
+          ))}
         </div>
       </div>
     </section>

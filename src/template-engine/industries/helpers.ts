@@ -49,7 +49,11 @@ export function standardServiceCollection(
         'global.contactCta',
         'global.statsBand',
         'global.trustLogos',
-        'global.bentoHighlights'
+        'global.bentoHighlights',
+        'global.iconHighlights',
+        'global.storyTimeline',
+        'global.mediaSpotlight',
+        'global.quoteMarquee'
       ],
       defaultSections: ['global.pageHeader', 'global.textImage', 'global.contactCta']
     }
