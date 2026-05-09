@@ -153,6 +153,16 @@ function SectionRenderer({
       return <TrustLogosSection section={section} styleKey={styleKey} domSectionId={domSectionId} />;
     case 'global.bentoHighlights':
       return <BentoHighlightsSection section={section} styleKey={styleKey} domSectionId={domSectionId} />;
+    case 'global.scrollerHighlights':
+      return (
+        <ScrollerHighlightsSection
+          section={section}
+          styleKey={styleKey}
+          previewBasePath={previewBasePath}
+          seed={seed}
+          domSectionId={domSectionId}
+        />
+      );
     default:
       return (
         <section className="tenant-section" id={domSectionId}>
@@ -356,7 +366,7 @@ function HeroSection({
           </div>
         </div>
         {image && styleKey !== 'bold' ? (
-          <div className="tenant-hero-image">
+          <div className="tenant-hero-image tenant-hero-image--motion">
             <img src={image} alt="" />
           </div>
         ) : null}
@@ -442,7 +452,7 @@ function CollectionGrid({
           <SplitHeading plain={headline.plain} accent={headline.accent} />
         </h2>
         <p className="tenant-section-intro">{asString(section.data.intro)}</p>
-        <div className="tenant-card-grid">
+        <div className="tenant-card-grid tenant-card-grid--motion" data-stagger-grid>
           {items.map((item) => {
             const inner = (
               <>
@@ -480,20 +490,22 @@ function FaqSection({ section, domSectionId }: { section: SectionInstance; domSe
   const items = Array.isArray(section.data.items) ? section.data.items : [];
 
   return (
-    <section className="tenant-section tenant-soft" id={domSectionId}>
+    <section className="tenant-section tenant-soft tenant-faq-wrap" id={domSectionId}>
       <div className="shell">
         <p className="eyebrow">{asString(section.data.eyebrow)}</p>
         <h2 className="tenant-section-title">
           <SplitHeading plain={headline.plain} accent={headline.accent} />
         </h2>
-        <div className="tenant-card-grid" style={{ gridTemplateColumns: '1fr' }}>
+        <div className="tenant-faq-accordion">
           {items.map((raw, index) => {
             const item = isRecord(raw) ? raw : {};
+            const q = asString(item.question);
+            const a = asString(item.answer);
             return (
-              <article className="tenant-card" key={index} style={{ textAlign: 'left' }}>
-                <h3 style={{ marginTop: 0 }}>{asString(item.question)}</h3>
-                <div className="tenant-body-text">{asString(item.answer)}</div>
-              </article>
+              <details key={index} className="tenant-faq-accordion__item">
+                <summary className="tenant-faq-accordion__summary">{q}</summary>
+                <div className="tenant-faq-accordion__panel tenant-body-text">{a}</div>
+              </details>
             );
           })}
         </div>
@@ -717,6 +729,55 @@ function BentoHighlightsSection({
                   {asString(row.kicker) ? <p className="tenant-wow-bento__kicker">{asString(row.kicker)}</p> : null}
                   <h3>{asString(row.title)}</h3>
                   {asString(row.body) ? <p>{asString(row.body)}</p> : null}
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ScrollerHighlightsSection({
+  section,
+  styleKey,
+  previewBasePath,
+  seed,
+  domSectionId
+}: {
+  section: SectionInstance;
+  styleKey: StyleKey;
+  previewBasePath: string;
+  seed: SiteSeed;
+  domSectionId: string;
+}) {
+  const slides = arrayItems(section.data.slides);
+  const headline = asSplit(section.data.headline);
+  return (
+    <section className={`tenant-section tenant-scroller-section tenant-scroller-section--${styleKey}`} id={domSectionId}>
+      <div className="shell">
+        <p className="eyebrow">{asString(section.data.eyebrow)}</p>
+        <h2 className="tenant-section-title">
+          <SplitHeading plain={headline.plain} accent={headline.accent} />
+        </h2>
+        {asString(section.data.intro) ? <p className="tenant-section-intro">{asString(section.data.intro)}</p> : null}
+        <div className="tenant-scroller" role="region" aria-label={asString(headline.plain) || 'Highlights'} tabIndex={0}>
+          {slides.map((row, i) => {
+            const img =
+              asString(row.image) ||
+              (isRecord(row.image) ? asString((row.image as Record<string, unknown>).url) : '');
+            return (
+              <article className="tenant-scroller__card" key={i}>
+                {img ? (
+                  <div className="tenant-scroller__visual">
+                    <img src={img} alt="" loading="lazy" />
+                  </div>
+                ) : null}
+                <div className="tenant-scroller__body">
+                  <h3>{asString(row.title)}</h3>
+                  {asString(row.body) ? <p>{asString(row.body)}</p> : null}
+                  <CtaButton value={row.cta} previewBasePath={previewBasePath} seed={seed} />
                 </div>
               </article>
             );

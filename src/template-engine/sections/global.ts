@@ -185,5 +185,24 @@ export const globalSections: readonly SectionDefinition[] = [
         field.text('layoutSpan', 'Breite (1 oder 2)')
       ])
     ]
+  },
+  {
+    key: 'global.scrollerHighlights',
+    label: 'Highlight-Streifen (scroll)',
+    industries: 'all',
+    styles: 'all',
+    allowedPageKinds: ['core', 'custom', 'collectionDetail'],
+    repeatable: true,
+    fields: [
+      field.text('eyebrow', 'Eyebrow'),
+      field.splitHeading('headline', 'Überschrift'),
+      field.textarea('intro', 'Einleitung'),
+      field.repeater('slides', 'Karten', [
+        field.image('image', 'Bild', { required: true }),
+        field.text('title', 'Titel', { required: true }),
+        field.textarea('body', 'Text'),
+        field.cta('cta', 'Button (optional)')
+      ])
+    ]
   }
 ];

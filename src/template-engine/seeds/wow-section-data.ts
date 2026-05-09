@@ -6,97 +6,80 @@ function section(id: string, sectionKey: string, sortOrder: number, data: Record
 
 type TrustLogo = { name: string; logo: string; href: string };
 
-/** Abstract marks as placeholder logos (Unsplash); partner names are demo labels. */
-const TRUST_LOGO_URLS = [
-  'https://images.unsplash.com/photo-1556910103-1c02745a30bf?auto=format&fit=crop&w=220&q=72',
-  'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=220&q=72',
-  'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=220&q=72',
-  'https://images.unsplash.com/photo-1466637574441-795b8e58ef84?auto=format&fit=crop&w=220&q=72',
-  'https://images.unsplash.com/photo-1514362549857-f7c088a4fee0?auto=format&fit=crop&w=220&q=72',
-  'https://images.unsplash.com/photo-1504711434969-e33886174f5d?auto=format&fit=crop&w=220&q=72'
-] as const;
-
-function trustRow(names: readonly string[]): TrustLogo[] {
-  return names.map((name, i) => ({
-    name,
-    logo: TRUST_LOGO_URLS[i % TRUST_LOGO_URLS.length],
-    href: ''
-  }));
-}
-
+/** Themed thumbnail URLs per industry (no random food shots on hotels, etc.). */
 const TRUST_BY_INDUSTRY: Record<IndustryKey, TrustLogo[]> = {
-  restaurant: trustRow([
-    'Feinschmecker Regional',
-    'Slow Food Freunde',
-    'Bio-Partnergastronomie',
-    'Weinhandel Süd',
-    'Handwerk & Genuss',
-    'Stadtmarketing'
-  ]),
-  hotel: trustRow([
-    'Preferred Partner Hotels',
-    'Green Stay Initiative',
-    'Spa & Wellness Verband',
-    'Regionaltourismus',
-    'MICE Netzwerk D-A-CH',
-    'Gästebewertungen Top 1%'
-  ]),
-  tourism: trustRow([
-    'Alpenverein Partner',
-    'Nachhaltige Touren',
-    'Qualitätsreisen D-A-CH',
-    'Regional Guides',
-    'Outdoor Safety',
-    'Reisejournal'
-  ]),
-  salon: trustRow([
-    'Color Partner Studio',
-    'Care & Repair Linie',
-    'Bridal Collective',
-    'Clean Beauty Circle',
-    'Stylist Academy',
-    'Presse & Looks'
-  ]),
-  tradesman: trustRow([
-    'Handwerkskammer Mitglied',
-    'Meisterbetrieb zertifiziert',
-    'Geprüfte Arbeitssicherheit',
-    'Hersteller Premium',
-    'Regionalbau Netzwerk',
-    'Versicherungspartner'
-  ]),
-  consulting: trustRow([
-    'ISO 27001 Prozesse',
-    'Startup Hub Partner',
-    'Corporate Venture Board',
-    'EU Förderprojekte',
-    'Research Alliance',
-    'Executive Network'
-  ]),
-  medical: trustRow([
-    'Kassenärztliche Vereinigung',
-    'Qualitätsmanagement QM',
-    'Fachgesellschaft',
-    'Digitale Terminplattform',
-    'Patientenfeedback Top',
-    'Fortbildungszentrum'
-  ]),
-  fitness: trustRow([
-    'Programm Partner',
-    'Athletic Performance Lab',
-    'Community Challenges',
-    'Ernährung & Coaching',
-    'ZPP-anerkannt',
-    'Studio Awards'
-  ]),
-  wedding: trustRow([
-    'Bridal Guide Featured',
-    'Location Partner Weingut',
-    'Catering Collective',
-    'Fotografie Guild',
-    'RSVP Tech Partner',
-    'Hochzeitsredaktion'
-  ])
+  restaurant: [
+    { name: 'Feinschmecker Regional', logo: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Slow Food Freunde', logo: 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Bio-Partnergastronomie', logo: 'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Weinhandel Süd', logo: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Handwerk & Genuss', logo: 'https://images.unsplash.com/photo-1556910103-1c02745a30bf?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Stadtmarketing', logo: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=220&q=72', href: '' }
+  ],
+  hotel: [
+    { name: 'Preferred Partner Hotels', logo: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Green Stay Initiative', logo: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Spa & Wellness Verband', logo: 'https://images.unsplash.com/photo-1544161515-4ab6b6e49453?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Regionaltourismus', logo: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'MICE Netzwerk D-A-CH', logo: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Gästebewertungen Top 1%', logo: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=220&q=72', href: '' }
+  ],
+  tourism: [
+    { name: 'Alpenverein Partner', logo: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Nachhaltige Touren', logo: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Qualitätsreisen D-A-CH', logo: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Regional Guides', logo: 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Outdoor Safety', logo: 'https://images.unsplash.com/photo-1533240332313-74db2b1c0e20?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Reisejournal', logo: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=220&q=72', href: '' }
+  ],
+  salon: [
+    { name: 'Color Partner Studio', logo: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Care & Repair Linie', logo: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Bridal Collective', logo: 'https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Clean Beauty Circle', logo: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Stylist Academy', logo: 'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Presse & Looks', logo: 'https://images.unsplash.com/photo-1492106087820-71f1a00d2b11?auto=format&fit=crop&w=220&q=72', href: '' }
+  ],
+  tradesman: [
+    { name: 'Handwerkskammer Mitglied', logo: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Meisterbetrieb zertifiziert', logo: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Geprüfte Arbeitssicherheit', logo: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Hersteller Premium', logo: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Regionalbau Netzwerk', logo: 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Versicherungspartner', logo: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=220&q=72', href: '' }
+  ],
+  consulting: [
+    { name: 'ISO 27001 Prozesse', logo: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Startup Hub Partner', logo: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Corporate Venture Board', logo: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'EU Förderprojekte', logo: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Research Alliance', logo: 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Executive Network', logo: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=220&q=72', href: '' }
+  ],
+  medical: [
+    { name: 'Kassenärztliche Vereinigung', logo: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Qualitätsmanagement QM', logo: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Fachgesellschaft', logo: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Digitale Terminplattform', logo: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Patientenfeedback Top', logo: 'https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Fortbildungszentrum', logo: 'https://images.unsplash.com/photo-1584432810601-6d7a340be29c?auto=format&fit=crop&w=220&q=72', href: '' }
+  ],
+  fitness: [
+    { name: 'Programm Partner', logo: 'https://images.unsplash.com/photo-1534438327276-14e6700d112c?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Athletic Performance Lab', logo: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Community Challenges', logo: 'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Ernährung & Coaching', logo: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'ZPP-anerkannt', logo: 'https://images.unsplash.com/photo-1593079831268-3381b0db04a5?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Studio Awards', logo: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=220&q=72', href: '' }
+  ],
+  wedding: [
+    { name: 'Bridal Guide Featured', logo: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Location Partner Weingut', logo: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Catering Collective', logo: 'https://images.unsplash.com/photo-1555244163-436a6e0c0bb7?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Fotografie Guild', logo: 'https://images.unsplash.com/photo-1606800052052-a08c30f87cd6?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'RSVP Tech Partner', logo: 'https://images.unsplash.com/photo-1522673607260-14d1f34b1a31?auto=format&fit=crop&w=220&q=72', href: '' },
+    { name: 'Hochzeitsredaktion', logo: 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=220&q=72', href: '' }
+  ]
 };
 
 const TRUST_HEADLINE_BY_INDUSTRY: Record<
@@ -548,6 +531,16 @@ const BENTO_BY_INDUSTRY: Record<IndustryKey, { eyebrow: string; headline: { plai
   }
 };
 
+/** Unterseiten: nur ein WOW-Block, rotiert nach Seite → weniger Wiederholung, mehr Variation. */
+function subpageWowSlot(pageKey: string): 0 | 1 | 2 {
+  let h = 2166136261 >>> 0;
+  for (let i = 0; i < pageKey.length; i++) {
+    h ^= pageKey.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return (h % 3) as 0 | 1 | 2;
+}
+
 /** Optional context for Unterseiten / Detailrouten — eigene Section-IDs + leichte Text-Anreicherung. */
 export type WowPageContext = {
   pageKey: string;
@@ -582,7 +575,7 @@ export function buildWowSectionInstances(
       : bentoSource;
   const bento = adaptBentoForStyle(bentoBase, styleKey);
 
-  return [
+  const triple: SectionInstance[] = [
     section(`${id}-stats`, 'global.statsBand', 0, {
       eyebrow: stats.eyebrow,
       headline: stats.headline,
@@ -599,4 +592,10 @@ export function buildWowSectionInstances(
       items: bento.items
     })
   ];
+
+  if (page === undefined) {
+    return triple;
+  }
+
+  return [triple[subpageWowSlot(page.pageKey)]];
 }

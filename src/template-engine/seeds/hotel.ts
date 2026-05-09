@@ -161,7 +161,50 @@ export function hotelSeed(styleKey: StyleKey): SiteSeed {
             intro: 'Klicken Sie für Details, Ausstattung und Buchungsweg.',
             items: ['room-berg', 'room-spa', 'room-family']
           }),
-          section('rooms-offers', 'hotel.offers', 3, {
+          section('rooms-scroll', 'global.scrollerHighlights', 3, {
+            eyebrow: 'Aufenthalt',
+            headline: { plain: 'Drei Gründe', accent: 'für uns.' },
+            intro: 'Warum Gäste wiederkommen — kurz erklärt.',
+            slides: [
+              {
+                image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=900&q=80',
+                title: 'Ruhe & Aussicht',
+                body: 'Zimmer nach Süden, Balkon, Berge als Kulisse.',
+                cta: { label: 'Zimmer wählen', link: { type: 'page', href: '/zimmer' } }
+              },
+              {
+                image: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=900&q=80',
+                title: 'Spa & Pools',
+                body: '1.200 m² Wellness — Saunen, Außenpool, Ruheräume.',
+                cta: { label: 'Angebote', link: { type: 'page', href: '/angebote' } }
+              },
+              {
+                image: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=900&q=80',
+                title: 'Kulinarik',
+                body: 'Frühstück bis Fine Dining — regional eingekauft.',
+                cta: { label: 'Kontakt', link: { type: 'page', href: '/kontakt' } }
+              }
+            ]
+          }),
+          section('rooms-faq', 'global.faq', 4, {
+            eyebrow: 'Buchung',
+            headline: { plain: 'Fragen zum', accent: 'Aufenthalt.' },
+            items: [
+              {
+                question: 'Wann sind Check-in und Check-out?',
+                answer: 'Check-in ab 15:00, Check-out bis 11:00. Auf Anfrage halten wir Ihr Zimmer gern länger frei.'
+              },
+              {
+                question: 'Sind Haustiere erlaubt?',
+                answer: 'Kleine Hunde nach Absprache in ausgewählten Zimmern — bitte bei Buchung angeben.'
+              },
+              {
+                question: 'Parkplatz & E-Laden?',
+                answer: 'Kostenfreie Parkplätze und Wallboxen (Aufpreis) sind verfügbar — reservieren Sie den Stellplatz mit.'
+              }
+            ]
+          }),
+          section('rooms-offers', 'hotel.offers', 5, {
             eyebrow: 'Kombinieren',
             headline: { plain: 'Mit', accent: 'Angebot.' },
             intro: 'Saisonale Pakete lassen sich mit jedem Zimmer kombinieren.',

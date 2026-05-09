@@ -175,7 +175,50 @@ export function restaurantSeed(styleKey: StyleKey): SiteSeed {
             intro: 'Alle Signature-Gerichte mit Preisen und Bildern — klicken Sie für Details.',
             items: ['dish-tagliatelle', 'dish-margherita', 'dish-branzino']
           }),
-          section('menu-cta', 'global.contactCta', 3, {
+          section('menu-scroller', 'global.scrollerHighlights', 3, {
+            eyebrow: 'Besonderheiten',
+            headline: { plain: 'Drei Gründe', accent: 'vorbeizukommen.' },
+            intro: 'Kurz & knackig: was uns von anderen unterscheidet.',
+            slides: [
+              {
+                image: 'https://images.unsplash.com/photo-1556910103-1c02745a30bf?auto=format&fit=crop&w=900&q=80',
+                title: 'Holzofen aus Neapel',
+                body: 'Pizza in 90 Sekunden bei 485 °C — knusprig, luftig, authentisch.',
+                cta: { label: 'Pizza ansehen', link: { type: 'page', href: '/speisekarte' } }
+              },
+              {
+                image: 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=900&q=80',
+                title: 'Pasta frisch täglich',
+                body: 'Eigene Manufaktur, lange Teigruhe, Saucen aus dem Sud.',
+                cta: { label: 'Menü-PDF', link: { type: 'page', href: '/speisekarte' } }
+              },
+              {
+                image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=900&q=80',
+                title: 'Wein & Natur',
+                body: 'Über 120 Positionen — Schwerpunkt Italien & Alpen.',
+                cta: { label: 'Weinabend', link: { type: 'page', href: '/erlebnisse' } }
+              }
+            ]
+          }),
+          section('menu-faq', 'global.faq', 4, {
+            eyebrow: 'Gastronomie',
+            headline: { plain: 'Häufige', accent: 'Fragen.' },
+            items: [
+              {
+                question: 'Könnt ihr Allergien berücksichtigen?',
+                answer: 'Ja. Bitte bei Reservierung oder beim Service Bescheid sagen — unsere Küche trennt Arbeitsgänge und kann auf Gluten, Laktose und Nüsse Rücksicht nehmen.'
+              },
+              {
+                question: 'Gibt es eine Kinderkarte?',
+                answer: 'Wir haben kleinere Portionen und Pasta-Formen, die Kinder lieben. Fragt einfach das Team am Tisch.'
+              },
+              {
+                question: 'Wie lange im Voraus reservieren?',
+                answer: 'Am Wochenende empfehlen wir 3–5 Tage Vorlauf. Unter der Woche oft auch spontan möglich.'
+              }
+            ]
+          }),
+          section('menu-cta', 'global.contactCta', 5, {
             eyebrow: 'Reservierung',
             headline: { plain: 'Tisch', accent: 'für heute?' },
             subline: 'Wir halten Ihnen gern einen Platz frei.',
@@ -243,7 +286,32 @@ export function restaurantSeed(styleKey: StyleKey): SiteSeed {
               { url: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?auto=format&fit=crop&w=1200&q=80', alt: 'Pasta' }
             ]
           }),
-          section('gallery-cta', 'global.contactCta', 3, {
+          section('gallery-scroller', 'global.scrollerHighlights', 3, {
+            eyebrow: 'Küche & Saal',
+            headline: { plain: 'Hinter den', accent: 'Kulissen.' },
+            intro: 'Wo gekocht, gegossen und gelacht wird — ein Blick in unsere Räume.',
+            slides: [
+              {
+                image: 'https://images.unsplash.com/photo-1551218808-94e220e084d2?auto=format&fit=crop&w=900&q=80',
+                title: 'Pass',
+                body: 'Handgemachte Pasta, täglich frisch gewalzt.',
+                cta: { label: 'Speisekarte', link: { type: 'page', href: '/speisekarte' } }
+              },
+              {
+                image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=900&q=80',
+                title: 'Service',
+                body: 'Aufmerksam, persönlich, ohne aufdringlich zu sein.',
+                cta: { label: 'Reservieren', link: { type: 'page', href: '/kontakt' } }
+              },
+              {
+                image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=900&q=80',
+                title: 'Ambiente',
+                body: 'Holz, Leinen, Kerzen — Abende, die länger werden dürfen.',
+                cta: { label: 'Erlebnisse', link: { type: 'page', href: '/erlebnisse' } }
+              }
+            ]
+          }),
+          section('gallery-cta', 'global.contactCta', 4, {
             eyebrow: 'Reservierung',
             headline: { plain: 'Selbst', accent: 'vorbeischauen?' },
             subline: 'Wir freuen uns, wenn Sie live statt nur auf Fotos neugierig werden.',
@@ -273,7 +341,7 @@ export function restaurantSeed(styleKey: StyleKey): SiteSeed {
             headline: { plain: 'Küche mit', accent: 'Herz.' },
             body:
               'Giulia und Marco führen die Trattoria in zweiter Generation. Wir arbeiten mit kleinen Manufakturen, backen täglich frisch und lassen Gäste teilhaben — ob am Tresen, am langen Tisch oder beim Weinabend.',
-            image: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=1200&q=80',
+            image: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80',
             cta: { label: 'Stellen & Praktika', link: { type: 'page', href: '/kontakt' } }
           }),
           section('about-voices', 'global.testimonials', 3, {

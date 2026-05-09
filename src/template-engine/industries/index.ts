@@ -14,7 +14,8 @@ const globalAllowed = [
   'global.mapContact',
   'global.statsBand',
   'global.trustLogos',
-  'global.bentoHighlights'
+  'global.bentoHighlights',
+  'global.scrollerHighlights'
 ] as const;
 
 export const industries: readonly IndustryDefinition[] = [
