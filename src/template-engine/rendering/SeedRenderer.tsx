@@ -1,0 +1,533 @@
+'use client';
+
+import Link from 'next/link';
+import type { PageInstance, SectionInstance, StyleKey } from '../model';
+import type { CollectionSeedItem, SiteSeed } from '../seeds/model';
+
+export function SeedPageRenderer({
+  seed,
+  page,
+  styleKey,
+  previewBasePath
+}: {
+  seed: SiteSeed;
+  page: PageInstance;
+  styleKey: StyleKey;
+  previewBasePath: string;
+}) {
+  const sortedSections = [...page.sections].filter((section) => section.visible).sort((a, b) => a.sortOrder - b.sortOrder);
+
+  return (
+    <main className={`tenant-preview tenant-preview--${styleKey}`}>
+      <PreviewNav seed={seed} previewBasePath={previewBasePath} />
+      {sortedSections.map((section) => (
+        <SectionRenderer
+          key={section.id}
+          seed={seed}
+          section={section}
+          styleKey={styleKey}
+          previewBasePath={previewBasePath}
+        />
+      ))}
+    </main>
+  );
+}
+
+function PreviewNav({ seed, previewBasePath }: { seed: SiteSeed; previewBasePath: string }) {
+  return (
+    <header className="tenant-nav">
+      <div className="shell tenant-nav-inner">
+        <Link href={previewBasePath}>
+          <strong>{seed.global.brand.name}</strong>
+        </Link>
+        <nav>
+          {seed.global.navigation.map((item) => (
+            <Link href={`${previewBasePath}${item.href}`} key={item.href}>
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+      </div>
+    </header>
+  );
+}
+
+function SectionRenderer({
+  seed,
+  section,
+  styleKey,
+  previewBasePath
+}: {
+  seed: SiteSeed;
+  section: SectionInstance;
+  styleKey: StyleKey;
+  previewBasePath: string;
+}) {
+  switch (section.sectionKey) {
+    case 'global.hero':
+      return <HeroSection section={section} styleKey={styleKey} previewBasePath={previewBasePath} />;
+    case 'global.pageHeader':
+      return <PageHeaderSection section={section} styleKey={styleKey} />;
+    case 'global.textImage':
+      return <TextImageSection section={section} previewBasePath={previewBasePath} />;
+    case 'global.mapContact':
+      return <MapContactSection section={section} seed={seed} />;
+    case 'global.galleryGrid':
+      return <GalleryGridSection section={section} />;
+    case 'global.actionBar':
+      return <ActionBar section={section} previewBasePath={previewBasePath} />;
+    case 'restaurant.menuHighlights':
+    case 'restaurant.diningExperiences':
+    case 'hotel.roomHighlights':
+    case 'hotel.offers':
+    case 'tourism.tourHighlights':
+    case 'salon.treatmentHighlights':
+    case 'salon.lookbook':
+    case 'tradesman.serviceOverview':
+    case 'tradesman.references':
+    case 'consulting.offerOverview':
+    case 'consulting.caseStudies':
+    case 'medical.treatmentOverview':
+    case 'medical.doctorTeam':
+    case 'fitness.classOverview':
+    case 'fitness.trainingPlan':
+    case 'fitness.trainerTeam':
+    case 'wedding.schedule':
+    case 'wedding.accommodation':
+      return <CollectionGrid seed={seed} section={section} previewBasePath={previewBasePath} />;
+    case 'global.testimonials':
+      return <Testimonials section={section} />;
+    case 'global.faq':
+      return <FaqSection section={section} />;
+    case 'wedding.rsvp':
+      return <RsvpSection section={section} previewBasePath={previewBasePath} />;
+    case 'global.contactCta':
+      return <ContactCta section={section} previewBasePath={previewBasePath} />;
+    default:
+      return (
+        <section className="tenant-section">
+          <div className="shell card">
+            <p className="eyebrow">{section.sectionKey}</p>
+            <p>Für diese Section ist noch kein Renderer implementiert.</p>
+          </div>
+        </section>
+      );
+  }
+}
+
+function PageHeaderSection({ section, styleKey }: { section: SectionInstance; styleKey: StyleKey }) {
+  const headline = asSplit(section.data.headline);
+  const image = asString(section.data.image);
+
+  if (!image) {
+    return (
+      <section className={`tenant-page-hero tenant-page-hero--text tenant-page-hero--${styleKey}`}>
+        <div className="shell tenant-page-hero__text-inner">
+          <p className="eyebrow">{asString(section.data.eyebrow)}</p>
+          <h1 className="tenant-page-hero__title">
+            {headline.plain}
+            {headline.accent ? <em>{headline.accent}</em> : null}
+          </h1>
+          {asString(section.data.subline) ? <p className="tenant-page-hero__sub tenant-page-hero__sub--plain">{asString(section.data.subline)}</p> : null}
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className={`tenant-page-hero tenant-page-hero--${styleKey}`}>
+      <div className="tenant-page-hero__media">
+        <img src={image} alt="" />
+        <div className="tenant-page-hero__shade" />
+      </div>
+      <div className="shell tenant-page-hero__content">
+        <p className="eyebrow">{asString(section.data.eyebrow)}</p>
+        <h1 className="tenant-page-hero__title">
+          {headline.plain}
+          {headline.accent ? <em>{headline.accent}</em> : null}
+        </h1>
+        {asString(section.data.subline) ? <p className="tenant-page-hero__sub">{asString(section.data.subline)}</p> : null}
+      </div>
+    </section>
+  );
+}
+
+function TextImageSection({ section, previewBasePath }: { section: SectionInstance; previewBasePath: string }) {
+  const headline = asSplit(section.data.headline);
+  const image = asString(section.data.image);
+  const body = asString(section.data.body);
+
+  return (
+    <section className="tenant-section">
+      <div className="shell tenant-split">
+        <div>
+          <p className="eyebrow">{asString(section.data.eyebrow)}</p>
+          <h2 className="tenant-section-title">
+            {headline.plain}
+            {headline.accent ? <em>{headline.accent}</em> : null}
+          </h2>
+          <div className="tenant-body-text">{body}</div>
+          <CtaButton value={section.data.cta} previewBasePath={previewBasePath} />
+        </div>
+        {image ? (
+          <div className="tenant-split__visual">
+            <img src={image} alt="" />
+          </div>
+        ) : null}
+      </div>
+    </section>
+  );
+}
+
+function GalleryGridSection({ section }: { section: SectionInstance }) {
+  const headline = asSplit(section.data.headline);
+  const images = parseGalleryImages(section.data.images);
+
+  return (
+    <section className="tenant-section">
+      <div className="shell">
+        <p className="eyebrow">{asString(section.data.eyebrow)}</p>
+        <h2 className="tenant-section-title">
+          {headline.plain}
+          {headline.accent ? <em>{headline.accent}</em> : null}
+        </h2>
+        <div className="tenant-gallery-grid">
+          {images.map((item, index) => (
+            <figure className="tenant-gallery-cell" key={`${item.src}-${index}`}>
+              <img src={item.src} alt={item.alt} loading="lazy" />
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function parseGalleryImages(value: unknown): { src: string; alt: string }[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((entry) => {
+      if (typeof entry === 'string') return { src: entry, alt: '' };
+      if (isRecord(entry)) {
+        const src = asString(entry.url) || asString(entry.src) || asString(entry.image);
+        const alt = asString(entry.alt) || asString(entry.caption);
+        return { src, alt };
+      }
+      return { src: '', alt: '' };
+    })
+    .filter((item) => Boolean(item.src));
+}
+
+function MapContactSection({ section, seed }: { section: SectionInstance; seed: SiteSeed }) {
+  const headline = asSplit(section.data.headline);
+  const contact = seed.global.contact;
+  const address = typeof contact.address === 'string' ? contact.address : '';
+  const phone = typeof contact.phone === 'string' ? contact.phone : '';
+  const email = typeof contact.email === 'string' ? contact.email : '';
+
+  return (
+    <section className="tenant-section tenant-soft">
+      <div className="shell">
+        <p className="eyebrow">{asString(section.data.eyebrow)}</p>
+        <h2 className="tenant-section-title">
+          {headline.plain}
+          {headline.accent ? <em>{headline.accent}</em> : null}
+        </h2>
+        <div className="tenant-map-grid">
+          <div className="tenant-map-card">
+            <h3>Adresse</h3>
+            <p>{address || 'Adresse folgt.'}</p>
+            {phone ? <p>Tel. {phone}</p> : null}
+            {email ? <p>{email}</p> : null}
+          </div>
+          <div className="tenant-map-placeholder" aria-hidden>
+            Karte (Demo)
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function HeroSection({
+  section,
+  styleKey,
+  previewBasePath
+}: {
+  section: SectionInstance;
+  styleKey: StyleKey;
+  previewBasePath: string;
+}) {
+  const headline = asSplit(section.data.headline);
+  const image = asString(section.data.image);
+
+  return (
+    <section className={`tenant-hero tenant-hero--${styleKey}`}>
+      {styleKey === 'bold' && image ? <img className="tenant-hero-bg" src={image} alt="" /> : null}
+      <div className="shell tenant-hero-grid">
+        <div>
+          <p className="eyebrow">{asString(section.data.eyebrow)}</p>
+          <h1>
+            {headline.plain}
+            {headline.accent ? <em>{headline.accent}</em> : null}
+          </h1>
+          <p className="tenant-lead">{asString(section.data.subline)}</p>
+          <p className="tenant-body">{asString(section.data.body)}</p>
+          <div className="tenant-actions">
+            <CtaButton value={section.data.primaryCta} previewBasePath={previewBasePath} />
+            <CtaButton value={section.data.secondaryCta} previewBasePath={previewBasePath} secondary />
+          </div>
+        </div>
+        {image && styleKey !== 'bold' ? (
+          <div className="tenant-hero-image">
+            <img src={image} alt="" />
+          </div>
+        ) : null}
+      </div>
+    </section>
+  );
+}
+
+function ActionBar({ section, previewBasePath }: { section: SectionInstance; previewBasePath: string }) {
+  return (
+    <section className="tenant-actionbar">
+      <div className="shell tenant-actionbar-inner">
+        <span>
+          <b />
+          {asString(section.data.statusOverride)}
+        </span>
+        <div>
+          <CtaButton value={section.data.primaryCta} previewBasePath={previewBasePath} compact />
+          <CtaButton value={section.data.secondaryCta} previewBasePath={previewBasePath} compact secondary />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function collectionDetailPrefix(sectionKey: string): string | null {
+  const map: Record<string, string> = {
+    'restaurant.menuHighlights': '/speisekarte',
+    'restaurant.diningExperiences': '/erlebnisse',
+    'hotel.roomHighlights': '/zimmer',
+    'hotel.offers': '/angebote',
+    'tourism.tourHighlights': '/touren',
+    'salon.treatmentHighlights': '/leistungen',
+    'salon.lookbook': '/looks',
+    'tradesman.serviceOverview': '/leistungen',
+    'tradesman.references': '/referenzen',
+    'consulting.offerOverview': '/leistungen',
+    'consulting.caseStudies': '/cases',
+    'medical.treatmentOverview': '/leistungen',
+    'medical.doctorTeam': '/team',
+    'fitness.classOverview': '/kurse',
+    'fitness.trainingPlan': '/kurse',
+    'fitness.trainerTeam': '/trainer',
+    'wedding.schedule': '/ablauf',
+    'wedding.accommodation': '/unterkunft'
+  };
+  return map[sectionKey] ?? null;
+}
+
+function CollectionGrid({
+  seed,
+  section,
+  previewBasePath
+}: {
+  seed: SiteSeed;
+  section: SectionInstance;
+  previewBasePath: string;
+}) {
+  const headline = asSplit(section.data.headline);
+  const itemIds = Array.isArray(section.data.items) ? section.data.items.map(String) : [];
+  const items = itemIds
+    .map((id) => seed.collections.find((item) => item.id === id))
+    .filter((item): item is CollectionSeedItem => Boolean(item));
+  const prefix = collectionDetailPrefix(section.sectionKey);
+
+  return (
+    <section className="tenant-section">
+      <div className="shell">
+        <p className="eyebrow">{asString(section.data.eyebrow)}</p>
+        <h2 className="tenant-section-title">
+          {headline.plain}
+          {headline.accent ? <em>{headline.accent}</em> : null}
+        </h2>
+        <p className="tenant-section-intro">{asString(section.data.intro)}</p>
+        <div className="tenant-card-grid">
+          {items.map((item) => {
+            const inner = (
+              <>
+                {asString(item.data.image) ? <img src={asString(item.data.image)} alt="" /> : null}
+                <div>
+                  <h3>{item.title}</h3>
+                  <p>{asString(item.data.summary)}</p>
+                  {asString(item.data.price) ? <strong>{asString(item.data.price)}</strong> : null}
+                </div>
+              </>
+            );
+
+            if (prefix) {
+              return (
+                <Link className="tenant-card tenant-card--link" href={`${previewBasePath}${prefix}/${item.slug}`} key={item.id}>
+                  {inner}
+                </Link>
+              );
+            }
+
+            return (
+              <article className="tenant-card" key={item.id}>
+                {inner}
+              </article>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FaqSection({ section }: { section: SectionInstance }) {
+  const headline = asSplit(section.data.headline);
+  const items = Array.isArray(section.data.items) ? section.data.items : [];
+
+  return (
+    <section className="tenant-section tenant-soft">
+      <div className="shell">
+        <p className="eyebrow">{asString(section.data.eyebrow)}</p>
+        <h2 className="tenant-section-title">
+          {headline.plain}
+          {headline.accent ? <em>{headline.accent}</em> : null}
+        </h2>
+        <div className="tenant-card-grid" style={{ gridTemplateColumns: '1fr' }}>
+          {items.map((raw, index) => {
+            const item = isRecord(raw) ? raw : {};
+            return (
+              <article className="tenant-card" key={index} style={{ textAlign: 'left' }}>
+                <h3 style={{ marginTop: 0 }}>{asString(item.question)}</h3>
+                <div className="tenant-body-text">{asString(item.answer)}</div>
+              </article>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function RsvpSection({ section, previewBasePath }: { section: SectionInstance; previewBasePath: string }) {
+  const headline = asSplit(section.data.headline);
+
+  return (
+    <section className="tenant-section">
+      <div className="shell">
+        <p className="eyebrow">{asString(section.data.eyebrow)}</p>
+        <h2 className="tenant-section-title">
+          {headline.plain}
+          {headline.accent ? <em>{headline.accent}</em> : null}
+        </h2>
+        <p className="tenant-section-intro">{asString(section.data.intro)}</p>
+        {asString(section.data.deadlineLabel) ? (
+          <p className="eyebrow" style={{ marginTop: 16 }}>
+            {asString(section.data.deadlineLabel)}
+          </p>
+        ) : null}
+        <div style={{ marginTop: 20 }}>
+          <CtaButton value={section.data.cta} previewBasePath={previewBasePath} />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Testimonials({ section }: { section: SectionInstance }) {
+  const headline = asSplit(section.data.headline);
+  const items = Array.isArray(section.data.items) ? section.data.items : [];
+
+  return (
+    <section className="tenant-section tenant-soft">
+      <div className="shell">
+        <p className="eyebrow">{asString(section.data.eyebrow)}</p>
+        <h2 className="tenant-section-title">
+          {headline.plain}
+          {headline.accent ? <em>{headline.accent}</em> : null}
+        </h2>
+        <div className="tenant-card-grid">
+          {items.map((raw, index) => {
+            const item = isRecord(raw) ? raw : {};
+            return (
+              <article className="tenant-quote" key={index}>
+                <p>“{asString(item.quote)}”</p>
+                <strong>{asString(item.name)}</strong>
+              </article>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ContactCta({ section, previewBasePath }: { section: SectionInstance; previewBasePath: string }) {
+  const headline = asSplit(section.data.headline);
+  return (
+    <section className="tenant-section tenant-cta">
+      <div className="shell">
+        <p className="eyebrow">{asString(section.data.eyebrow)}</p>
+        <h2 className="tenant-section-title">
+          {headline.plain}
+          {headline.accent ? <em>{headline.accent}</em> : null}
+        </h2>
+        <p className="tenant-section-intro">{asString(section.data.subline)}</p>
+        <CtaButton value={section.data.cta} previewBasePath={previewBasePath} />
+      </div>
+    </section>
+  );
+}
+
+function CtaButton({
+  value,
+  secondary,
+  compact,
+  previewBasePath
+}: {
+  value: unknown;
+  secondary?: boolean;
+  compact?: boolean;
+  previewBasePath: string;
+}) {
+  if (!isRecord(value)) return null;
+  const label = asString(value.label);
+  if (!label) return null;
+  const link = isRecord(value.link) ? asString(value.link.href) : '#';
+  const href = resolveTenantHref(link, previewBasePath);
+
+  return (
+    <a className={`tenant-button ${secondary ? 'secondary' : ''} ${compact ? 'compact' : ''}`} href={href}>
+      {label}
+    </a>
+  );
+}
+
+function resolveTenantHref(href: string, previewBasePath: string): string {
+  if (!href || href === '#') return '#';
+  if (href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('http')) return href;
+  if (href.startsWith('/')) return `${previewBasePath}${href}`;
+  return href;
+}
+
+function asString(value: unknown): string {
+  return typeof value === 'string' ? value : '';
+}
+
+function asSplit(value: unknown): { plain: string; accent: string } {
+  if (!isRecord(value)) return { plain: '', accent: '' };
+  return {
+    plain: asString(value.plain),
+    accent: asString(value.accent)
+  };
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
