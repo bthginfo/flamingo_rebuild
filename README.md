@@ -91,7 +91,7 @@ Showcase marketing page: [http://localhost:3000/templates](http://localhost:3000
 
 ### Admin: who can log in where?
 
-- **`/admin-demo/...`** is a **public** playground (no login). Content is stored in the browser under `localStorage` keys `flamingo-rebuild.demo.<industry>.<style>`. If subpages all look like the homepage, click **„Demo zurücksetzen“** in the toolbar or clear those keys — an old truncated snapshot used to load instead of the full seed.
+- **`/admin-demo/...`** is a **public** playground (no login — middleware skips the admin cookie check for this prefix). Content is stored in the browser under `localStorage` keys `flamingo-rebuild.demo.<industry>.<style>`. If subpages all look like the homepage, click **„Demo zurücksetzen“** in the toolbar or clear those keys — an old truncated snapshot used to load instead of the full seed.
 - **`/admin/login`** talks to the API and checks **`flamingo_rebuild.tenants`** (bcrypt). There is **no fixed demo password in this repository**: use the **tenant slug** and the password chosen when that tenant was **provisioned from CRM** (or stored in your team’s password manager).
 - **`/admin/crm`** stays reachable without tenant login (middleware exception) for internal prospecting.
 

@@ -36,7 +36,12 @@ export function middleware(request: NextRequest) {
     return NextResponse.rewrite(url);
   }
 
-  if (!pathname.startsWith('/admin') || pathname === '/admin/login' || pathname.startsWith('/admin/crm')) {
+  if (
+    !pathname.startsWith('/admin') ||
+    pathname === '/admin/login' ||
+    pathname.startsWith('/admin/crm') ||
+    pathname.startsWith('/admin-demo')
+  ) {
     return NextResponse.next();
   }
 
