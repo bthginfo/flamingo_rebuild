@@ -6,6 +6,16 @@ export function validateSiteDocument(document: SiteSeed): string[] {
   const industry = getIndustry(document.industryKey);
   const collectionIds = new Set(document.collections.map((item) => item.id));
 
+  const slugMap = new Map<string, string>();
+  for (const page of document.pages) {
+    const norm = page.slug.replace(/\s/g, '').toLowerCase() || '/';
+    const prev = slugMap.get(norm);
+    if (prev && prev !== page.key) {
+      errors.push(`Duplicate slug "${page.slug}" on pages ${prev} and ${page.key}.`);
+    }
+    slugMap.set(norm, page.key);
+  }
+
   for (const page of document.pages) {
     const pageDefinition = industry.corePages.find((entry) => entry.key === page.key);
     const allowedSections = new Set(pageDefinition?.allowedSections ?? []);

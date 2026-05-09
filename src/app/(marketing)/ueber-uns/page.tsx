@@ -1,12 +1,6 @@
 import type { Metadata } from 'next';
-import { agency, team } from '@/ui/marketing/data';
-import {
-  BranchMarqueeSection,
-  CtaFooterSection,
-  LandingHeroShowcase,
-  ManifestoSection,
-  TestimonialsSection
-} from '@/ui/marketing/showcase-shared';
+import { team } from '@/ui/marketing/data';
+import { CtaFooterSection, ManifestoSection, SimplePageHero, TestimonialsSection } from '@/ui/marketing/showcase-shared';
 import { RevealOnScroll } from '@/ui/marketing/RevealOnScroll';
 
 export const metadata: Metadata = {
@@ -15,25 +9,25 @@ export const metadata: Metadata = {
     'FlamingoMedia ist eine Werkstatt für Websites, Foto und Video. Zwei Menschen, ein Hund, viel Kaffee — Handwerk vor Marketing-Sprech.'
 };
 
+const TEAM_IMAGE =
+  'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1400&q=80';
+
 export default function AboutPage() {
   return (
     <main>
-      <LandingHeroShowcase
-        pulse={agency.tagline}
+      <SimplePageHero
+        eyebrow="Über uns"
         titleLine1="Ein kleines Studio."
         titleEmphasis="Ein klarer Anspruch."
         lead="FlamingoMedia ist eine Werkstatt für Websites, Foto und Video. Zwei Menschen, ein Hund, viel Kaffee. Wir glauben an Handwerk vor Marketing-Sprech."
-        monoAside="/ Innsbruck · DACH"
-        primaryCta={{ href: '#team', label: 'Das Team →' }}
-        secondaryCta={{ href: '/templates', label: 'Templates ansehen' }}
-        scrollTargetId="#mehr"
       />
 
-      <BranchMarqueeSection />
-
       <RevealOnScroll as="section" className="section surface">
-        <div className="shell split-grid" data-stagger-grid>
-          <div>
+        <div className="shell fm-about-split" data-stagger-grid>
+          <div className="fm-about-split__visual">
+            <img src={TEAM_IMAGE} alt="Team bei der Arbeit" loading="lazy" />
+          </div>
+          <div className="fm-about-split__copy">
             <h2 className="section-title">
               Studio in Innsbruck.
               <br />

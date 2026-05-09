@@ -81,6 +81,7 @@ export const processSteps = [
 export const processPhases = [
   {
     step: '01',
+    icon: '◇',
     rail: 'Kennenlernen',
     tag: 'Tag 1',
     title: 'Kennenlernen',
@@ -89,6 +90,7 @@ export const processPhases = [
   },
   {
     step: '02',
+    icon: '✎',
     rail: 'Briefing & Auswahl',
     tag: 'Tag 2',
     title: 'Briefing & Auswahl',
@@ -97,6 +99,7 @@ export const processPhases = [
   },
   {
     step: '03',
+    icon: '◉',
     rail: 'Foto- & Videoshooting',
     tag: 'Optional',
     title: 'Foto- & Videoshooting',
@@ -105,6 +108,7 @@ export const processPhases = [
   },
   {
     step: '04',
+    icon: '✦',
     rail: 'Aufbau',
     tag: 'Tag 3–7',
     title: 'Aufbau',
@@ -113,6 +117,7 @@ export const processPhases = [
   },
   {
     step: '05',
+    icon: '↻',
     rail: 'Feedback-Schleife',
     tag: 'Tag 8',
     title: 'Feedback-Schleife',
@@ -121,6 +126,7 @@ export const processPhases = [
   },
   {
     step: '06',
+    icon: '⚡',
     rail: 'Live-Schaltung',
     tag: 'Tag 9–10',
     title: 'Live-Schaltung',
@@ -129,6 +135,7 @@ export const processPhases = [
   },
   {
     step: '07',
+    icon: '♥',
     rail: 'Pflege & Support',
     tag: 'Laufend',
     title: 'Pflege & Support',
@@ -136,6 +143,8 @@ export const processPhases = [
     bullets: ['Du pflegst Inhalte selbst', 'Hosting inklusive', 'Kleine Anpassungen on demand'] as const
   }
 ] as const;
+
+export type ProcessPhase = (typeof processPhases)[number];
 
 /** https://www.flamingomedia.online/preise */
 export const pricingTiers = [

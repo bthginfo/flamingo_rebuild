@@ -4,6 +4,7 @@ import { getTenantCmsProfile } from '@/db/auth-repository';
 import { loadEditorSiteSeed } from '@/lib/admin-editor-seed';
 import { requireAdminSession } from '@/lib/admin-server';
 import { getIndustry } from '@/template-engine/registry';
+import { AddCustomPageForm } from '@/ui/admin/AddCustomPageForm';
 
 export default async function AdminPagesPage() {
   const { tenantSlug } = await requireAdminSession('/admin/pages');
@@ -54,18 +55,20 @@ export default async function AdminPagesPage() {
           Blueprint aus der Template-Registry für <strong>{industry.label}</strong> ({profile.styleKey}) — Tenant{' '}
           <strong>{tenantSlug}</strong>.
         </p>
-        <div className="grid">
-          {industry.corePages.map((page) => (
-            <Link className="card" href={`/admin/pages/${page.key}`} key={page.key}>
-              <h2>{page.label}</h2>
-              <p>{page.defaultSlug}</p>
-              <p style={{ color: 'var(--muted)' }}>{page.defaultSections.length} Start-Abschnitte</p>
+        <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
+          {initialSeed.pages.map((page) => (
+            <Link className="card" href={`/admin/pages/${encodeURIComponent(page.key)}`} key={page.id}>
+              <p className="eyebrow">{page.kind === 'custom' ? 'Eigene Seite' : 'Kernseite'}</p>
+              <h2>{page.title}</h2>
+              <p style={{ color: 'var(--muted)' }}>{page.slug}</p>
+              <p style={{ color: 'var(--muted)' }}>{page.sections.length} Abschnitte</p>
               <p className="eyebrow" style={{ marginTop: 12 }}>
                 Bearbeiten
               </p>
             </Link>
           ))}
         </div>
+        <AddCustomPageForm />
         {home ? (
           <section style={{ marginTop: 54 }}>
             <p className="eyebrow">

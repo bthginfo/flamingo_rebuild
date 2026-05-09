@@ -36,19 +36,52 @@ export function SeedPageRenderer({
     accentHex && accentHex.length > 0 ? ({ ['--tenant-accent']: accentHex } as CSSProperties) : undefined;
 
   return (
-    <main className={`tenant-preview tenant-preview--${styleKey}`} style={accentStyle}>
-      <PreviewNav seed={seed} previewBasePath={previewBasePath} />
-      {sortedSections.map((section) => (
-        <SectionRenderer
-          key={section.id}
-          seed={seed}
-          section={section}
-          styleKey={styleKey}
-          previewBasePath={previewBasePath}
-          domSectionId={sectionAnchorId(section.id)}
-        />
-      ))}
-    </main>
+    <div className="tenant-site-wrap">
+      <main className={`tenant-preview tenant-preview--${styleKey}`} style={accentStyle}>
+        <PreviewNav seed={seed} previewBasePath={previewBasePath} />
+        {sortedSections.map((section) => (
+          <SectionRenderer
+            key={section.id}
+            seed={seed}
+            section={section}
+            styleKey={styleKey}
+            previewBasePath={previewBasePath}
+            domSectionId={sectionAnchorId(section.id)}
+          />
+        ))}
+      </main>
+      <PreviewFooter seed={seed} previewBasePath={previewBasePath} />
+    </div>
+  );
+}
+
+function PreviewFooter({ seed, previewBasePath }: { seed: SiteSeed; previewBasePath: string }) {
+  const integ = seed.global.integrations;
+  const imprintHref = integ?.imprintHref ?? '/impressum';
+  const privacyHref = integ?.privacyHref ?? '/datenschutz';
+  const year = new Date().getFullYear();
+  return (
+    <footer className="tenant-footer">
+      <div className="shell tenant-footer__inner">
+        <div className="tenant-footer__brand">
+          <strong>{seed.global.brand.name}</strong>
+          <p>{seed.global.brand.tagline}</p>
+        </div>
+        <nav className="tenant-footer__nav" aria-label="Fußzeile">
+          {seed.global.navigation.map((item) => (
+            <Link href={`${previewBasePath}${item.href}`} key={item.href}>
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+        <div className="tenant-footer__meta">
+          <Link href={`${previewBasePath}${imprintHref}`}>Impressum</Link>
+          <span aria-hidden>·</span>
+          <Link href={`${previewBasePath}${privacyHref}`}>Datenschutz</Link>
+          <span className="tenant-footer__copy">© {year}</span>
+        </div>
+      </div>
+    </footer>
   );
 }
 

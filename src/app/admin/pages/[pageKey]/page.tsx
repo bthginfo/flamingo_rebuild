@@ -27,15 +27,16 @@ export default async function AdminPageEditorRoute({
     redirect('/admin/login?next=/admin/pages');
   }
 
-  const industry = getIndustry(profile.industryKey);
-  const pageKeys = new Set(industry.corePages.map((p) => p.key));
-  if (!pageKeys.has(pageKey)) {
-    notFound();
-  }
-
   const { style: styleParam } = await searchParams;
+  const industry = getIndustry(profile.industryKey);
   const styleOverride = resolveStyleParam(styleParam, profile.styleKey);
   const initialSeed = await loadEditorSiteSeed(tenantSlug, profile, styleOverride);
+
+  const pageKeys = new Set(industry.corePages.map((p) => p.key));
+  const existsInSeed = initialSeed.pages.some((p) => p.key === pageKey);
+  if (!pageKeys.has(pageKey) && !existsInSeed) {
+    notFound();
+  }
 
   return <RestaurantHomeEditor initialSeed={initialSeed} pageKey={pageKey} />;
 }

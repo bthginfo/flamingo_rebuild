@@ -7,6 +7,7 @@ const navItems = [
   { href: '/templates', label: 'Templates' },
   { href: '/prozess', label: 'Ablauf' },
   { href: '/preise', label: 'Preise' },
+  { href: '/preise#foerderung', label: 'Förderung' },
   { href: '/ueber-uns', label: 'Über uns' },
   { href: '/admin-demo/home', label: 'Admin-Demo' },
   { href: '/kontakt', label: 'Kontakt' },
@@ -42,8 +43,8 @@ export function MarketingShell({ children }: { children: React.ReactNode }) {
       </header>
       {children}
       <footer className="marketing-footer">
-        <div className="shell footer-grid">
-          <div>
+        <div className="shell marketing-footer__top">
+          <div className="marketing-footer__brand">
             <Image
               src={agency.logoFull}
               alt={agency.name}
@@ -53,26 +54,43 @@ export function MarketingShell({ children }: { children: React.ReactNode }) {
               unoptimized
             />
             <p>{agency.tagline}</p>
+            <div className="marketing-footer__contact">
+              <a href={`mailto:${agency.email}`}>{agency.email}</a>
+              <a href={`tel:${agency.phone.replace(/\s/g, '')}`}>{agency.phone}</a>
+              <a href={`tel:${agency.phoneAt.replace(/\s/g, '')}`}>{agency.phoneAt}</a>
+              <span>Innsbruck · München · Ingolstadt</span>
+            </div>
+          </div>
+          <div>
+            <p className="footer-title">Studio</p>
+            <Link href="/templates">Templates</Link>
+            <Link href="/prozess">Ablauf</Link>
+            <Link href="/preise">Preise</Link>
+            <Link href="/preise#foerderung">Förderrechner</Link>
+            <Link href="/ueber-uns">Über uns</Link>
+            <Link href="/kontakt">Kontakt</Link>
+          </div>
+          <div>
+            <p className="footer-title">Live ansehen</p>
+            <Link href="/preview/restaurant/classic">Restaurant</Link>
+            <Link href="/preview/salon/classic">Salon</Link>
+            <Link href="/preview/tradesman/classic">Handwerk</Link>
           </div>
           <div>
             <p className="footer-title">Rechtliches</p>
             <Link href="/impressum">Impressum</Link>
             <Link href="/datenschutz">Datenschutz</Link>
           </div>
-          <div>
-            <p className="footer-title">Studio</p>
-            <Link href="/prozess">Ablauf</Link>
-            <Link href="/preise">Preise</Link>
-            <Link href="/ueber-uns">Über uns</Link>
-            <Link href="/kontakt">Kontakt</Link>
+        </div>
+        <div className="marketing-footer__marquee" aria-hidden>
+          <div className="marketing-footer__marquee-track">
+            <span>FLAMINGOMEDIA · FLAMINGOMEDIA · FLAMINGOMEDIA · FLAMINGOMEDIA · </span>
+            <span>FLAMINGOMEDIA · FLAMINGOMEDIA · FLAMINGOMEDIA · FLAMINGOMEDIA · </span>
           </div>
-          <div>
-            <p className="footer-title">Kontakt</p>
-            <a href={`mailto:${agency.email}`}>{agency.email}</a>
-            <a href={`tel:${agency.phone.replace(/\s/g, '')}`}>{agency.phone}</a>
-            <a href={`tel:${agency.phoneAt.replace(/\s/g, '')}`}>{agency.phoneAt}</a>
-            <span>Innsbruck · München · Ingolstadt</span>
-          </div>
+        </div>
+        <div className="shell marketing-footer__bottom">
+          <span>© {new Date().getFullYear()} {agency.name}. Alle Rechte vorbehalten.</span>
+          <span className="marketing-footer__mono">Made with care · Innsbruck</span>
         </div>
       </footer>
       <CookieNotice />

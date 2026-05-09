@@ -1,5 +1,6 @@
 import { getTenantCmsProfile } from '@/db/auth-repository';
 import { isDatabaseConfigured } from '@/db/client';
+import { loadEditorSiteSeed } from '@/lib/admin-editor-seed';
 import { AdminAppChrome, type AdminCorePageNav } from '@/admin/AdminAppChrome';
 import { isSessionFresh, readAdminSession } from '@/platform/auth/admin-session';
 import { getIndustry } from '@/template-engine/registry';
@@ -24,7 +25,18 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           tenantName = profile.name;
           industryKey = profile.industryKey;
           styleKey = profile.styleKey;
-          corePages = getIndustry(profile.industryKey).corePages.map((p) => ({ key: p.key, label: p.label }));
+          const industry = getIndustry(profile.industryKey);
+          const coreNav: AdminCorePageNav[] = industry.corePages.map((p) => ({ key: p.key, label: p.label }));
+          try {
+            const seed = await loadEditorSiteSeed(session.tenantSlug, profile);
+            const coreKeys = new Set(industry.corePages.map((p) => p.key));
+            const extras: AdminCorePageNav[] = seed.pages
+              .filter((p) => !coreKeys.has(p.key))
+              .map((p) => ({ key: p.key, label: p.title }));
+            corePages = [...coreNav, ...extras];
+          } catch {
+            corePages = coreNav;
+          }
         } else {
           tenantName = session.tenantSlug;
         }

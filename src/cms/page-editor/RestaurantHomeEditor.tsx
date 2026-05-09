@@ -19,7 +19,7 @@ import {
   resolvePreviewAccentHex,
   type PreviewAccentId
 } from '@/template-engine/rendering/preview-accent-palette';
-import { getIndustry, getSection } from '@/template-engine/registry';
+import { getIndustry, getSection, getAllowedSectionsForCustomPage } from '@/template-engine/registry';
 import { ImageFieldEditor, LinkTargetEditor } from '@/cms/page-editor/field-editors';
 
 const STYLE_LABELS: Record<StyleKey, string> = {
@@ -131,12 +131,15 @@ export function RestaurantHomeEditor({
   const addableSectionKeys = useMemo(() => {
     const industry = getIndustry(seed.industryKey);
     const pageDefinition = industry.corePages.find((entry) => entry.key === page.key);
-    const allowed = pageDefinition?.allowedSections ?? [];
+    const allowedKeys = pageDefinition
+      ? [...pageDefinition.allowedSections]
+      : getAllowedSectionsForCustomPage(seed.industryKey).map((s) => s.key);
+    const allowed = new Set(allowedKeys);
     const counts = new Map<string, number>();
     for (const s of page.sections) {
       counts.set(s.sectionKey, (counts.get(s.sectionKey) ?? 0) + 1);
     }
-    return allowed.filter((sectionKey) => {
+    return [...allowed].filter((sectionKey) => {
       const def = getSection(sectionKey);
       if (def.repeatable) return true;
       return (counts.get(sectionKey) ?? 0) === 0;

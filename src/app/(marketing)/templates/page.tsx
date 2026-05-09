@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { agency } from '@/ui/marketing/data';
 import { RevealOnScroll } from '@/ui/marketing/RevealOnScroll';
+import { TiltHoverCard } from '@/ui/marketing/TiltHoverCard';
 import {
   BranchMarqueeSection,
   CtaFooterSection,
@@ -63,7 +64,8 @@ export default function TemplatesPage() {
                 </div>
                 <div className="fm-style-grid" data-stagger-grid>
                   {STYLE_STRIP.map((s) => (
-                    <Link key={s.id} href={previewHref(k, s.id)} className="fm-style-card">
+                    <TiltHoverCard key={s.id}>
+                      <Link href={previewHref(k, s.id)} className="fm-style-card">
                       <div className="fm-style-card__visual">
                         <img src={STYLE_PREVIEW[k][s.id]} alt={`${m.label} · ${s.label}`} loading="lazy" />
                         <span className="fm-style-card__badge">{s.label}</span>
@@ -79,7 +81,8 @@ export default function TemplatesPage() {
                           →
                         </span>
                       </div>
-                    </Link>
+                      </Link>
+                    </TiltHoverCard>
                   ))}
                 </div>
               </RevealOnScroll>

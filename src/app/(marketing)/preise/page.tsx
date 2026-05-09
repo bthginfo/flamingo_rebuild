@@ -1,14 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { addOns, agency, pricingFaqs, pricingTiers } from '@/ui/marketing/data';
-import {
-  BranchMarqueeSection,
-  CtaFooterSection,
-  LandingHeroShowcase,
-  ManifestoSection,
-  TestimonialsSection
-} from '@/ui/marketing/showcase-shared';
+import { addOns, pricingFaqs, pricingTiers } from '@/ui/marketing/data';
+import { CtaFooterSection, SimplePageHero } from '@/ui/marketing/showcase-shared';
 import { RevealOnScroll } from '@/ui/marketing/RevealOnScroll';
+import { MarketingFaqAccordion } from '@/ui/marketing/MarketingFaqAccordion';
+import { DigitalFoerderRechner } from '@/ui/marketing/DigitalFoerderRechner';
 
 export const metadata: Metadata = {
   title: 'Preise & Pakete',
@@ -19,18 +15,12 @@ export const metadata: Metadata = {
 export default function PricingPage() {
   return (
     <main>
-      <LandingHeroShowcase
-        pulse={agency.tagline}
+      <SimplePageHero
+        eyebrow="Preise"
         titleLine1="Faire Preise."
         titleEmphasis="Keine Überraschungen."
         lead="Drei klare Pakete. Ein transparenter Festpreis, einmalig zahlbar. Hosting und Pflege auf Wunsch monatlich – kündbar jederzeit."
-        monoAside="/ Fair · transparent"
-        primaryCta={{ href: '#pakete', label: 'Pakete vergleichen →' }}
-        secondaryCta={{ href: '/templates', label: 'Templates ansehen' }}
-        scrollTargetId="#mehr"
       />
-
-      <BranchMarqueeSection />
 
       <RevealOnScroll as="section" className="section surface" id="pakete">
         <div className="shell pricing-grid" data-stagger-grid>
@@ -56,8 +46,8 @@ export default function PricingPage() {
                   </li>
                 ))}
               </ul>
-              <Link className={tier.featured ? 'button' : 'button secondary'} href="/prozess" style={{ marginTop: 'auto' }}>
-                Ablauf ansehen
+              <Link className={tier.featured ? 'button' : 'button secondary'} href="/kontakt" style={{ marginTop: 'auto' }}>
+                Anfragen →
               </Link>
             </article>
           ))}
@@ -91,23 +81,38 @@ export default function PricingPage() {
         </div>
       </RevealOnScroll>
 
-      <RevealOnScroll as="section" className="section surface" id="faq">
-        <div className="shell">
-          <p className="eyebrow">FAQ</p>
-          <h2 className="section-title">Häufige Fragen.</h2>
-          <div className="fm-faq-grid" data-stagger-grid>
-            {pricingFaqs.map((item) => (
-              <article className="card fm-faq-card" key={item.q}>
-                <h3>{item.q}</h3>
-                <p style={{ color: 'var(--muted)', lineHeight: 1.65 }}>{item.a}</p>
-              </article>
-            ))}
+      <RevealOnScroll as="section" className="section surface" id="foerderung">
+        <div className="shell fm-preise-split">
+          <DigitalFoerderRechner />
+          <div>
+            <p className="eyebrow">Hinweis</p>
+            <h2 className="section-title">
+              Förderung &amp;
+              <br />
+              <em>Website-Budget.</em>
+            </h2>
+            <p className="hero-copy">
+              Viele reine Web- oder Marketingprojekte fallen <strong>nicht</strong> unter die Tiroler
+              Digitalisierungsförderung — rechne trotzdem, wenn Du z. B. ERP, Prozesssysteme oder Schulungen mit
+              einplanst. Wir begleiten Dich gern bei der Einordnung.
+            </p>
+            <Link className="button secondary" href="/prozess" style={{ marginTop: 20 }}>
+              So läuft ein Projekt →
+            </Link>
           </div>
         </div>
       </RevealOnScroll>
 
-      <ManifestoSection />
-      <TestimonialsSection />
+      <RevealOnScroll as="section" className="section fm-faq-section" id="faq">
+        <div className="shell fm-faq-section__inner">
+          <p className="eyebrow fm-faq-section__eyebrow">FAQ</p>
+          <h2 className="fm-faq-section__title">
+            Häufige <em className="fm-italic-pop fm-faq-section__accent">Fragen.</em>
+          </h2>
+          <MarketingFaqAccordion items={pricingFaqs} />
+        </div>
+      </RevealOnScroll>
+
       <CtaFooterSection />
     </main>
   );

@@ -161,3 +161,31 @@ export function CtaFooterSection() {
     </RevealOnScroll>
   );
 }
+
+/** Light hero for inner marketing routes (legacy showcase parity). */
+export function SimplePageHero({
+  eyebrow,
+  titleLine1,
+  titleEmphasis,
+  lead
+}: {
+  eyebrow: string;
+  titleLine1: string;
+  titleEmphasis: string;
+  lead: string;
+}) {
+  return (
+    <section className="fm-simple-hero">
+      <div className="fm-simple-hero__wash" aria-hidden />
+      <div className="shell fm-simple-hero__inner">
+        <p className="eyebrow">{eyebrow}</p>
+        <h1 className="fm-simple-hero__title">
+          {titleLine1}
+          <br />
+          <em className="fm-italic-pop fm-simple-hero__accent">{titleEmphasis}</em>
+        </h1>
+        <p className="hero-copy fm-simple-hero__lead">{lead}</p>
+      </div>
+    </section>
+  );
+}

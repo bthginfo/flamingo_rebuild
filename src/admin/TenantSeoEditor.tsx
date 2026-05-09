@@ -61,7 +61,7 @@ export function TenantSeoEditor() {
     void load();
   }, [load]);
 
-  function updateRow(pageId: string, patch: Partial<Pick<SeoRow, 'metaTitle' | 'metaDescription'>>) {
+  function updateRow(pageId: string, patch: Partial<Pick<SeoRow, 'metaTitle' | 'metaDescription' | 'slug'>>) {
     setRows((current) => current.map((row) => (row.pageId === pageId ? { ...row, ...patch } : row)));
     if (status === 'ready' || status === 'saved') setStatus('ready');
   }
@@ -76,6 +76,7 @@ export function TenantSeoEditor() {
         if (!row) return page;
         return {
           ...page,
+          slug: row.slug.trim().startsWith('/') ? row.slug.trim() : `/${row.slug.trim()}`,
           seo: {
             ...page.seo,
             title: row.metaTitle.trim(),
@@ -184,9 +185,14 @@ export function TenantSeoEditor() {
             <p className="eyebrow">
               {row.pageKey} · {row.pageTitle}
             </p>
-            <p style={{ color: 'var(--muted)', fontSize: 14 }}>
-              Slug: <code>{row.slug}</code>
-            </p>
+            <label className="cms-field" style={{ marginTop: 12 }}>
+              <span>URL-Pfad (Slug)</span>
+              <input
+                value={row.slug}
+                onChange={(e) => updateRow(row.pageId, { slug: e.target.value })}
+                placeholder="/kontakt"
+              />
+            </label>
             <label className="cms-field" style={{ marginTop: 12 }}>
               <span>Meta-Titel</span>
               <input value={row.metaTitle} onChange={(e) => updateRow(row.pageId, { metaTitle: e.target.value })} />

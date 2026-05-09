@@ -33,3 +33,12 @@ export function getAllowedSectionsForPage(industryKey: IndustryKey, pageKey: str
   if (!page) return [];
   return page.allowedSections.map(getSection);
 }
+
+/** Sections that may be added on a tenant-defined custom page (`kind: custom`). */
+export function getAllowedSectionsForCustomPage(industryKey: IndustryKey): readonly SectionDefinition[] {
+  return sections.filter((s) => {
+    if (!s.allowedPageKinds.includes('custom')) return false;
+    if (s.industries === 'all') return true;
+    return s.industries.includes(industryKey);
+  });
+}
