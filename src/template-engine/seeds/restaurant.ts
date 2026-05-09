@@ -38,7 +38,7 @@ export function restaurantSeed(styleKey: StyleKey): SiteSeed {
       contact: {
         phone: '+43 512 123 4567',
         email: 'ciao@trattoria-flamingo.test',
-        address: 'Maria-Theresien-Strasse 12, 6020 Innsbruck'
+        address: 'Maria-Theresien-Straße 12, 6020 Innsbruck'
       }
     },
     collections: [
@@ -111,7 +111,7 @@ export function restaurantSeed(styleKey: StyleKey): SiteSeed {
           section('home-hero', 'global.hero', 1, {
             eyebrow: 'Cucina italiana · seit 1998',
             headline: { plain: 'Italien beginnt', accent: 'am ersten Bissen.' },
-            subline: 'Pasta, Pizza, Naturweine und ein Tisch, an dem der Abend laenger bleiben darf.',
+            subline: 'Pasta, Pizza, Naturweine und ein Tisch, an dem der Abend länger bleiben darf.',
             body: 'Wir kochen täglich frisch, arbeiten mit Produzenten aus Tirol und Italien und servieren italienische Küche ohne Theater.',
             image: heroImages[styleKey],
             primaryCta: { label: 'Tisch reservieren', link: { type: 'page', href: '/kontakt' } },
@@ -137,7 +137,7 @@ export function restaurantSeed(styleKey: StyleKey): SiteSeed {
           }),
           section('home-testimonials', 'global.testimonials', 5, {
             eyebrow: 'Stimmen',
-            headline: { plain: 'Was unsere', accent: 'Gaeste sagen.' },
+            headline: { plain: 'Was unsere', accent: 'Gäste sagen.' },
             items: [
               { quote: 'Ein Geheimtipp. Wir machen extra einen Umweg, wenn wir in Tirol sind.', name: 'Markus W., München' },
               { quote: 'Tolle Pasta, herzliche Bedienung und faire Preise. Unsere Kinder lieben Giulia.', name: 'Familie Berger' },
@@ -307,7 +307,7 @@ export function restaurantSeed(styleKey: StyleKey): SiteSeed {
           section('contact-block', 'global.textImage', 2, {
             eyebrow: 'Lokal',
             headline: { plain: 'Trattoria', accent: 'Flamingo.' },
-            body: 'Maria-Theresien-Strasse 12, 6020 Innsbruck\nTelefon +43 512 123 4567\nciao@trattoria-flamingo.test',
+            body: 'Maria-Theresien-Straße 12, 6020 Innsbruck\nTelefon +43 512 123 4567\nciao@trattoria-flamingo.test',
             image: heroImages[styleKey],
             cta: { label: 'Route planen', link: { type: 'page', href: '/kontakt' } }
           }),

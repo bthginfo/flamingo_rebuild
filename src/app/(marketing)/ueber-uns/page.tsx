@@ -37,8 +37,9 @@ export default function AboutPage() {
             <p className="eyebrow">Haltung</p>
             <h2 className="section-title">Gute Websites sind konkret.</h2>
             <p className="hero-copy">
-              Wir zeigen echte Angebote, echte Abläufe, echte Menschen und klare nächste Schritte.               Kein austauschbarer Standard — jede Branche bekommt Rhythmus und Bildsprache, die zu den Gästen passen, die Du im Laden
-              auch siehst.
+              Wir zeigen echte Angebote, echte Abläufe, echte Menschen und klare nächste Schritte. Kein austauschbarer
+              Standard — jede Branche bekommt Rhythmus und Bildsprache, die zu den Gästen passen, die Du im Laden auch
+              siehst.
             </p>
           </div>
           <div className="image-panel">

@@ -31,7 +31,7 @@ export function fitnessSeed(styleKey: StyleKey): SiteSeed {
       contact: {
         phone: '+49 221 88 77 30',
         email: 'willkommen@studio-flamingo-kraft.test',
-        address: 'Aachener Strasse 55, 50674 Köln'
+        address: 'Aachener Straße 55, 50674 Köln'
       }
     },
     collections: [

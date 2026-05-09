@@ -388,9 +388,13 @@ a {
 .marketing-root .fm-manifesto__grid article {
   transition:
     border-color 0.3s ease,
+    border-left-color 0.3s ease,
     transform 0.35s ease,
-    background 0.35s ease;
+    background 0.35s ease,
+    box-shadow 0.35s ease;
   border-radius: 12px;
+  border: 1px solid transparent;
+  border-left: 3px solid rgba(124, 58, 237, 0);
   margin: 0 -12px;
   padding: 22px 12px 12px;
 }
@@ -398,7 +402,9 @@ a {
 .marketing-root .fm-manifesto__grid article:hover {
   transform: translateY(-3px);
   background: rgba(255, 255, 255, 0.04);
-  border-color: transparent;
+  border-color: rgba(255, 255, 255, 0.06);
+  border-left-color: rgba(242, 65, 113, 0.85);
+  box-shadow: 0 10px 32px rgba(20, 17, 26, 0.08);
 }
 
 .marketing-root .fm-quote {
@@ -552,6 +558,7 @@ a {
 }
 
 .marketing-root .fm-tpl-block:hover {
+  transform: translateY(-3px);
   border-color: rgba(124, 58, 237, 0.2);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 1) inset,
@@ -611,12 +618,15 @@ a {
   transition:
     transform 0.38s cubic-bezier(0.2, 0.8, 0.2, 1),
     box-shadow 0.4s ease,
-    border-color 0.3s ease;
+    border-color 0.3s ease,
+    border-left-color 0.3s ease;
+  border-left: 3px solid transparent;
 }
 
 .marketing-root .feature-card:hover {
   transform: translateY(-5px);
   border-color: rgba(124, 58, 237, 0.2);
+  border-left-color: rgba(124, 58, 237, 0.55);
   box-shadow:
     0 22px 48px rgba(20, 17, 26, 0.09),
     0 0 40px -14px rgba(242, 65, 113, 0.1);
@@ -673,6 +683,111 @@ a {
 
 .marketing-root .marketing-footer {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+/* Marquees: pause on hover so copy stays readable */
+.marketing-root .top-marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+.marketing-root .fm-branch-marquee__viewport:hover .fm-branch-marquee__animate {
+  animation-play-state: paused;
+}
+
+/* Service chips & pills */
+.marketing-root .fm-chip {
+  cursor: default;
+  transition:
+    transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 0.22s ease,
+    color 0.22s ease,
+    box-shadow 0.22s ease,
+    background 0.22s ease;
+}
+
+.marketing-root .fm-chip:hover {
+  transform: translateY(-2px);
+  border-color: rgba(124, 58, 237, 0.38);
+  color: var(--fg);
+  background: rgba(124, 58, 237, 0.07);
+  box-shadow: 0 8px 22px rgba(124, 58, 237, 0.14);
+}
+
+.marketing-root .fm-pill {
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.marketing-root .fm-pill:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+/* Footer links: underline sweep */
+.marketing-root .marketing-footer a {
+  position: relative;
+  width: fit-content;
+  transition: color 0.2s ease;
+}
+
+.marketing-root .marketing-footer a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 2px;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, var(--accent), rgba(255, 255, 255, 0.55));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.marketing-root .marketing-footer a:hover,
+.marketing-root .marketing-footer a:focus-visible {
+  color: #fff;
+}
+
+.marketing-root .marketing-footer a:hover::after,
+.marketing-root .marketing-footer a:focus-visible::after {
+  transform: scaleX(1);
+}
+
+/* Pricing cards: subtle shine on hover */
+.marketing-root .price-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.marketing-root .price-card::before {
+  content: '';
+  position: absolute;
+  inset: -45% -55%;
+  background: linear-gradient(
+    118deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.5) 50%,
+    transparent 60%
+  );
+  transform: translateX(-120%) rotate(11deg);
+  transition: transform 0.65s cubic-bezier(0.2, 0.8, 0.2, 1);
+  pointer-events: none;
+}
+
+.marketing-root .price-card:hover::before {
+  transform: translateX(120%) rotate(11deg);
+}
+
+.marketing-root .price-card.featured::before {
+  background: linear-gradient(
+    118deg,
+    transparent 38%,
+    rgba(255, 61, 104, 0.28) 50%,
+    transparent 62%
+  );
 }
 
 .preview-root {
@@ -2802,6 +2917,20 @@ a {
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
+  }
+
+  .marketing-root .price-card::before {
+    display: none !important;
+  }
+
+  .marketing-root .fm-chip:hover,
+  .marketing-root .fm-pill:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  .marketing-root .fm-tpl-block:hover {
+    transform: none !important;
   }
 }
 
