@@ -37,6 +37,12 @@ export const field = {
     type: 'link',
     ...options
   }),
+  url: (key: string, label: string, options: Partial<FieldDefinition> = {}): FieldDefinition => ({
+    key,
+    label,
+    type: 'url',
+    ...options
+  }),
   cta: (key: string, label: string, options: Partial<FieldDefinition> = {}): FieldDefinition => ({
     key,
     label,

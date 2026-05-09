@@ -326,7 +326,7 @@ export const globalSections: readonly SectionDefinition[] = [
           field.textarea('bullets', 'Leistungen (eine Zeile pro Punkt)'),
           { key: 'highlighted', label: 'Hervorheben', type: 'boolean' },
           field.text('ctaLabel', 'Button-Text'),
-          field.text('ctaHref', 'Button-Link (URL)')
+          field.url('ctaHref', 'Button-Link (URL)')
         ],
         { required: true }
       )
@@ -376,7 +376,7 @@ export const globalSections: readonly SectionDefinition[] = [
     fields: [
       field.text('eyebrow', 'Eyebrow'),
       field.splitHeading('headline', 'Überschrift'),
-      field.text('embedUrl', 'YouTube-URL', { required: true }),
+      field.url('embedUrl', 'YouTube-URL', { required: true }),
       field.textarea('caption', 'Untertitel')
     ]
   },

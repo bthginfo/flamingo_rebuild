@@ -93,6 +93,8 @@ Der **Kunden-Admin** (`/admin`, `/admin/pages`, …) erfordert wie bisher eine g
 
 Mit aktivierter Datenbank werden Prospects verwaltet und Tenants provisioniert: Insert in `flamingo_rebuild.tenants` mit bcrypt-Hash, **veröffentlichte** Site-Version aus Demo-Seed (alle **neun** Branchen × drei Stile), optional Merge mit **Content-JSON**, danach Draft-Klon für die Bearbeitung. Leeres Admin-Passwort im Dialog erzeugt ein **automatisches Passwort** (wird nach dem Speichern in der Erfolgsmeldung angezeigt — bitte sicher notieren).
 
+**Globale CMS-Sektionen** (`global.*`) kommen aus der Template-Registry (`template-engine/sections`, `industries/index.ts` → `globalAllowed`); `validateSiteDocument` prüft beim Speichern/Provisionieren nur gegen diese Registry — **keine** separate Anpassung der Provisionierungs-Logik nötig, solange Seeds und JSON-Import erlaubte `sectionKey`-Werte verwenden.
+
 **KI-gefüllte Inhalte:** Vorlage `docs/rebuild-content-template.json`, System-/Arbeitsprompt `docs/rebuild-ki-prompt.md` — JSON im Provisionierungs-Dialog einfügen oder als Datei wählen. Schlüssel mit Unterstrich (`_…`) werden beim Import automatisch entfernt.
 
 ### Eigenes Vercel-Projekt pro Kunde (optional)
