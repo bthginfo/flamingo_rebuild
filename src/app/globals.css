@@ -3829,3 +3829,311 @@ a {
   line-height: 1.55;
   color: var(--muted, #64748b);
 }
+
+/* -------------------------------------------------------------------------- */
+/* WOW sections (SeedRenderer) — BEM matches SeedRenderer.tsx.                */
+/* Previously only .tenant-wow__* existed; these classes had no layout rules. */
+/* -------------------------------------------------------------------------- */
+
+.tenant-wow-stats {
+  position: relative;
+  padding: clamp(48px, 6vw, 88px) 0;
+  overflow: hidden;
+}
+
+.tenant-wow-stats__glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.55;
+  background:
+    radial-gradient(780px 300px at 10% 0%, rgba(109, 94, 252, 0.16), transparent 62%),
+    radial-gradient(680px 260px at 96% 100%, rgba(34, 211, 238, 0.12), transparent 58%);
+}
+
+.tenant-wow-stats__inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(22px, 3vw, 36px);
+}
+
+.tenant-wow-stats__intro {
+  max-width: 42ch;
+}
+
+.tenant-wow-stats .eyebrow,
+.tenant-wow-trust .eyebrow,
+.tenant-wow-bento .eyebrow {
+  letter-spacing: 0.1em;
+}
+
+.tenant-wow-stats__title {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(2rem, 4.2vw, 3.1rem);
+  line-height: 1.12;
+  margin: 10px 0 0;
+  color: var(--tenant-fg);
+}
+
+.tenant-wow-stats__title em {
+  color: var(--tenant-accent);
+  font-style: italic;
+}
+
+.tenant-wow-stats__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tenant-wow-stats__card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px 18px 18px;
+  border-radius: 16px;
+  border: 1px solid var(--tenant-line);
+  background: color-mix(in oklab, var(--tenant-bg), #fff 14%);
+  box-shadow: 0 12px 30px rgba(20, 17, 26, 0.06);
+}
+
+.tenant-preview--bold .tenant-wow-stats__card {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.35);
+}
+
+.tenant-wow-stats__value {
+  font-size: clamp(1.85rem, 3.4vw, 2.55rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--tenant-fg);
+  line-height: 1;
+}
+
+.tenant-wow-stats__label {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--tenant-fg);
+}
+
+.tenant-wow-stats__hint {
+  font-size: 0.88rem;
+  line-height: 1.4;
+  color: var(--tenant-muted);
+}
+
+.tenant-wow-trust {
+  padding: clamp(48px, 6vw, 88px) 0;
+  border-block: 1px solid var(--tenant-line);
+}
+
+.tenant-wow-trust__head {
+  max-width: 48ch;
+  margin-bottom: clamp(22px, 3vw, 32px);
+}
+
+.tenant-wow-trust__title {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(2rem, 4.2vw, 3.1rem);
+  line-height: 1.12;
+  margin: 10px 0 0;
+  color: var(--tenant-fg);
+}
+
+.tenant-wow-trust__title em {
+  color: var(--tenant-accent);
+  font-style: italic;
+}
+
+.tenant-wow-trust__row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
+  gap: 18px 16px;
+  align-items: stretch;
+}
+
+.tenant-wow-trust__cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  padding: 18px 14px 16px;
+  border-radius: 16px;
+  border: 1px solid var(--tenant-line);
+  background: color-mix(in oklab, var(--tenant-bg), #fff 12%);
+  text-decoration: none;
+  color: inherit;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.tenant-preview--bold .tenant-wow-trust__cell {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.tenant-wow-trust__cell:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(20, 17, 26, 0.1);
+}
+
+.tenant-wow-trust__logo-wrap {
+  width: 100%;
+  max-width: 220px;
+  aspect-ratio: 4 / 3;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.tenant-preview--bold .tenant-wow-trust__logo-wrap {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.tenant-wow-trust__logo-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.tenant-wow-trust__name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--tenant-fg);
+  max-width: 22ch;
+}
+
+.tenant-wow-trust__mono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--tenant-fg);
+}
+
+.tenant-preview--bold .tenant-wow-trust__mono {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.tenant-wow-bento {
+  padding: clamp(48px, 6vw, 88px) 0;
+}
+
+.tenant-wow-bento__head {
+  max-width: 48ch;
+  margin-bottom: clamp(22px, 3vw, 32px);
+}
+
+.tenant-wow-bento__title {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(2rem, 4.2vw, 3.1rem);
+  line-height: 1.12;
+  margin: 10px 0 0;
+  color: var(--tenant-fg);
+}
+
+.tenant-wow-bento__title em {
+  color: var(--tenant-accent);
+  font-style: italic;
+}
+
+.tenant-wow-bento__grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.tenant-wow-bento__tile {
+  grid-column: span 2;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid var(--tenant-line);
+  background: color-mix(in oklab, var(--tenant-bg), #fff 12%);
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+  box-shadow: 0 14px 34px rgba(20, 17, 26, 0.07);
+}
+
+.tenant-preview--bold .tenant-wow-bento__tile {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.tenant-wow-bento__tile--wide {
+  grid-column: span 4;
+}
+
+.tenant-wow-bento__visual {
+  position: relative;
+  min-height: 160px;
+  flex: 0 0 auto;
+}
+
+.tenant-wow-bento__visual img {
+  width: 100%;
+  height: 100%;
+  min-height: 160px;
+  object-fit: cover;
+  display: block;
+}
+
+.tenant-wow-bento__shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.35), transparent 55%);
+  pointer-events: none;
+}
+
+.tenant-wow-bento__body {
+  padding: 16px 18px 18px;
+  flex: 1 1 auto;
+}
+
+.tenant-wow-bento__body h3 {
+  margin: 0 0 8px;
+  font-size: 1.12rem;
+  color: var(--tenant-fg);
+}
+
+.tenant-wow-bento__body p {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--tenant-muted);
+}
+
+.tenant-wow-bento__kicker {
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--tenant-muted);
+  margin: 0 0 6px;
+}
+
+@media (max-width: 900px) {
+  .tenant-wow-bento__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tenant-wow-bento__tile,
+  .tenant-wow-bento__tile--wide {
+    grid-column: span 1;
+  }
+}

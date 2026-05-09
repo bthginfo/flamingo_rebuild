@@ -4,6 +4,16 @@ import Link from 'next/link';
 import type { PageInstance, SectionInstance, StyleKey } from '../model';
 import type { CollectionSeedItem, SiteSeed } from '../seeds/model';
 
+function SplitHeading({ plain, accent }: { plain: string; accent: string }) {
+  if (!accent) return plain;
+  return (
+    <>
+      {plain}{' '}
+      <em>{accent}</em>
+    </>
+  );
+}
+
 export function SeedPageRenderer({
   seed,
   page,
@@ -131,8 +141,7 @@ function PageHeaderSection({ section, styleKey }: { section: SectionInstance; st
         <div className="shell tenant-page-hero__text-inner">
           <p className="eyebrow">{asString(section.data.eyebrow)}</p>
           <h1 className="tenant-page-hero__title">
-            {headline.plain}
-            {headline.accent ? <em>{headline.accent}</em> : null}
+            <SplitHeading plain={headline.plain} accent={headline.accent} />
           </h1>
           {asString(section.data.subline) ? <p className="tenant-page-hero__sub tenant-page-hero__sub--plain">{asString(section.data.subline)}</p> : null}
         </div>
@@ -149,8 +158,7 @@ function PageHeaderSection({ section, styleKey }: { section: SectionInstance; st
       <div className="shell tenant-page-hero__content">
         <p className="eyebrow">{asString(section.data.eyebrow)}</p>
         <h1 className="tenant-page-hero__title">
-          {headline.plain}
-          {headline.accent ? <em>{headline.accent}</em> : null}
+          <SplitHeading plain={headline.plain} accent={headline.accent} />
         </h1>
         {asString(section.data.subline) ? <p className="tenant-page-hero__sub">{asString(section.data.subline)}</p> : null}
       </div>
@@ -169,8 +177,7 @@ function TextImageSection({ section, previewBasePath }: { section: SectionInstan
         <div>
           <p className="eyebrow">{asString(section.data.eyebrow)}</p>
           <h2 className="tenant-section-title">
-            {headline.plain}
-            {headline.accent ? <em>{headline.accent}</em> : null}
+            <SplitHeading plain={headline.plain} accent={headline.accent} />
           </h2>
           <div className="tenant-body-text">{body}</div>
           <CtaButton value={section.data.cta} previewBasePath={previewBasePath} />
@@ -194,8 +201,7 @@ function GalleryGridSection({ section }: { section: SectionInstance }) {
       <div className="shell">
         <p className="eyebrow">{asString(section.data.eyebrow)}</p>
         <h2 className="tenant-section-title">
-          {headline.plain}
-          {headline.accent ? <em>{headline.accent}</em> : null}
+          <SplitHeading plain={headline.plain} accent={headline.accent} />
         </h2>
         <div className="tenant-gallery-grid">
           {images.map((item, index) => (
@@ -236,8 +242,7 @@ function MapContactSection({ section, seed }: { section: SectionInstance; seed: 
       <div className="shell">
         <p className="eyebrow">{asString(section.data.eyebrow)}</p>
         <h2 className="tenant-section-title">
-          {headline.plain}
-          {headline.accent ? <em>{headline.accent}</em> : null}
+          <SplitHeading plain={headline.plain} accent={headline.accent} />
         </h2>
         <div className="tenant-map-grid">
           <div className="tenant-map-card">
@@ -274,8 +279,7 @@ function HeroSection({
         <div>
           <p className="eyebrow">{asString(section.data.eyebrow)}</p>
           <h1>
-            {headline.plain}
-            {headline.accent ? <em>{headline.accent}</em> : null}
+            <SplitHeading plain={headline.plain} accent={headline.accent} />
           </h1>
           <p className="tenant-lead">{asString(section.data.subline)}</p>
           <p className="tenant-body">{asString(section.data.body)}</p>
@@ -356,8 +360,7 @@ function CollectionGrid({
       <div className="shell">
         <p className="eyebrow">{asString(section.data.eyebrow)}</p>
         <h2 className="tenant-section-title">
-          {headline.plain}
-          {headline.accent ? <em>{headline.accent}</em> : null}
+          <SplitHeading plain={headline.plain} accent={headline.accent} />
         </h2>
         <p className="tenant-section-intro">{asString(section.data.intro)}</p>
         <div className="tenant-card-grid">
@@ -402,8 +405,7 @@ function FaqSection({ section }: { section: SectionInstance }) {
       <div className="shell">
         <p className="eyebrow">{asString(section.data.eyebrow)}</p>
         <h2 className="tenant-section-title">
-          {headline.plain}
-          {headline.accent ? <em>{headline.accent}</em> : null}
+          <SplitHeading plain={headline.plain} accent={headline.accent} />
         </h2>
         <div className="tenant-card-grid" style={{ gridTemplateColumns: '1fr' }}>
           {items.map((raw, index) => {
@@ -429,8 +431,7 @@ function RsvpSection({ section, previewBasePath }: { section: SectionInstance; p
       <div className="shell">
         <p className="eyebrow">{asString(section.data.eyebrow)}</p>
         <h2 className="tenant-section-title">
-          {headline.plain}
-          {headline.accent ? <em>{headline.accent}</em> : null}
+          <SplitHeading plain={headline.plain} accent={headline.accent} />
         </h2>
         <p className="tenant-section-intro">{asString(section.data.intro)}</p>
         {asString(section.data.deadlineLabel) ? (
@@ -455,8 +456,7 @@ function Testimonials({ section }: { section: SectionInstance }) {
       <div className="shell">
         <p className="eyebrow">{asString(section.data.eyebrow)}</p>
         <h2 className="tenant-section-title">
-          {headline.plain}
-          {headline.accent ? <em>{headline.accent}</em> : null}
+          <SplitHeading plain={headline.plain} accent={headline.accent} />
         </h2>
         <div className="tenant-card-grid">
           {items.map((raw, index) => {
@@ -481,8 +481,7 @@ function ContactCta({ section, previewBasePath }: { section: SectionInstance; pr
       <div className="shell">
         <p className="eyebrow">{asString(section.data.eyebrow)}</p>
         <h2 className="tenant-section-title">
-          {headline.plain}
-          {headline.accent ? <em>{headline.accent}</em> : null}
+          <SplitHeading plain={headline.plain} accent={headline.accent} />
         </h2>
         <p className="tenant-section-intro">{asString(section.data.subline)}</p>
         <CtaButton value={section.data.cta} previewBasePath={previewBasePath} />
@@ -505,8 +504,7 @@ function StatsBandSection({ section, styleKey }: { section: SectionInstance; sty
         <div className="tenant-wow-stats__intro">
           <p className="eyebrow">{asString(section.data.eyebrow)}</p>
           <h2 className="tenant-wow-stats__title">
-            {headline.plain}
-            {headline.accent ? <em>{headline.accent}</em> : null}
+            <SplitHeading plain={headline.plain} accent={headline.accent} />
           </h2>
         </div>
         <ul className="tenant-wow-stats__grid">
@@ -532,8 +530,7 @@ function TrustLogosSection({ section, styleKey }: { section: SectionInstance; st
         <div className="tenant-wow-trust__head">
           <p className="eyebrow">{asString(section.data.eyebrow)}</p>
           <h2 className="tenant-wow-trust__title">
-            {headline.plain}
-            {headline.accent ? <em>{headline.accent}</em> : null}
+            <SplitHeading plain={headline.plain} accent={headline.accent} />
           </h2>
         </div>
         <div className="tenant-wow-trust__row">
@@ -578,8 +575,7 @@ function BentoHighlightsSection({ section, styleKey }: { section: SectionInstanc
         <div className="tenant-wow-bento__head">
           <p className="eyebrow">{asString(section.data.eyebrow)}</p>
           <h2 className="tenant-wow-bento__title">
-            {headline.plain}
-            {headline.accent ? <em>{headline.accent}</em> : null}
+            <SplitHeading plain={headline.plain} accent={headline.accent} />
           </h2>
         </div>
         <div className="tenant-wow-bento__grid">
