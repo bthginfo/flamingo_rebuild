@@ -1,6 +1,6 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import {
-  agency,
   homeAddOnPackages,
   homeAdminBullets,
   homeAblaufTeaser,
@@ -171,21 +171,42 @@ export function HomeDeviceStripAlignedSection() {
         </p>
         <div className="fm-device-grid" data-stagger-grid>
           <Link href={previewHref('restaurant', 'classic')} className="fm-device-card">
-            <img src={CORE_TEMPLATE_META.restaurant.image} alt="" />
+            <Image
+              src={CORE_TEMPLATE_META.restaurant.image}
+              alt=""
+              width={960}
+              height={600}
+              className="fm-device-card__img"
+              sizes="(max-width: 900px) 100vw, 33vw"
+            />
             <div>
               <h3>Restaurant · Klassisch</h3>
               <p>Restaurant-Template auf dem Desktop</p>
             </div>
           </Link>
           <Link href="/admin-demo/home" className="fm-device-card">
-            <img src={imageAssets.contentKit} alt="" />
+            <Image
+              src={imageAssets.contentKit}
+              alt=""
+              width={960}
+              height={600}
+              className="fm-device-card__img"
+              sizes="(max-width: 900px) 100vw, 33vw"
+            />
             <div>
               <h3>Admin-Bereich</h3>
               <p>Inhalte pflegen, ohne Code</p>
             </div>
           </Link>
           <Link href={previewHref('salon', 'bold')} className="fm-device-card">
-            <img src={EXTRA_TEMPLATE_META.salon.image} alt="" />
+            <Image
+              src={EXTRA_TEMPLATE_META.salon.image}
+              alt=""
+              width={960}
+              height={600}
+              className="fm-device-card__img"
+              sizes="(max-width: 900px) 100vw, 33vw"
+            />
             <div>
               <h3>Salon · Bold</h3>
               <p>Mobile zuerst gedacht</p>

@@ -289,5 +289,154 @@ export const globalSections: readonly SectionDefinition[] = [
         { required: true }
       )
     ]
+  },
+  {
+    key: 'global.asymmetricSpot',
+    label: 'Asymmetrischer Spot',
+    industries: 'all',
+    styles: 'all',
+    allowedPageKinds: ['core', 'custom', 'collectionDetail'],
+    repeatable: true,
+    fields: [
+      field.text('eyebrow', 'Eyebrow'),
+      field.splitHeading('headline', 'Überschrift'),
+      field.richText('body', 'Text', { required: true }),
+      field.image('image', 'Bild', { required: true }),
+      field.text('imageSide', 'Bild-Seite', { helpText: 'left oder right' })
+    ]
+  },
+  {
+    key: 'global.pricingTiers',
+    label: 'Preis-Stufen',
+    industries: 'all',
+    styles: 'all',
+    allowedPageKinds: ['core', 'custom', 'collectionDetail'],
+    repeatable: true,
+    fields: [
+      field.text('eyebrow', 'Eyebrow'),
+      field.splitHeading('headline', 'Überschrift'),
+      field.textarea('intro', 'Einleitung'),
+      field.repeater(
+        'tiers',
+        'Tarife',
+        [
+          field.text('name', 'Name', { required: true }),
+          field.text('priceLine', 'Preiszeile', { required: true }),
+          field.textarea('summary', 'Kurzbeschreibung'),
+          field.textarea('bullets', 'Leistungen (eine Zeile pro Punkt)'),
+          { key: 'highlighted', label: 'Hervorheben', type: 'boolean' },
+          field.text('ctaLabel', 'Button-Text'),
+          field.text('ctaHref', 'Button-Link (URL)')
+        ],
+        { required: true }
+      )
+    ]
+  },
+  {
+    key: 'global.ribbonCta',
+    label: 'Hinweis-Leiste mit CTA',
+    industries: 'all',
+    styles: 'all',
+    allowedPageKinds: ['core', 'custom', 'collectionDetail'],
+    repeatable: true,
+    fields: [
+      field.text('message', 'Nachricht', { required: true }),
+      field.cta('cta', 'Button')
+    ]
+  },
+  {
+    key: 'global.keyFactsGrid',
+    label: 'Key-Facts (Raster)',
+    industries: 'all',
+    styles: 'all',
+    allowedPageKinds: ['core', 'custom', 'collectionDetail'],
+    repeatable: true,
+    fields: [
+      field.text('eyebrow', 'Eyebrow'),
+      field.splitHeading('headline', 'Überschrift'),
+      field.repeater(
+        'items',
+        'Fakten',
+        [
+          field.text('icon', 'Icon / Emoji'),
+          field.text('title', 'Titel', { required: true }),
+          field.textarea('detail', 'Detail', { required: true })
+        ],
+        { required: true }
+      )
+    ]
+  },
+  {
+    key: 'global.videoEmbed',
+    label: 'Video (YouTube)',
+    industries: 'all',
+    styles: 'all',
+    allowedPageKinds: ['core', 'custom', 'collectionDetail'],
+    repeatable: true,
+    fields: [
+      field.text('eyebrow', 'Eyebrow'),
+      field.splitHeading('headline', 'Überschrift'),
+      field.text('embedUrl', 'YouTube-URL', { required: true }),
+      field.textarea('caption', 'Untertitel')
+    ]
+  },
+  {
+    key: 'global.pullQuote',
+    label: 'Zitat-Block',
+    industries: 'all',
+    styles: 'all',
+    allowedPageKinds: ['core', 'custom', 'collectionDetail'],
+    repeatable: true,
+    fields: [
+      field.textarea('quote', 'Zitat', { required: true }),
+      field.text('attribution', 'Quelle / Name'),
+      field.text('role', 'Rolle / Kontext')
+    ]
+  },
+  {
+    key: 'global.stepsStrip',
+    label: 'Schritte (Streifen)',
+    industries: 'all',
+    styles: 'all',
+    allowedPageKinds: ['core', 'custom', 'collectionDetail'],
+    repeatable: true,
+    fields: [
+      field.text('eyebrow', 'Eyebrow'),
+      field.splitHeading('headline', 'Überschrift'),
+      field.repeater(
+        'steps',
+        'Schritte',
+        [
+          field.text('label', 'Schritt-Label'),
+          field.text('title', 'Titel', { required: true }),
+          field.textarea('body', 'Text')
+        ],
+        { required: true }
+      )
+    ]
+  },
+  {
+    key: 'global.featureCompare',
+    label: 'Vergleich (Du vs. Standard)',
+    industries: 'all',
+    styles: 'all',
+    allowedPageKinds: ['core', 'custom', 'collectionDetail'],
+    repeatable: true,
+    fields: [
+      field.text('eyebrow', 'Eyebrow'),
+      field.splitHeading('headline', 'Überschrift'),
+      field.text('columnUs', 'Spalte: Du', { required: true }),
+      field.text('columnThem', 'Spalte: Andere', { required: true }),
+      field.repeater(
+        'rows',
+        'Zeilen',
+        [
+          field.text('feature', 'Merkmal', { required: true }),
+          field.text('us', 'Bei dir', { required: true }),
+          field.text('them', 'Typisch sonst', { required: true })
+        ],
+        { required: true }
+      )
+    ]
   }
 ];

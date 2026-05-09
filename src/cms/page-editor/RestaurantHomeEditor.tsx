@@ -636,10 +636,10 @@ function FieldEditor({
   if (field.type === 'splitHeading') {
     const current = split(value);
     return (
-      <>
+      <div className="cms-field-split-heading">
         <TextField label={`${field.label} - Teil 1`} value={current.plain} onChange={(next) => onChange([...path, 'plain'], next)} />
         <TextField label={`${field.label} - Teil 2`} value={current.accent} onChange={(next) => onChange([...path, 'accent'], next)} />
-      </>
+      </div>
     );
   }
 

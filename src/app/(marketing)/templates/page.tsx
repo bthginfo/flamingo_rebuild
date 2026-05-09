@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import { agency } from '@/ui/marketing/data';
 import { RevealOnScroll } from '@/ui/marketing/RevealOnScroll';
@@ -82,7 +83,13 @@ export default function TemplatesPage() {
                         aria-label={`${m.label} im Stil ${s.label} live ansehen`}
                       >
                         <div className="fm-style-card__visual">
-                          <img src={STYLE_PREVIEW[k][s.id]} alt="" loading="lazy" />
+                          <Image
+                            src={STYLE_PREVIEW[k][s.id]}
+                            alt=""
+                            fill
+                            className="fm-style-card__shot"
+                            sizes="(max-width: 900px) 100vw, 28vw"
+                          />
                           <span className="fm-style-card__badge">{s.label}</span>
                         </div>
                         <div className="fm-style-card__footer">

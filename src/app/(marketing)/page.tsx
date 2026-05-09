@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import { agency, rotatingHeroWords } from '@/ui/marketing/data';
 import {
@@ -137,7 +138,7 @@ export default function MarketingHomePage() {
               const m = CORE_TEMPLATE_META[k];
               return (
                 <Link key={k} href={previewHref(k, 'classic')} className="fm-portrait-card">
-                  <img src={m.image} alt="" className="fm-portrait-card__img" />
+                  <Image src={m.image} alt="" fill className="fm-portrait-card__img" sizes="(max-width: 900px) 100vw, 33vw" />
                   <div className="fm-portrait-card__shade" />
                   <div className="fm-portrait-card__body">
                     <span className="fm-portrait-card__slash">/ {k}</span>
@@ -156,7 +157,7 @@ export default function MarketingHomePage() {
               const m = EXTRA_TEMPLATE_META[k];
               return (
                 <Link key={k} href={previewHref(k, 'classic')} className="fm-portrait-card">
-                  <img src={m.image} alt="" className="fm-portrait-card__img" />
+                  <Image src={m.image} alt="" fill className="fm-portrait-card__img" sizes="(max-width: 900px) 100vw, 33vw" />
                   <div className="fm-portrait-card__shade" />
                   <div className="fm-portrait-card__body">
                     <span className="fm-portrait-card__slash">/ {k}</span>

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { team } from '@/ui/marketing/data';
 import { CtaFooterSection, ManifestoSection, SimplePageHero, TestimonialsSection } from '@/ui/marketing/showcase-shared';
 import { RevealOnScroll } from '@/ui/marketing/RevealOnScroll';
@@ -25,7 +26,7 @@ export default function AboutPage() {
       <RevealOnScroll as="section" className="section surface">
         <div className="shell fm-about-split" data-stagger-grid>
           <div className="fm-about-split__visual">
-            <img src={TEAM_IMAGE} alt="Team bei der Arbeit" loading="lazy" />
+            <Image src={TEAM_IMAGE} alt="Team bei der Arbeit" fill className="fm-about-split__img" sizes="(max-width: 900px) 100vw, 45vw" />
           </div>
           <div className="fm-about-split__copy">
             <h2 className="section-title">
@@ -53,7 +54,7 @@ export default function AboutPage() {
             {team.map((member, index) => (
               <article className="card team-card" key={member.name}>
                 <p className="fm-mono-label">/ {String(index + 1).padStart(2, '0')}</p>
-                <img src={member.image} alt={member.name} />
+                <Image src={member.image} alt={member.name} width={640} height={800} className="team-card__img" sizes="(max-width: 900px) 100vw, 33vw" />
                 <h3>{member.name}</h3>
                 <p className="eyebrow" style={{ marginTop: 4 }}>
                   {member.role}

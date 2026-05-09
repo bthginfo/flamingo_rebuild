@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import type { ReactNode } from 'react';
 import { agency } from '@/ui/marketing/data';
 import { branchMarquee, manifestoBlocks, testimonials } from '@/ui/marketing/showcase-content';
@@ -32,7 +33,7 @@ export function LandingHeroShowcase({
       <div className="fm-landing-hero__glow">
         <MouseGlow />
       </div>
-      <img className="fm-landing-hero__mark" src={agency.logoMark} alt="" />
+      <Image className="fm-landing-hero__mark" src={agency.logoMark} alt="" width={520} height={520} sizes="72vw" priority />
       <div className="shell fm-landing-hero__inner">
         <p className="fm-landing-hero__pulse">
           <span className="fm-dot" aria-hidden />

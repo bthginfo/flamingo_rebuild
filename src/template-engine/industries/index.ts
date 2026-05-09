@@ -19,7 +19,15 @@ const globalAllowed = [
   'global.iconHighlights',
   'global.storyTimeline',
   'global.mediaSpotlight',
-  'global.quoteMarquee'
+  'global.quoteMarquee',
+  'global.asymmetricSpot',
+  'global.pricingTiers',
+  'global.ribbonCta',
+  'global.keyFactsGrid',
+  'global.videoEmbed',
+  'global.pullQuote',
+  'global.stepsStrip',
+  'global.featureCompare'
 ] as const;
 
 export const industries: readonly IndustryDefinition[] = [

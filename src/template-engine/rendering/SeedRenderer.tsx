@@ -1,6 +1,7 @@
 'use client';
 
 import type { CSSProperties } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import type { PageInstance, SectionInstance, StyleKey } from '../model';
 import { resolveCtaLinkHref } from '../link-resolution';
@@ -223,6 +224,22 @@ function SectionRenderer({
       );
     case 'global.quoteMarquee':
       return <QuoteMarqueeSection section={section} styleKey={styleKey} domSectionId={domSectionId} />;
+    case 'global.asymmetricSpot':
+      return <AsymmetricSpotSection section={section} domSectionId={domSectionId} />;
+    case 'global.pricingTiers':
+      return <PricingTiersSection section={section} domSectionId={domSectionId} />;
+    case 'global.ribbonCta':
+      return <RibbonCtaSection section={section} previewBasePath={previewBasePath} seed={seed} domSectionId={domSectionId} />;
+    case 'global.keyFactsGrid':
+      return <KeyFactsGridSection section={section} styleKey={styleKey} domSectionId={domSectionId} />;
+    case 'global.videoEmbed':
+      return <VideoEmbedSection section={section} styleKey={styleKey} domSectionId={domSectionId} />;
+    case 'global.pullQuote':
+      return <PullQuoteBlockSection section={section} styleKey={styleKey} domSectionId={domSectionId} />;
+    case 'global.stepsStrip':
+      return <StepsStripSection section={section} styleKey={styleKey} domSectionId={domSectionId} />;
+    case 'global.featureCompare':
+      return <FeatureCompareSection section={section} styleKey={styleKey} domSectionId={domSectionId} />;
     default:
       return (
         <section className="tenant-section" id={domSectionId}>
@@ -267,7 +284,7 @@ function PageHeaderSection({
   return (
     <section className={`tenant-page-hero tenant-page-hero--${styleKey}`} id={domSectionId}>
       <div className="tenant-page-hero__media">
-        <img src={image} alt="" />
+        <Image src={image} alt="" width={1600} height={720} className="tenant-page-hero__media-img" sizes="100vw" unoptimized />
         <div className="tenant-page-hero__shade" />
       </div>
       <div className="shell tenant-page-hero__content">
@@ -309,7 +326,7 @@ function TextImageSection({
         </div>
         {image ? (
           <div className="tenant-split__visual">
-            <img src={image} alt="" />
+            <Image src={image} alt="" width={1400} height={1050} className="tenant-split__visual-img" sizes="(max-width: 900px) 100vw, 45vw" unoptimized />
           </div>
         ) : null}
       </div>
@@ -331,7 +348,16 @@ function GalleryGridSection({ section, domSectionId }: { section: SectionInstanc
         <div className="tenant-gallery-grid">
           {images.map((item, index) => (
             <figure className="tenant-gallery-cell" key={`${item.src}-${index}`}>
-              <img src={item.src} alt={item.alt} loading="lazy" />
+              <Image
+                src={item.src}
+                alt={item.alt}
+                width={900}
+                height={900}
+                className="tenant-gallery-img"
+                sizes="(max-width: 900px) 50vw, 33vw"
+                loading="lazy"
+                unoptimized
+              />
             </figure>
           ))}
         </div>
@@ -411,7 +437,9 @@ function HeroSection({
 
   return (
     <section className={`tenant-hero tenant-hero--${styleKey}`} id={domSectionId}>
-      {styleKey === 'bold' && image ? <img className="tenant-hero-bg" src={image} alt="" /> : null}
+      {styleKey === 'bold' && image ? (
+        <Image src={image} alt="" fill priority className="tenant-hero-bg" sizes="100vw" unoptimized />
+      ) : null}
       <div className="shell tenant-hero-grid">
         <div>
           <p className="eyebrow">{asString(section.data.eyebrow)}</p>
@@ -427,7 +455,15 @@ function HeroSection({
         </div>
         {image && styleKey !== 'bold' ? (
           <div className="tenant-hero-image tenant-hero-image--motion">
-            <img src={image} alt="" />
+            <Image
+              src={image}
+              alt=""
+              width={1600}
+              height={2000}
+              className="tenant-hero-image-img"
+              sizes="(max-width: 900px) 100vw, 42vw"
+              unoptimized
+            />
           </div>
         ) : null}
       </div>
@@ -516,7 +552,18 @@ function CollectionGrid({
           {items.map((item) => {
             const inner = (
               <>
-                {asString(item.data.image) ? <img src={asString(item.data.image)} alt="" /> : null}
+                {asString(item.data.image) ? (
+                  <Image
+                    src={asString(item.data.image)}
+                    alt=""
+                    width={960}
+                    height={720}
+                    className="tenant-card-img"
+                    sizes="(max-width: 900px) 100vw, 32vw"
+                    loading="lazy"
+                    unoptimized
+                  />
+                ) : null}
                 <div>
                   <h3>{item.title}</h3>
                   <p>{asString(item.data.summary)}</p>
@@ -729,7 +776,7 @@ function TrustLogosSection({
               <>
                 {logo ? (
                   <span className="tenant-wow-trust__logo-wrap">
-                    <img src={logo} alt="" loading="lazy" />
+                    <Image src={logo} alt="" width={220} height={120} className="tenant-trust-img" loading="lazy" unoptimized />
                   </span>
                 ) : (
                   <span className="tenant-wow-trust__mono">{name.slice(0, 2).toUpperCase()}</span>
@@ -781,7 +828,7 @@ function BentoHighlightsSection({
               <article key={i} className={`tenant-wow-bento__tile ${span}`}>
                 {img ? (
                   <div className="tenant-wow-bento__visual">
-                    <img src={img} alt="" loading="lazy" />
+                    <Image src={img} alt="" width={1200} height={800} className="tenant-bento-img" loading="lazy" unoptimized />
                     <div className="tenant-wow-bento__shade" />
                   </div>
                 ) : null}
@@ -831,7 +878,7 @@ function ScrollerHighlightsSection({
               <article className="tenant-scroller__card" key={i}>
                 {img ? (
                   <div className="tenant-scroller__visual">
-                    <img src={img} alt="" loading="lazy" />
+                    <Image src={img} alt="" width={900} height={600} className="tenant-scroller-img" loading="lazy" unoptimized />
                   </div>
                 ) : null}
                 <div className="tenant-scroller__body">
@@ -949,7 +996,7 @@ function MediaSpotlightSection({
       id={domSectionId}
     >
       <div className="tenant-pro-media__visual">
-        {img ? <img src={img} alt="" loading="lazy" /> : null}
+        {img ? <Image src={img} alt="" fill className="tenant-pro-media-img" sizes="100vw" loading="lazy" unoptimized /> : null}
         <div className="tenant-pro-media__veil" aria-hidden />
       </div>
       <div className="shell tenant-pro-media__content">
@@ -998,6 +1045,315 @@ function QuoteMarqueeSection({
               </figcaption>
             </figure>
           ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function youtubeVideoId(raw: string): string | null {
+  const s = raw.trim();
+  if (!s) return null;
+  try {
+    const u = new URL(s.startsWith('http') ? s : `https://${s}`);
+    if (u.hostname === 'youtu.be') {
+      const id = u.pathname.replace(/^\//, '').split('/')[0];
+      return id || null;
+    }
+    if (u.hostname.includes('youtube.com')) {
+      const v = u.searchParams.get('v');
+      if (v) return v;
+      const p = u.pathname.split('/').filter(Boolean);
+      const ei = p.indexOf('embed');
+      if (ei >= 0 && p[ei + 1]) return p[ei + 1];
+      const si = p.indexOf('shorts');
+      if (si >= 0 && p[si + 1]) return p[si + 1];
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+function AsymmetricSpotSection({ section, domSectionId }: { section: SectionInstance; domSectionId: string }) {
+  const headline = asSplit(section.data.headline);
+  const image = asString(section.data.image);
+  const body = asString(section.data.body);
+  const side = asString(section.data.imageSide).toLowerCase() === 'right' ? 'right' : 'left';
+  const textBlock = (
+    <div>
+      <p className="eyebrow">{asString(section.data.eyebrow)}</p>
+      <h2 className="tenant-section-title">
+        <SplitHeading plain={headline.plain} accent={headline.accent} />
+      </h2>
+      <div className="tenant-body-text">{body}</div>
+    </div>
+  );
+  const visual = image ? (
+    <div className="tenant-split__visual">
+      <Image
+        src={image}
+        alt=""
+        width={1400}
+        height={1050}
+        className="tenant-split__visual-img"
+        sizes="(max-width: 900px) 100vw, 45vw"
+        unoptimized
+      />
+    </div>
+  ) : null;
+  return (
+    <section className="tenant-section" id={domSectionId}>
+      <div className={`shell tenant-split tenant-split--asym-${side}`}>
+        {side === 'left' ? (
+          <>
+            {textBlock}
+            {visual}
+          </>
+        ) : (
+          <>
+            {visual}
+            {textBlock}
+          </>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function PricingTiersSection({ section, domSectionId }: { section: SectionInstance; domSectionId: string }) {
+  const headline = asSplit(section.data.headline);
+  const tiers = arrayItems(section.data.tiers);
+  return (
+    <section className="tenant-section tenant-pro-pricing" id={domSectionId}>
+      <div className="shell">
+        <p className="eyebrow">{asString(section.data.eyebrow)}</p>
+        <h2 className="tenant-section-title">
+          <SplitHeading plain={headline.plain} accent={headline.accent} />
+        </h2>
+        {asString(section.data.intro) ? <p className="tenant-section-intro">{asString(section.data.intro)}</p> : null}
+        <div className="tenant-pro-pricing__grid">
+          {tiers.map((row, i) => {
+            const bullets = asString(row.bullets)
+              .split('\n')
+              .map((l) => l.trim())
+              .filter(Boolean);
+            const hi = row.highlighted === true;
+            const ctaLabel = asString(row.ctaLabel);
+            const ctaHref = asString(row.ctaHref);
+            const href = ctaHref.startsWith('http') ? ctaHref : ctaHref ? `https://${ctaHref}` : '';
+            return (
+              <article key={i} className={`tenant-pro-pricing__card${hi ? ' tenant-pro-pricing__card--hi' : ''}`}>
+                <h3>{asString(row.name)}</h3>
+                <p className="tenant-pro-pricing__price">{asString(row.priceLine)}</p>
+                {asString(row.summary) ? <p className="tenant-pro-pricing__summary">{asString(row.summary)}</p> : null}
+                {bullets.length > 0 ? (
+                  <ul className="tenant-pro-pricing__bullets">
+                    {bullets.map((b, bi) => (
+                      <li key={`${i}-${bi}`}>{b}</li>
+                    ))}
+                  </ul>
+                ) : null}
+                {ctaLabel && href ? (
+                  <a className="tenant-button" href={href}>
+                    {ctaLabel}
+                  </a>
+                ) : null}
+              </article>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function RibbonCtaSection({
+  section,
+  previewBasePath,
+  seed,
+  domSectionId
+}: {
+  section: SectionInstance;
+  previewBasePath: string;
+  seed: SiteSeed;
+  domSectionId: string;
+}) {
+  return (
+    <section className="tenant-pro-ribbon" id={domSectionId}>
+      <div className="shell tenant-pro-ribbon__inner">
+        <p className="tenant-pro-ribbon__msg">{asString(section.data.message)}</p>
+        <CtaButton value={section.data.cta} previewBasePath={previewBasePath} seed={seed} />
+      </div>
+    </section>
+  );
+}
+
+function KeyFactsGridSection({
+  section,
+  styleKey,
+  domSectionId
+}: {
+  section: SectionInstance;
+  styleKey: StyleKey;
+  domSectionId: string;
+}) {
+  const headline = asSplit(section.data.headline);
+  const items = arrayItems(section.data.items);
+  return (
+    <section className={`tenant-pro-keyfacts tenant-pro-keyfacts--${styleKey}`} id={domSectionId}>
+      <div className="shell">
+        <p className="eyebrow">{asString(section.data.eyebrow)}</p>
+        <h2 className="tenant-section-title">
+          <SplitHeading plain={headline.plain} accent={headline.accent} />
+        </h2>
+        <div className="tenant-pro-keyfacts__grid">
+          {items.map((row, i) => (
+            <article key={i} className="tenant-pro-keyfacts__card">
+              {asString(row.icon) ? (
+                <span className="tenant-pro-keyfacts__icon" aria-hidden>
+                  {asString(row.icon)}
+                </span>
+              ) : null}
+              <h3>{asString(row.title)}</h3>
+              <p>{asString(row.detail)}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function VideoEmbedSection({
+  section,
+  styleKey,
+  domSectionId
+}: {
+  section: SectionInstance;
+  styleKey: StyleKey;
+  domSectionId: string;
+}) {
+  const headline = asSplit(section.data.headline);
+  const id = youtubeVideoId(asString(section.data.embedUrl));
+  return (
+    <section className={`tenant-section tenant-pro-vid tenant-pro-vid--${styleKey}`} id={domSectionId}>
+      <div className="shell">
+        <p className="eyebrow">{asString(section.data.eyebrow)}</p>
+        <h2 className="tenant-section-title">
+          <SplitHeading plain={headline.plain} accent={headline.accent} />
+        </h2>
+        {id ? (
+          <div className="tenant-pro-vid__frame">
+            <iframe
+              title={headline.plain || 'Video'}
+              src={`https://www.youtube-nocookie.com/embed/${id}`}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
+          </div>
+        ) : (
+          <p className="tenant-section-intro">Bitte eine gültige YouTube-URL hinterlegen.</p>
+        )}
+        {asString(section.data.caption) ? <p className="tenant-pro-vid__caption">{asString(section.data.caption)}</p> : null}
+      </div>
+    </section>
+  );
+}
+
+function PullQuoteBlockSection({
+  section,
+  styleKey,
+  domSectionId
+}: {
+  section: SectionInstance;
+  styleKey: StyleKey;
+  domSectionId: string;
+}) {
+  return (
+    <section className={`tenant-pro-pull tenant-pro-pull--${styleKey}`} id={domSectionId}>
+      <div className="shell tenant-pro-pull__inner">
+        <blockquote className="tenant-pro-pull__quote">{asString(section.data.quote)}</blockquote>
+        <footer className="tenant-pro-pull__meta">
+          {asString(section.data.attribution) ? <strong>{asString(section.data.attribution)}</strong> : null}
+          {asString(section.data.role) ? <span>{asString(section.data.role)}</span> : null}
+        </footer>
+      </div>
+    </section>
+  );
+}
+
+function StepsStripSection({
+  section,
+  styleKey,
+  domSectionId
+}: {
+  section: SectionInstance;
+  styleKey: StyleKey;
+  domSectionId: string;
+}) {
+  const headline = asSplit(section.data.headline);
+  const steps = arrayItems(section.data.steps);
+  return (
+    <section className={`tenant-pro-steps-strip tenant-pro-steps-strip--${styleKey}`} id={domSectionId}>
+      <div className="shell">
+        <p className="eyebrow">{asString(section.data.eyebrow)}</p>
+        <h2 className="tenant-section-title">
+          <SplitHeading plain={headline.plain} accent={headline.accent} />
+        </h2>
+        <ol className="tenant-pro-steps-strip__list">
+          {steps.map((row, i) => (
+            <li key={i} className="tenant-pro-steps-strip__item">
+              {asString(row.label) ? <span className="tenant-pro-steps-strip__label">{asString(row.label)}</span> : null}
+              <h3>{asString(row.title)}</h3>
+              {asString(row.body) ? <p>{asString(row.body)}</p> : null}
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  );
+}
+
+function FeatureCompareSection({
+  section,
+  styleKey,
+  domSectionId
+}: {
+  section: SectionInstance;
+  styleKey: StyleKey;
+  domSectionId: string;
+}) {
+  const headline = asSplit(section.data.headline);
+  const rows = arrayItems(section.data.rows);
+  const colUs = asString(section.data.columnUs) || 'Du';
+  const colThem = asString(section.data.columnThem) || 'Typisch';
+  return (
+    <section className={`tenant-section tenant-pro-compare tenant-pro-compare--${styleKey}`} id={domSectionId}>
+      <div className="shell">
+        <p className="eyebrow">{asString(section.data.eyebrow)}</p>
+        <h2 className="tenant-section-title">
+          <SplitHeading plain={headline.plain} accent={headline.accent} />
+        </h2>
+        <div className="tenant-pro-compare__wrap">
+          <table className="tenant-pro-compare__table">
+            <thead>
+              <tr>
+                <th>Merkmal</th>
+                <th>{colUs}</th>
+                <th>{colThem}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, i) => (
+                <tr key={i}>
+                  <td>{asString(row.feature)}</td>
+                  <td>{asString(row.us)}</td>
+                  <td>{asString(row.them)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </section>
