@@ -46,10 +46,16 @@ export function MarketingShell({ children }: { children: React.ReactNode }) {
             <p>{agency.tagline}</p>
           </div>
           <div>
+            <p className="footer-title">Rechtliches</p>
+            <Link href="/impressum">Impressum</Link>
+            <Link href="/datenschutz">Datenschutz</Link>
+          </div>
+          <div>
             <p className="footer-title">Studio</p>
             <Link href="/prozess">Ablauf</Link>
             <Link href="/preise">Preise</Link>
             <Link href="/ueber-uns">Über uns</Link>
+            <Link href="/kontakt">Kontakt</Link>
           </div>
           <div>
             <p className="footer-title">Kontakt</p>

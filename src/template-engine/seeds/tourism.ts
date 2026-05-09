@@ -134,6 +134,31 @@ export function tourismSeed(styleKey: StyleKey): SiteSeed {
             headline: { plain: 'Touren', accent: 'im Überblick.' },
             intro: 'Gleiche Qualität — unterschiedliche Schwierigkeiten. Fragen Sie nach Privatvarianten.',
             items: ['tour-gipfel', 'tour-see', 'tour-stadt']
+          }),
+          section('tours-scroll', 'global.scrollerHighlights', 3, {
+            eyebrow: 'Outdoor',
+            headline: { plain: 'Drei Gründe', accent: 'mit uns zu gehen.' },
+            intro: 'Kleine Gruppen, klare Kommunikation, echte Guides vor Ort.',
+            slides: [
+              {
+                image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=900&q=80',
+                title: 'Kleine Gruppen',
+                body: 'Wir skalieren nicht auf Busse — ihr wandert mit Menschen, die das Gelände kennen.',
+                cta: { label: 'Buchen', link: { type: 'page', href: '/kontakt' } }
+              },
+              {
+                image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=900&q=80',
+                title: 'Sicherheit zuerst',
+                body: 'Wetter-Plan B, Erste Hilfe und ruhiges Tempo — besonders mit gemischten Gruppen.',
+                cta: { label: 'Guides', link: { type: 'page', href: '/guides' } }
+              },
+              {
+                image: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=900&q=80',
+                title: 'Regional verwurzelt',
+                body: 'Geschichten vom Tal, in dem wir leben — nicht aus dem Reiseführer.',
+                cta: { label: 'Galerie', link: { type: 'page', href: '/galerie' } }
+              }
+            ]
           })
         ]
       },

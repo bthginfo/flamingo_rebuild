@@ -79,7 +79,11 @@ export function ContactForm() {
       </button>
       {status ? <p className="fm-contact-status">{status}</p> : null}
       <p className="fm-contact-legal">
-        Mit dem Absenden stimmen Sie der Verarbeitung Ihrer Daten gemäß geltender Datenschutzgesetzgebung zu.
+        Mit dem Absenden stimmen Sie der Verarbeitung Ihrer Daten gemäß unserer{' '}
+        <a href="/datenschutz" style={{ textDecoration: 'underline' }}>
+          Datenschutzerklärung
+        </a>{' '}
+        zu.
       </p>
     </form>
   );

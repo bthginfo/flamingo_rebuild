@@ -183,7 +183,32 @@ export function fitnessSeed(styleKey: StyleKey): SiteSeed {
             intro: 'Details und Kapazität auf der Kursseite.',
             items: ['class-hiit', 'class-yoga', 'class-cycle']
           }),
-          section('cls-plan', 'fitness.trainingPlan', 3, {
+          section('cls-scroll', 'global.scrollerHighlights', 3, {
+            eyebrow: 'Studio',
+            headline: { plain: 'Drei Gründe', accent: 'für unser Training.' },
+            intro: 'Community, Coaching und klare Programme — auf einen Blick.',
+            slides: [
+              {
+                image: 'https://images.unsplash.com/photo-1534438327276-14e6700d112c?auto=format&fit=crop&w=900&q=80',
+                title: 'Coach im Blick',
+                body: 'Korrekturen statt Show — wir arbeiten mit Technik-Checks und Feedback.',
+                cta: { label: 'Trainer:innen', link: { type: 'page', href: '/trainer' } }
+              },
+              {
+                image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=900&q=80',
+                title: 'Fester Wochenplan',
+                body: 'HIIT, Yoga, Cycle — Slots, die ihr im Kalender verlassen könnt.',
+                cta: { label: 'Kurse', link: { type: 'page', href: '/kurse' } }
+              },
+              {
+                image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=900&q=80',
+                title: 'Community',
+                body: 'Kein Egoshow — wir feiern Fortschritte aller Levels.',
+                cta: { label: 'Kontakt', link: { type: 'page', href: '/kontakt' } }
+              }
+            ]
+          }),
+          section('cls-plan', 'fitness.trainingPlan', 4, {
             eyebrow: 'Wochenplan',
             headline: { plain: 'Drei', accent: 'Slots.' },
             intro: 'Gleicher Slug-Pfad wie Kurse — Detailseite unterscheidet Inhalt.',

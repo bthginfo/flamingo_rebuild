@@ -154,6 +154,31 @@ export function salonSeed(styleKey: StyleKey): SiteSeed {
             headline: { plain: 'Treatments', accent: 'im Detail.' },
             intro: 'Klick für Kurzbeschreibung und Bild.',
             items: ['tr-cut-color', 'tr-spa-hands', 'tr-bridal']
+          }),
+          section('svc-scroll', 'global.scrollerHighlights', 3, {
+            eyebrow: 'Salon',
+            headline: { plain: 'Drei Gründe', accent: 'für einen Termin.' },
+            intro: 'Was Gäste an unserem Rhythmus schätzen — kurz und visuell.',
+            slides: [
+              {
+                image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=900&q=80',
+                title: 'Ruhe zwischen den Terminen',
+                body: 'Weniger Stühle, mehr Zeit pro Gast — ohne Warteschlangen-Gefühl.',
+                cta: { label: 'Studio', link: { type: 'page', href: '/studio' } }
+              },
+              {
+                image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=900&q=80',
+                title: 'Color mit Plan',
+                body: 'Strähnen, Glossing oder Reset — wir dokumentieren jeden Schritt.',
+                cta: { label: 'Looks', link: { type: 'page', href: '/looks' } }
+              },
+              {
+                image: 'https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?auto=format&fit=crop&w=900&q=80',
+                title: 'Klare Preise',
+                body: 'Vor dem Start wisst ihr, was auf dem Zettel steht — ohne Überraschungen.',
+                cta: { label: 'Kontakt', link: { type: 'page', href: '/kontakt' } }
+              }
+            ]
           })
         ]
       },

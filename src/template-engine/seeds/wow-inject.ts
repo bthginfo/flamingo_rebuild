@@ -3,7 +3,11 @@ import type { SiteSeed } from './model';
 import { buildWowSectionInstances } from './wow-section-data';
 
 function renumber(sections: readonly SectionInstance[]): SectionInstance[] {
-  return sections.map((s, i) => ({ ...s, sortOrder: i + 1 }));
+  const cleaned = sections.filter(
+    (s): s is SectionInstance =>
+      s != null && typeof s === 'object' && typeof s.sectionKey === 'string' && s.sectionKey.length > 0
+  );
+  return cleaned.map((s, i) => ({ ...s, sortOrder: i + 1 }));
 }
 
 function insertAfterMarker(

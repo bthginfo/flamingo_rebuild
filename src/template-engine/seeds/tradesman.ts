@@ -147,7 +147,32 @@ export function tradesmanSeed(styleKey: StyleKey): SiteSeed {
             intro: 'Details und Ablauf pro Leistung — per Klick.',
             items: ['svc-heizung', 'svc-bad', 'svc-elektro']
           }),
-          section('svc-cta', 'global.contactCta', 3, {
+          section('svc-scroll', 'global.scrollerHighlights', 3, {
+            eyebrow: 'Handwerk',
+            headline: { plain: 'Drei Gründe', accent: 'für unsere Kundschaft.' },
+            intro: 'Koordination, Termintreue und saubere Baustelle — kompakt erklärt.',
+            slides: [
+              {
+                image: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=900&q=80',
+                title: 'Ein Ansprechpartner',
+                body: 'Heizung, Sanitär, Elektro — wir koordinieren die Gewerke für euch.',
+                cta: { label: 'Referenzen', link: { type: 'page', href: '/referenzen' } }
+              },
+              {
+                image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=900&q=80',
+                title: 'Feste Termine',
+                body: 'Realistische Planung statt leerer Versprechen — ihr wisst, wann was passiert.',
+                cta: { label: 'Leistungen', link: { type: 'page', href: '/leistungen' } }
+              },
+              {
+                image: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=900&q=80',
+                title: 'Saubere Übergabe',
+                body: 'Dokumentation und Einweisung — damit ihr nach dem Einbau entspannt seid.',
+                cta: { label: 'Kontakt', link: { type: 'page', href: '/kontakt' } }
+              }
+            ]
+          }),
+          section('svc-cta', 'global.contactCta', 4, {
             eyebrow: 'Projekt',
             headline: { plain: 'Unverbindlich', accent: 'anfragen.' },
             subline: 'Fotos und Grundrisse helfen uns beim ersten Call.',

@@ -146,6 +146,31 @@ export function medicalSeed(styleKey: StyleKey): SiteSeed {
             headline: { plain: 'Behandlungen', accent: 'im Detail.' },
             intro: 'Fachliche Informationen auf den Detailseiten.',
             items: ['tx-prevention', 'tx-chronic', 'tx-travel']
+          }),
+          section('svc-scroll', 'global.scrollerHighlights', 3, {
+            eyebrow: 'Praxis',
+            headline: { plain: 'Drei Schwerpunkte', accent: 'unserer Arbeit.' },
+            intro: 'Prävention, chronische Versorgung und Reisemedizin — kurz erklärt.',
+            slides: [
+              {
+                image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=900&q=80',
+                title: 'Zeit am Patienten',
+                body: 'Längere Slots, weniger Hektik — damit Fragen nicht unter den Tisch fallen.',
+                cta: { label: 'Team', link: { type: 'page', href: '/team' } }
+              },
+              {
+                image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=900&q=80',
+                title: 'Evidence-basiert',
+                body: 'Leitlinien und Studienlage fließen in jede Empfehlung ein.',
+                cta: { label: 'Leistungen', link: { type: 'page', href: '/leistungen' } }
+              },
+              {
+                image: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=900&q=80',
+                title: 'Digitale Wege',
+                body: 'Rezept und Termin online — wenn es medizinisch sinnvoll ist.',
+                cta: { label: 'Kontakt', link: { type: 'page', href: '/kontakt' } }
+              }
+            ]
           })
         ]
       },

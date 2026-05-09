@@ -146,6 +146,31 @@ export function consultingSeed(styleKey: StyleKey): SiteSeed {
             headline: { plain: 'Was wir', accent: 'anbieten.' },
             intro: 'Klick für Kurzbeschreibung.',
             items: ['off-strategy', 'off-pm', 'off-data']
+          }),
+          section('svc-scroll', 'global.scrollerHighlights', 3, {
+            eyebrow: 'Beratung',
+            headline: { plain: 'Drei Prinzipien', accent: 'unserer Arbeit.' },
+            intro: 'Wie wir Entscheidungen beschleunigen — ohne Theater.',
+            slides: [
+              {
+                image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=900&q=80',
+                title: 'Messbar statt mood',
+                body: 'Deliverables und KPIs — damit Boards Entscheidungen nachvollziehen können.',
+                cta: { label: 'Cases', link: { type: 'page', href: '/cases' } }
+              },
+              {
+                image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=900&q=80',
+                title: 'Kleine Teams',
+                body: 'Senior:innen on the tools — keine anonyme Armada aus Juniors.',
+                cta: { label: 'Expertise', link: { type: 'page', href: '/expertise' } }
+              },
+              {
+                image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=900&q=80',
+                title: 'Dokumentiert',
+                body: 'Jede Session endet mit klaren nächsten Schritten — schriftlich.',
+                cta: { label: 'Kontakt', link: { type: 'page', href: '/kontakt' } }
+              }
+            ]
           })
         ]
       },

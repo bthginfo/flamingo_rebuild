@@ -150,6 +150,31 @@ export function weddingSeed(styleKey: StyleKey): SiteSeed {
             headline: { plain: 'Alle', accent: 'Programmpunkte.' },
             intro: 'Klick für Kurzinfo — ideal auf dem Handy.',
             items: ['sch-trauung', 'sch-sekt', 'sch-dinner']
+          }),
+          section('abl-scroll', 'global.scrollerHighlights', 3, {
+            eyebrow: 'Hochzeit',
+            headline: { plain: 'Drei Momente', accent: 'am Tag X.' },
+            intro: 'Was Gäste besonders in Erinnerung behalten — kurz und bildlich.',
+            slides: [
+              {
+                image: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=900&q=80',
+                title: 'Zeremonie im Licht',
+                body: 'Kurz, emotional, mit Raum für eure Texte — nichts wird gehetzt.',
+                cta: { label: 'Location', link: { type: 'page', href: '/location' } }
+              },
+              {
+                image: 'https://images.unsplash.com/photo-1522673607260-14d1f34b1a31?auto=format&fit=crop&w=900&q=80',
+                title: 'Essen & Reden',
+                body: 'Menü mit Optionen — inklusive klarer Zeiten für Reden und Tanz.',
+                cta: { label: 'RSVP', link: { type: 'page', href: '/rsvp' } }
+              },
+              {
+                image: 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=900&q=80',
+                title: 'Übernachten',
+                body: 'Hotel und Pension in der Nähe — mit reservierten Kontingenten.',
+                cta: { label: 'Unterkünfte', link: { type: 'page', href: '/location' } }
+              }
+            ]
           })
         ]
       },

@@ -108,7 +108,7 @@ export function validateTemplateRegistry(): RegistryValidationIssue[] {
             });
           }
 
-          if (Array.isArray(section.data.items)) {
+          if (Array.isArray(section.data?.items)) {
             for (const rawId of section.data.items) {
               if (typeof rawId !== 'string') continue;
               if (!collectionIds.has(rawId)) {
