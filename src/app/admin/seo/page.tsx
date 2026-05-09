@@ -8,8 +8,8 @@ export default function AdminSeoPage() {
         <p className="eyebrow">Admin</p>
         <h1 style={{ fontFamily: 'Georgia, serif', fontSize: 44 }}>SEO</h1>
         <p style={{ color: 'var(--muted)', maxWidth: 640, lineHeight: 1.55 }}>
-          Meta-Titel und -Beschreibung pro Kernseite. Änderungen gehen in den Content-Entwurf; Veröffentlichen wie gewohnt
-          über die Seiten- oder Collection-Editoren (Button „Veröffentlichen“).
+          Meta-Titel und -Beschreibung pro Kernseite. Unten: Entwurf speichern, speichern &amp; veröffentlichen oder
+          Entwurf verwerfen — gleiches Muster wie in den Seiten-Editoren.
         </p>
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 12 }}>
           <Link className="button secondary" href="/admin/pages">

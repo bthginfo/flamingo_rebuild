@@ -1,7 +1,14 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { loadAdminDocument, resolveAdminContentState, saveAdminDraft, type AdminContentState } from '@/cms/admin-content-api';
+import {
+  discardAdminDraft,
+  loadAdminDocument,
+  publishAdminDraft,
+  resolveAdminContentState,
+  saveAdminDraft,
+  type AdminContentState
+} from '@/cms/admin-content-api';
 import type { SiteSeed } from '@/template-engine/seeds/model';
 
 type NavItem = { label: string; href: string };
@@ -10,7 +17,9 @@ export function TenantNavigationEditor() {
   const [contentState, setContentState] = useState<AdminContentState>({ mode: 'demo' });
   const [seed, setSeed] = useState<SiteSeed | null>(null);
   const [items, setItems] = useState<NavItem[]>([]);
-  const [status, setStatus] = useState<'loading' | 'ready' | 'demo' | 'saving' | 'saved' | 'error'>('loading');
+  const [status, setStatus] = useState<
+    'loading' | 'ready' | 'demo' | 'saving' | 'saved' | 'publishing' | 'discarding' | 'error'
+  >('loading');
   const [message, setMessage] = useState('');
 
   const load = useCallback(async () => {
@@ -39,24 +48,67 @@ export function TenantNavigationEditor() {
     void load();
   }, [load]);
 
+  function buildNextSeed(): SiteSeed | null {
+    if (!seed) return null;
+    return {
+      ...seed,
+      global: {
+        ...seed.global,
+        navigation: items.map((entry) => ({ label: entry.label.trim(), href: entry.href.trim() }))
+      }
+    };
+  }
+
   async function handleSave() {
     if (!seed || contentState.mode !== 'api' || !contentState.tenantSlug) return;
     setStatus('saving');
     setMessage('');
     try {
-      const next: SiteSeed = {
-        ...seed,
-        global: {
-          ...seed.global,
-          navigation: items.map((entry) => ({ label: entry.label.trim(), href: entry.href.trim() }))
-        }
-      };
+      const next = buildNextSeed();
+      if (!next) {
+        setStatus('ready');
+        return;
+      }
       await saveAdminDraft(contentState.tenantSlug, next);
       setSeed(next);
       setStatus('saved');
     } catch (error) {
       setStatus('error');
       setMessage(error instanceof Error ? error.message : 'Speichern fehlgeschlagen.');
+    }
+  }
+
+  async function handlePublish() {
+    if (!seed || contentState.mode !== 'api' || !contentState.tenantSlug) return;
+    setStatus('publishing');
+    setMessage('');
+    try {
+      const next = buildNextSeed();
+      if (!next) {
+        setStatus('ready');
+        return;
+      }
+      await saveAdminDraft(contentState.tenantSlug, next);
+      await publishAdminDraft(contentState.tenantSlug);
+      await load();
+      setStatus('saved');
+    } catch (error) {
+      setStatus('error');
+      setMessage(error instanceof Error ? error.message : 'Veröffentlichen fehlgeschlagen.');
+    }
+  }
+
+  async function handleDiscard() {
+    if (contentState.mode !== 'api' || !contentState.tenantSlug) return;
+    setStatus('discarding');
+    setMessage('');
+    try {
+      await discardAdminDraft(contentState.tenantSlug);
+      await load();
+      setStatus('ready');
+    } catch (error) {
+      setStatus('error');
+      setMessage(error instanceof Error ? error.message : 'Verwerfen fehlgeschlagen.');
     }
   }
 
@@ -129,7 +181,7 @@ export function TenantNavigationEditor() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         {items.map((row, index) => (
           <div
-            key={index}
+            key={`${row.href}-${index}`}
             style={{
               display: 'grid',
               gridTemplateColumns: '1fr 1fr auto',
@@ -165,10 +217,31 @@ export function TenantNavigationEditor() {
         <button className="button secondary" type="button" onClick={addRow}>
           Eintrag hinzufügen
         </button>
-        <button className="button" type="button" onClick={() => void handleSave()} disabled={status === 'saving'}>
+        <button
+          className="button"
+          type="button"
+          onClick={() => void handleSave()}
+          disabled={status === 'saving' || status === 'publishing' || status === 'discarding'}
+        >
           {status === 'saving' ? 'Speichert…' : 'Entwurf speichern'}
         </button>
-        {status === 'saved' ? <span className="eyebrow">Gespeichert.</span> : null}
+        <button
+          className="button secondary"
+          type="button"
+          onClick={() => void handlePublish()}
+          disabled={status === 'saving' || status === 'publishing' || status === 'discarding'}
+        >
+          {status === 'publishing' ? 'Veröffentlicht…' : 'Speichern & veröffentlichen'}
+        </button>
+        <button
+          className="button secondary"
+          type="button"
+          onClick={() => void handleDiscard()}
+          disabled={status === 'saving' || status === 'publishing' || status === 'discarding'}
+        >
+          {status === 'discarding' ? 'Verwerfen…' : 'Entwurf verwerfen'}
+        </button>
+        {status === 'saved' ? <span className="eyebrow">Fertig.</span> : null}
       </div>
     </div>
   );

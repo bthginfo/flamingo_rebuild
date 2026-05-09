@@ -1,7 +1,14 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { loadAdminDocument, resolveAdminContentState, saveAdminDraft, type AdminContentState } from '@/cms/admin-content-api';
+import {
+  discardAdminDraft,
+  loadAdminDocument,
+  publishAdminDraft,
+  resolveAdminContentState,
+  saveAdminDraft,
+  type AdminContentState
+} from '@/cms/admin-content-api';
 import type { SiteSeed } from '@/template-engine/seeds/model';
 
 type SeoRow = { pageId: string; pageKey: string; pageTitle: string; slug: string; metaTitle: string; metaDescription: string };
@@ -14,7 +21,9 @@ export function TenantSeoEditor() {
   const [contentState, setContentState] = useState<AdminContentState>({ mode: 'demo' });
   const [seed, setSeed] = useState<SiteSeed | null>(null);
   const [rows, setRows] = useState<SeoRow[]>([]);
-  const [status, setStatus] = useState<'loading' | 'ready' | 'demo' | 'saving' | 'saved' | 'error'>('loading');
+  const [status, setStatus] = useState<
+    'loading' | 'ready' | 'demo' | 'saving' | 'saved' | 'publishing' | 'discarding' | 'error'
+  >('loading');
   const [message, setMessage] = useState('');
 
   const load = useCallback(async () => {
@@ -57,33 +66,76 @@ export function TenantSeoEditor() {
     if (status === 'ready' || status === 'saved') setStatus('ready');
   }
 
+  function buildNextSeed(): SiteSeed | null {
+    if (!seed) return null;
+    const byId = new Map(rows.map((r) => [r.pageId, r]));
+    return {
+      ...seed,
+      pages: seed.pages.map((page) => {
+        const row = byId.get(page.id);
+        if (!row) return page;
+        return {
+          ...page,
+          seo: {
+            ...page.seo,
+            title: row.metaTitle.trim(),
+            description: row.metaDescription.trim()
+          }
+        };
+      })
+    };
+  }
+
   async function handleSave() {
     if (!seed || contentState.mode !== 'api' || !contentState.tenantSlug) return;
     setStatus('saving');
     setMessage('');
     try {
-      const byId = new Map(rows.map((r) => [r.pageId, r]));
-      const next: SiteSeed = {
-        ...seed,
-        pages: seed.pages.map((page) => {
-          const row = byId.get(page.id);
-          if (!row) return page;
-          return {
-            ...page,
-            seo: {
-              ...page.seo,
-              title: row.metaTitle.trim(),
-              description: row.metaDescription.trim()
-            }
-          };
-        })
-      };
+      const next = buildNextSeed();
+      if (!next) {
+        setStatus('ready');
+        return;
+      }
       await saveAdminDraft(contentState.tenantSlug, next);
       setSeed(next);
       setStatus('saved');
     } catch (error) {
       setStatus('error');
       setMessage(error instanceof Error ? error.message : 'Speichern fehlgeschlagen.');
+    }
+  }
+
+  async function handlePublish() {
+    if (!seed || contentState.mode !== 'api' || !contentState.tenantSlug) return;
+    setStatus('publishing');
+    setMessage('');
+    try {
+      const next = buildNextSeed();
+      if (!next) {
+        setStatus('ready');
+        return;
+      }
+      await saveAdminDraft(contentState.tenantSlug, next);
+      await publishAdminDraft(contentState.tenantSlug);
+      await load();
+      setStatus('saved');
+    } catch (error) {
+      setStatus('error');
+      setMessage(error instanceof Error ? error.message : 'Veröffentlichen fehlgeschlagen.');
+    }
+  }
+
+  async function handleDiscard() {
+    if (contentState.mode !== 'api' || !contentState.tenantSlug) return;
+    setStatus('discarding');
+    setMessage('');
+    try {
+      await discardAdminDraft(contentState.tenantSlug);
+      await load();
+      setStatus('ready');
+    } catch (error) {
+      setStatus('error');
+      setMessage(error instanceof Error ? error.message : 'Verwerfen fehlgeschlagen.');
     }
   }
 
@@ -122,8 +174,8 @@ export function TenantSeoEditor() {
     <div className="card" style={{ marginTop: 24 }}>
       <p className="eyebrow">Pro Seite</p>
       <p style={{ color: 'var(--muted)', marginBottom: 20 }}>
-        <code>title</code> und <code>description</code> im <code>seo</code>-Objekt — werden bei Veröffentlichung mit
-        ausgeliefert.
+        <code>title</code> und <code>description</code> im <code>seo</code>-Objekt. Speichern legt den Entwurf ab;
+        „Veröffentlichen“ schreibt live (nach erneutem Laden der öffentlichen Site sichtbar).
       </p>
       {message && status === 'error' ? <p className="cms-error-text">{message}</p> : null}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
@@ -150,13 +202,34 @@ export function TenantSeoEditor() {
           </article>
         ))}
       </div>
-      <div style={{ marginTop: 20 }}>
-        <button className="button" type="button" onClick={() => void handleSave()} disabled={status === 'saving'}>
+      <div style={{ marginTop: 20, display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+        <button
+          className="button"
+          type="button"
+          onClick={() => void handleSave()}
+          disabled={status === 'saving' || status === 'publishing' || status === 'discarding'}
+        >
           {status === 'saving' ? 'Speichert…' : 'Entwurf speichern'}
         </button>
+        <button
+          className="button secondary"
+          type="button"
+          onClick={() => void handlePublish()}
+          disabled={status === 'saving' || status === 'publishing' || status === 'discarding'}
+        >
+          {status === 'publishing' ? 'Veröffentlicht…' : 'Speichern & veröffentlichen'}
+        </button>
+        <button
+          className="button secondary"
+          type="button"
+          onClick={() => void handleDiscard()}
+          disabled={status === 'saving' || status === 'publishing' || status === 'discarding'}
+        >
+          {status === 'discarding' ? 'Verwerfen…' : 'Entwurf verwerfen'}
+        </button>
         {status === 'saved' ? (
-          <span className="eyebrow" style={{ marginLeft: 16 }}>
-            Gespeichert.
+          <span className="eyebrow" style={{ marginLeft: 8 }}>
+            Fertig.
           </span>
         ) : null}
       </div>
