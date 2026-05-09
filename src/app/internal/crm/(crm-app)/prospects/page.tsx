@@ -53,7 +53,8 @@ export default async function InternalCrmProspectsPage() {
         <p style={{ color: 'var(--muted)', maxWidth: 720, marginTop: 12 }}>
           Diese URL ist nirgends verlinkt. Zugang nur mit{' '}
           <code>FLAMINGO_INTERNAL_CRM_PASSWORD_HASH</code> (bcrypt) — getrennt vom Kunden-Admin unter{' '}
-          <code>/admin</code>.
+          <code>/admin</code>. Optional: <code>FLAMINGO_PROVISION_VERCEL=1</code> plus <code>VERCEL_TOKEN</code> und{' '}
+          <code>VERCEL_TEAM_ID</code> legt beim Tenant-Anlegen ein eigenes Vercel-Projekt an (siehe README).
         </p>
 
         {!dbReady ? (

@@ -1,5 +1,6 @@
 import { createHmac, timingSafeEqual } from 'crypto';
 import { cookies } from 'next/headers';
+import { getSingleTenantSlug } from '@/lib/deployment-mode';
 
 export const ADMIN_SESSION_COOKIE = 'flamingo_rebuild_admin';
 
@@ -27,6 +28,8 @@ export function verifyAdminSession(token: string | undefined): AdminSession | un
     if (typeof parsed.tenantSlug !== 'string' || parsed.tenantSlug.length === 0) return undefined;
     if (parsed.role !== 'owner' && parsed.role !== 'editor') return undefined;
     if (typeof parsed.issuedAt !== 'number') return undefined;
+    const fixed = getSingleTenantSlug();
+    if (fixed && parsed.tenantSlug !== fixed) return undefined;
     return {
       tenantSlug: parsed.tenantSlug,
       role: parsed.role,

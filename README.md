@@ -95,6 +95,18 @@ Mit aktivierter Datenbank werden Prospects verwaltet und Tenants provisioniert: 
 
 **KI-gefüllte Inhalte:** Vorlage `docs/rebuild-content-template.json`, System-/Arbeitsprompt `docs/rebuild-ki-prompt.md` — JSON im Provisionierungs-Dialog einfügen oder als Datei wählen. Schlüssel mit Unterstrich (`_…`) werden beim Import automatisch entfernt.
 
+### Eigenes Vercel-Projekt pro Kunde (optional)
+
+Wenn die **Plattform**-`.env.local` / Vercel-Umgebung **`VERCEL_TOKEN`**, **`VERCEL_TEAM_ID`** und **Plaintext-`POSTGRES_URL`** (kein Vercel-Blob) gesetzt sind, kannst du zusätzlich **`FLAMINGO_PROVISION_VERCEL=1`** setzen. Beim Provisionieren aus dem CRM wird dann:
+
+1. Ein **Vercel-Projekt** mit Namen = Tenant-Slug angelegt oder wiederverwendet (GitHub-Repo standard **`bthginfo/flamingo_rebuild`**, überschreibbar mit **`GITHUB_REPO`**).
+2. **Umgebungsvariablen** auf diesem Projekt gesetzt: u. a. dieselbe **`POSTGRES_URL`** (gemeinsame Neon-DB), **`FLAMINGO_REBUILD_DB=1`**, ein **neu generiertes `AUTH_SECRET`**, **`FLAMINGO_SINGLE_TENANT_SLUG`** (= Slug), **`NEXT_PUBLIC_SITE_URL`**, optional **`BLOB_READ_WRITE_TOKEN`**. Internes CRM-Passwort wird **nicht** kopiert.
+3. Ein **Production-Deploy** von `main` angestoßen.
+
+Auf dem **Kunden-Vercel-Projekt** gilt **Single-Tenant-Modus**: `FLAMINGO_SINGLE_TENANT_SLUG` sperrt die App auf genau diesen Slug (Middleware leitet `/` auf `/site/<slug>/…`, `/internal` ist **404**, Login mit anderem Slug wird abgelehnt). **Eigene Domain** verbindest du in Vercel wie gewohnt mit diesem Projekt; **SMTP** kannst du weiterhin im **Tenant-Admin** unter Integrationen pflegen oder zusätzliche Keys nur auf dem Kunden-Projekt in Vercel setzen (Code liest SMTP aktuell aus der Site-DB, nicht aus separaten SMTP-Env-Variablen — für reine Env-SMTP wäre ein kleiner Follow-up nötig).
+
+**Migration:** Nach `git pull` einmal `npm run db:migrate` (neue Spalten `vercel_project_id` / `vercel_project_name` an `tenants`).
+
 Showcase: [http://localhost:3000/templates](http://localhost:3000/templates) bei `npm run dev`.
 
 ### Admin: wer loggt sich wo ein?

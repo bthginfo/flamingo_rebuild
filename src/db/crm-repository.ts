@@ -147,6 +147,7 @@ export type InternalTenantListRow = {
   createdAt: Date;
   updatedAt: Date;
   lastPublishedAt: Date | null;
+  vercelProjectName: string | null;
 };
 
 /** Für internes CRM: alle Tenants mit Zeitpunkt der letzten Veröffentlichung (falls vorhanden). */
@@ -170,7 +171,8 @@ export async function listTenantsForInternalCrm(): Promise<InternalTenantListRow
     styleKey: t.styleKey,
     createdAt: t.createdAt,
     updatedAt: t.updatedAt,
-    lastPublishedAt: pubMap.get(t.id) ?? null
+    lastPublishedAt: pubMap.get(t.id) ?? null,
+    vercelProjectName: t.vercelProjectName ?? null
   }));
 }
 
@@ -196,4 +198,19 @@ export async function insertTenantRecord(params: {
 
   if (!row) throw new Error('Failed to insert tenant.');
   return row.id;
+}
+
+export async function updateTenantVercelById(
+  tenantId: string,
+  fields: { vercelProjectId: string; vercelProjectName: string }
+): Promise<void> {
+  const db = getDb();
+  await db
+    .update(tenants)
+    .set({
+      vercelProjectId: fields.vercelProjectId,
+      vercelProjectName: fields.vercelProjectName,
+      updatedAt: new Date()
+    })
+    .where(eq(tenants.id, tenantId));
 }

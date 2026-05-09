@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import { NextResponse, type NextRequest } from 'next/server';
 import { getTenantAuthRecord } from '@/db/auth-repository';
+import { getSingleTenantSlug } from '@/lib/deployment-mode';
 import { ADMIN_SESSION_COOKIE, signAdminSession } from '@/platform/auth/admin-session';
 
 export const runtime = 'nodejs';
@@ -19,6 +20,14 @@ export async function POST(request: NextRequest) {
   const password = String(body.password ?? '');
   if (!tenant || !password) {
     return NextResponse.json({ error: 'Tenant und Passwort sind erforderlich.' }, { status: 400 });
+  }
+
+  const fixedSlug = getSingleTenantSlug();
+  if (fixedSlug && tenant !== fixedSlug) {
+    return NextResponse.json(
+      { error: 'Auf dieser Installation ist nur ein Tenant vorgesehen (falscher Slug).' },
+      { status: 403 }
+    );
   }
 
   const record = await getTenantAuthRecord(tenant);

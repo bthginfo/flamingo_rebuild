@@ -140,6 +140,12 @@ export async function provisionProspectAction(_state: CrmFormState, formData: Fo
   if (result.generatedPassword) {
     message += ` Automatisch generiertes Admin-Passwort (bitte sicher notieren): ${result.generatedPassword}`;
   }
+  if (result.vercel) {
+    message += ` Vercel: ${result.vercel.projectUrl} (Admin: ${result.vercel.loginUrl}). Deploy: ${result.vercel.deploymentUrl} (${result.vercel.deploymentState}).`;
+  }
+  if (result.vercelError) {
+    message += ` Vercel-Provisioning fehlgeschlagen: ${result.vercelError}`;
+  }
 
   return { message };
 }

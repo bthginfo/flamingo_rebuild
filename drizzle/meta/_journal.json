@@ -8,6 +8,13 @@
       "when": 1778316313428,
       "tag": "0000_rare_wolverine",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1778316314000,
+      "tag": "0001_tenant_vercel",
+      "breakpoints": true
     }
   ]
 }

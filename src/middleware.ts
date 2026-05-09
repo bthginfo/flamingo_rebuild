@@ -23,6 +23,34 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const host = request.headers.get('host') ?? '';
 
+  const single = process.env.FLAMINGO_SINGLE_TENANT_SLUG?.trim().toLowerCase() ?? '';
+  if (single.length >= 2) {
+    if (pathname.startsWith('/internal')) {
+      return new NextResponse(null, { status: 404 });
+    }
+    if (pathname.startsWith('/site/')) {
+      const m = pathname.match(/^\/site\/([^/]+)/);
+      if (m && m[1].toLowerCase() !== single) {
+        return new NextResponse(null, { status: 404 });
+      }
+    } else if (
+      !pathname.startsWith('/admin') &&
+      !pathname.startsWith('/api') &&
+      !pathname.startsWith('/_next') &&
+      pathname !== '/favicon.ico' &&
+      pathname !== '/robots.txt' &&
+      pathname !== '/sitemap.xml' &&
+      !pathname.startsWith('/icon') &&
+      !pathname.startsWith('/opengraph-image') &&
+      !pathname.startsWith('/preview') &&
+      !pathname.startsWith('/site')
+    ) {
+      const url = request.nextUrl.clone();
+      url.pathname = pathname === '/' ? `/site/${single}/` : `/site/${single}${pathname}`;
+      return NextResponse.rewrite(url);
+    }
+  }
+
   const tenantSlug = tenantSlugFromHost(host);
   if (
     tenantSlug &&

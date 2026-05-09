@@ -21,6 +21,9 @@ export const tenants = flamingoRebuildSchema.table('tenants', {
   styleKey: text('style_key').notNull(),
   status: tenantStatus('status').notNull().default('active'),
   passwordHash: text('password_hash'),
+  /** Gesetzt, wenn optional ein eigenes Vercel-Projekt angelegt wurde. */
+  vercelProjectId: text('vercel_project_id'),
+  vercelProjectName: text('vercel_project_name'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull()
 });

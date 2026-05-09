@@ -5,11 +5,13 @@ import {
   getProspectById,
   insertTenantRecord,
   markProspectProvisioned,
-  tenantSlugExists
+  tenantSlugExists,
+  updateTenantVercelById
 } from '@/db/crm-repository';
 import { isValidTenantSlug } from '@/lib/tenant-slug';
 import { INDUSTRY_KEYS, STYLE_KEYS, type IndustryKey, type StyleKey } from '@/template-engine/model';
 import { validateSiteDocument } from '@/platform/publishing/validate-site-document';
+import { provisionVercelProjectForTenantSlug } from '@/platform/vercel/provision-tenant-project';
 import { getDemoSeed } from '@/template-engine/seeds';
 import type { CollectionSeedItem, SiteSeed } from '@/template-engine/seeds/model';
 
@@ -42,8 +44,15 @@ export type ProvisionResult =
       tenantId: string;
       tenantSlug: string;
       health: ProvisionHealth;
-      /** Nur gesetzt, wenn das Admin-Passwort automatisch erzeugt wurde. */
       generatedPassword?: string;
+      vercel?: {
+        projectUrl: string;
+        loginUrl: string;
+        vercelProjectName: string;
+        deploymentUrl: string;
+        deploymentState: string;
+      };
+      vercelError?: string;
     }
   | { ok: false; status: number; error: string; issues?: string[] };
 
@@ -240,6 +249,38 @@ export async function provisionTenantFromProspect(input: ProvisionInput): Promis
   await saveDraftSiteDocument(tenantSlug, published);
   await markProspectProvisioned(prospect.id, tenantId);
 
+  let vercel:
+    | {
+        projectUrl: string;
+        loginUrl: string;
+        vercelProjectName: string;
+        deploymentUrl: string;
+        deploymentState: string;
+      }
+    | undefined;
+  let vercelError: string | undefined;
+  if (process.env.FLAMINGO_PROVISION_VERCEL === '1') {
+    const vr = await provisionVercelProjectForTenantSlug({
+      slug: tenantSlug,
+      onLog: () => {}
+    });
+    if (vr.ok) {
+      vercel = {
+        projectUrl: vr.projectUrl,
+        loginUrl: vr.loginUrl,
+        vercelProjectName: vr.vercelProjectName,
+        deploymentUrl: vr.deploymentUrl,
+        deploymentState: vr.deploymentState
+      };
+      await updateTenantVercelById(tenantId, {
+        vercelProjectId: vr.vercelProjectId,
+        vercelProjectName: vr.vercelProjectName
+      });
+    } else {
+      vercelError = vr.error;
+    }
+  }
+
   const health: ProvisionHealth = {
     registryValid: true,
     draftCreated: true,
@@ -253,6 +294,8 @@ export async function provisionTenantFromProspect(input: ProvisionInput): Promis
     tenantId,
     tenantSlug,
     health,
-    ...(generatedPassword ? { generatedPassword } : {})
+    ...(generatedPassword ? { generatedPassword } : {}),
+    ...(vercel ? { vercel } : {}),
+    ...(vercelError ? { vercelError } : {})
   };
 }

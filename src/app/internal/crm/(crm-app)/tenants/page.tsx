@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { isDatabaseConfigured } from '@/db/client';
 import { listTenantsForInternalCrm } from '@/db/crm-repository';
 import { getSiteOrigin } from '@/lib/site-url';
@@ -44,11 +43,16 @@ export default async function InternalCrmTenantsPage() {
                   <th>Stil</th>
                   <th>Erstellt</th>
                   <th>Letzte Veröffentlichung</th>
+                  <th>Vercel</th>
                   <th>Links</th>
                 </tr>
               </thead>
               <tbody>
-                {rows.map((t) => (
+                {rows.map((t) => {
+                  const adminBase = t.vercelProjectName
+                    ? `https://${t.vercelProjectName}.vercel.app`
+                    : origin;
+                  return (
                   <tr key={t.id}>
                     <td>
                       <strong>{t.name}</strong>
@@ -61,19 +65,35 @@ export default async function InternalCrmTenantsPage() {
                     <td>{t.createdAt.toLocaleString('de-AT')}</td>
                     <td>{t.lastPublishedAt ? t.lastPublishedAt.toLocaleString('de-AT') : '—'}</td>
                     <td>
+                      {t.vercelProjectName ? (
+                        <a
+                          href={`https://${encodeURIComponent(t.vercelProjectName)}.vercel.app`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {t.vercelProjectName}.vercel.app
+                        </a>
+                      ) : (
+                        '—'
+                      )}
+                    </td>
+                    <td>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                         <a href={`${origin}/site/${encodeURIComponent(t.slug)}`} target="_blank" rel="noreferrer">
                           Website
                         </a>
-                        <Link
-                          href={`/admin/login?tenant=${encodeURIComponent(t.slug)}&next=${encodeURIComponent('/admin')}`}
+                        <a
+                          href={`${adminBase}/admin/login?tenant=${encodeURIComponent(t.slug)}&next=${encodeURIComponent('/admin')}`}
+                          target="_blank"
+                          rel="noreferrer"
                         >
                           Admin-Login öffnen
-                        </Link>
+                        </a>
                       </div>
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>
