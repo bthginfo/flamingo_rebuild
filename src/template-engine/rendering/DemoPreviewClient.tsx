@@ -1,19 +1,22 @@
 'use client';
 
 import { useMemo, useEffect, useState } from 'react';
-import type { StyleKey } from '../model';
+import type { IndustryKey, StyleKey } from '../model';
 import type { SiteSeed } from '../seeds/model';
 import { loadDemoContent } from '@/cms/demo-store';
 import { loadAdminDocument } from '@/cms/admin-content-api';
 import { SeedPageRenderer } from './SeedRenderer';
 import { resolvePreviewPage } from './preview-route';
+import { PreviewChrome } from './PreviewChrome';
 
 export function DemoPreviewClient({
+  industryKey,
   initialSeed,
   styleKey,
   pathSegments,
   previewBasePath
 }: {
+  industryKey: IndustryKey;
   initialSeed: SiteSeed;
   styleKey: StyleKey;
   pathSegments: string[];
@@ -54,5 +57,10 @@ export function DemoPreviewClient({
 
   const page = useMemo(() => resolvePreviewPage(seed, pathSegments), [seed, pathSegments]);
 
-  return <SeedPageRenderer seed={seed} page={page} styleKey={styleKey} previewBasePath={previewBasePath} />;
+  return (
+    <>
+      <PreviewChrome industryKey={industryKey} styleKey={styleKey} pathSegments={pathSegments} />
+      <SeedPageRenderer seed={seed} page={page} styleKey={styleKey} previewBasePath={previewBasePath} />
+    </>
+  );
 }

@@ -2,6 +2,7 @@ import { getIndustry, getStyle } from '../registry';
 import type { IndustryKey, StyleKey } from '../model';
 import { getDemoSeed } from '../seeds';
 import { DemoPreviewClient } from './DemoPreviewClient';
+import { PreviewChrome } from './PreviewChrome';
 
 export function TemplatePreview({
   industryKey,
@@ -21,6 +22,7 @@ export function TemplatePreview({
   if (seed) {
     return (
       <DemoPreviewClient
+        industryKey={industryKey}
         initialSeed={seed}
         styleKey={styleKey}
         pathSegments={pathSegments}
@@ -30,28 +32,30 @@ export function TemplatePreview({
   }
 
   return (
-    <main>
-      <section className="section">
-        <div className="shell">
-          <p className="eyebrow">
-            {industry.label} · {style.label}
-          </p>
-          <h1 className="headline">{demoHeadline(industryKey, styleKey)}</h1>
-          <p style={{ maxWidth: 760, color: 'var(--muted)', fontSize: 21, lineHeight: 1.45 }}>{demoIntro(industryKey)}</p>
-          <div style={{ display: 'flex', gap: 12, marginTop: 28 }}>
-            <a className="button" href="#sections">
-              Abschnitte ansehen
-            </a>
-            <a className="button secondary" href="/admin">
-              Admin Demo
-            </a>
+    <>
+      <PreviewChrome industryKey={industryKey} styleKey={styleKey} pathSegments={pathSegments} />
+      <main>
+        <section className="section">
+          <div className="shell">
+            <p className="eyebrow">
+              {industry.label} · {style.label}
+            </p>
+            <h1 className="headline">{demoHeadline(industryKey, styleKey)}</h1>
+            <p style={{ maxWidth: 760, color: 'var(--muted)', fontSize: 21, lineHeight: 1.45 }}>{demoIntro(industryKey)}</p>
+            <div style={{ display: 'flex', gap: 12, marginTop: 28 }}>
+              <a className="button" href="#sections">
+                Abschnitte ansehen
+              </a>
+              <a className="button secondary" href="/admin">
+                Admin Demo
+              </a>
+            </div>
           </div>
-        </div>
-      </section>
-      <section id="sections" className="section" style={{ background: 'white' }}>
-        <div className="shell">
-          <p className="eyebrow">Page Blueprint</p>
-          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 44 }}>{home.label}</h2>
+        </section>
+        <section id="sections" className="section" style={{ background: 'white' }}>
+          <div className="shell">
+            <p className="eyebrow">Page Blueprint</p>
+            <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 44 }}>{home.label}</h2>
           <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
             {home.defaultSections.map((sectionKey) => (
               <div className="card" key={sectionKey}>
@@ -60,9 +64,10 @@ export function TemplatePreview({
               </div>
             ))}
           </div>
-        </div>
-      </section>
-    </main>
+          </div>
+        </section>
+      </main>
+    </>
   );
 }
 

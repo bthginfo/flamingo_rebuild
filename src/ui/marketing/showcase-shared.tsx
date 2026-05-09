@@ -64,20 +64,23 @@ export function LandingHeroShowcase({
 }
 
 export function BranchMarqueeSection({ id = 'mehr' }: { id?: string }) {
+  const loop = [...branchMarquee, ...branchMarquee];
   return (
     <section className="fm-branch-marquee surface" id={id}>
       <div className="shell fm-branch-marquee__head">
         <p className="eyebrow">Branchen, die wir verstehen</p>
       </div>
-      <div className="fm-branch-marquee__track" aria-hidden>
-        {[...branchMarquee, ...branchMarquee, ...branchMarquee].map((label, i) => (
-          <span key={`${label}-${i}`} className="fm-branch-marquee__item">
-            {label}
-            <span className="fm-branch-marquee__star">✦</span>
-          </span>
-        ))}
-        <span className="fm-branch-marquee__item fm-branch-marquee__more">und viele mehr</span>
-        <span className="fm-branch-marquee__star fm-branch-marquee__star--muted">✦</span>
+      <div className="fm-branch-marquee__viewport" aria-hidden>
+        <div className="fm-branch-marquee__animate">
+          {[...loop, ...loop].map((label, i) => (
+            <span key={`${label}-${i}`} className="fm-branch-marquee__item">
+              {label}
+              <span className="fm-branch-marquee__star">✦</span>
+            </span>
+          ))}
+          <span className="fm-branch-marquee__item fm-branch-marquee__more">und viele mehr</span>
+          <span className="fm-branch-marquee__star fm-branch-marquee__star--muted">✦</span>
+        </div>
       </div>
     </section>
   );
