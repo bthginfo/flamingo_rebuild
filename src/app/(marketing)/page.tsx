@@ -9,7 +9,14 @@ import {
   type ExtraTemplateKey
 } from '@/ui/marketing/template-showcase-data';
 import { RotatingWord } from '@/ui/marketing/RotatingWord';
-import { BranchMarqueeSection, CtaFooterSection, ManifestoSection, TestimonialsSection } from '@/ui/marketing/showcase-shared';
+import {
+  BranchMarqueeSection,
+  CtaFooterSection,
+  LandingHeroShowcase,
+  ManifestoSection,
+  TestimonialsSection
+} from '@/ui/marketing/showcase-shared';
+import { RevealOnScroll } from '@/ui/marketing/RevealOnScroll';
 
 export const metadata: Metadata = {
   title: 'Websites mit Pop für lokale Marken',
@@ -20,49 +27,21 @@ export const metadata: Metadata = {
 export default function MarketingHomePage() {
   return (
     <main>
-      <section className="fm-landing-hero" id="top">
-        <div className="fm-landing-hero__bg" aria-hidden />
-        <img className="fm-landing-hero__mark" src={agency.logoMark} alt="" />
-        <div className="shell fm-landing-hero__inner">
-          <p className="fm-landing-hero__pulse">
-            <span className="fm-dot" aria-hidden />
-            {agency.tagline}
-          </p>
-          <h1 className="fm-landing-hero__title">
-            Websites für
-            <br />
-            <em className="fm-italic-pop">
-              <RotatingWord words={rotatingHeroWords} />
-            </em>
-          </h1>
-          <div className="fm-landing-hero__grid">
-            <p className="fm-landing-hero__lead">
-              Wir gestalten und betreuen Websites für inhabergeführte Betriebe in der DACH-Region. Editorial-Design, das
-              mit dem Tempo Deiner Marke gehen kann. Inhalte, die Du selbst pflegst. Foto und Video von unserem eigenen
-              Team.
-            </p>
-            <div className="fm-landing-hero__aside">
-              <p className="fm-mono-label">/ Website live in wenigen Tagen</p>
-              <div className="fm-hero-ctas">
-                <Link className="button" href="/templates">
-                  Templates ansehen →
-                </Link>
-                <Link className="button secondary fm-btn-outline-light" href="/preise">
-                  Preise &amp; Pakete
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-        <a className="fm-scroll-hint" href="#mehr" aria-label="Weiter scrollen">
-          <span>Scroll</span>
-          <span className="fm-scroll-line" aria-hidden />
-        </a>
-      </section>
+      <LandingHeroShowcase
+        id="top"
+        pulse={agency.tagline}
+        titleLine1="Websites für"
+        titleEmphasis={<RotatingWord words={rotatingHeroWords} />}
+        lead="Wir gestalten und betreuen Websites für inhabergeführte Betriebe in der DACH-Region. Editorial-Design, das mit dem Tempo Deiner Marke gehen kann. Inhalte, die Du selbst pflegst. Foto und Video von unserem eigenen Team."
+        monoAside="/ Website live in wenigen Tagen"
+        primaryCta={{ href: '/templates', label: 'Templates ansehen →' }}
+        secondaryCta={{ href: '/preise', label: 'Preise & Pakete' }}
+        scrollTargetId="#mehr"
+      />
 
       <BranchMarqueeSection />
 
-      <section className="fm-services">
+      <RevealOnScroll as="section" className="fm-services">
         <div className="fm-services__pattern" aria-hidden />
         <div className="shell fm-services__inner">
           <div className="fm-services__intro">
@@ -79,7 +58,7 @@ export default function MarketingHomePage() {
               Betrieb kümmern kannst.
             </p>
           </div>
-          <div className="fm-bento">
+          <div className="fm-bento" data-stagger-grid>
             <article className="fm-bento__card fm-bento__card--wide">
               <div className="fm-bento__row">
                 <span className="fm-mono-muted">01</span>
@@ -128,9 +107,9 @@ export default function MarketingHomePage() {
             </article>
           </div>
         </div>
-      </section>
+      </RevealOnScroll>
 
-      <section className="section surface fm-templates-preview">
+      <RevealOnScroll as="section" className="section surface fm-templates-preview">
         <div className="shell">
           <div className="fm-templates-preview__head">
             <div>
@@ -146,7 +125,7 @@ export default function MarketingHomePage() {
               gibt es drei Stilwelten — Classic, Modern und Bold. Weitere Branchen gern auf Anfrage.
             </p>
           </div>
-          <div className="fm-portrait-grid">
+          <div className="fm-portrait-grid" data-stagger-grid>
             {(Object.keys(CORE_TEMPLATE_META) as CoreTemplateKey[]).map((k) => {
               const m = CORE_TEMPLATE_META[k];
               return (
@@ -192,9 +171,9 @@ export default function MarketingHomePage() {
             </Link>
           </div>
         </div>
-      </section>
+      </RevealOnScroll>
 
-      <section className="section fm-device-strip">
+      <RevealOnScroll as="section" className="section fm-device-strip">
         <div className="shell">
           <p className="eyebrow">In Aktion</p>
           <h2 className="section-title">
@@ -206,7 +185,7 @@ export default function MarketingHomePage() {
             Ein Restaurant im warmen Klassik-Stil, dieselbe Marke mutig in Bold — und dazwischen der ruhige Ort, an dem
             Du Texte und Bilder selbst anfasst. Kein Theater, nur echte Oberflächen.
           </p>
-          <div className="fm-device-grid">
+          <div className="fm-device-grid" data-stagger-grid>
             <Link href={previewHref('restaurant', 'classic')} className="fm-device-card">
               <img src={CORE_TEMPLATE_META.restaurant.image} alt="" />
               <div>
@@ -230,7 +209,7 @@ export default function MarketingHomePage() {
             </Link>
           </div>
         </div>
-      </section>
+      </RevealOnScroll>
 
       <ManifestoSection />
       <TestimonialsSection />

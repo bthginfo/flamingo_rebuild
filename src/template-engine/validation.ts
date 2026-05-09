@@ -110,11 +110,11 @@ export function validateTemplateRegistry(): RegistryValidationIssue[] {
 
           if (Array.isArray(section.data.items)) {
             for (const rawId of section.data.items) {
-              const id = String(rawId);
-              if (!collectionIds.has(id) && !isInlineRepeaterSection(section.sectionKey)) {
+              if (typeof rawId !== 'string') continue;
+              if (!collectionIds.has(rawId)) {
                 issues.push({
                   code: 'seed-missing-collection-item',
-                  message: `Seed ${industryKey} section ${section.id} references missing collection item ${id}.`
+                  message: `Seed ${industryKey} section ${section.id} references missing collection item ${rawId}.`
                 });
               }
             }
@@ -125,8 +125,4 @@ export function validateTemplateRegistry(): RegistryValidationIssue[] {
   }
 
   return issues;
-}
-
-function isInlineRepeaterSection(sectionKey: string): boolean {
-  return sectionKey === 'global.testimonials' || sectionKey === 'global.faq';
 }

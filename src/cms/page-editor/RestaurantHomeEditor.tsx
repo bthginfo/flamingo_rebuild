@@ -33,7 +33,22 @@ type EditorStatus =
   | 'published'
   | 'error';
 
-export function RestaurantHomeEditor({ initialSeed, pageKey }: { initialSeed: SiteSeed; pageKey: string }) {
+export function RestaurantHomeEditor({
+  initialSeed,
+  pageKey,
+  editorPathBase = '/admin/pages',
+  editorPersistQuery,
+  forceDemo = false
+}: {
+  initialSeed: SiteSeed;
+  pageKey: string;
+  /** Path prefix for CMS page URLs, e.g. `/admin/pages` or `/admin-demo`. */
+  editorPathBase?: string;
+  /** Optional query suffix (no leading `?`), e.g. `industry=restaurant` — kept on style/page tab links. */
+  editorPersistQuery?: string;
+  /** When true, skip session and always use localStorage-backed demo (public admin-demo route). */
+  forceDemo?: boolean;
+}) {
   const [seed, setSeed] = useState<SiteSeed>(() => cloneSeed(initialSeed));
   const [status, setStatus] = useState<EditorStatus>('loading');
   const [draftExists, setDraftExists] = useState(false);
@@ -42,6 +57,17 @@ export function RestaurantHomeEditor({ initialSeed, pageKey }: { initialSeed: Si
 
   useEffect(() => {
     let active = true;
+
+    if (forceDemo) {
+      setContentState({ mode: 'demo' });
+      setSeed(loadDemoContent(initialSeed, 'draft'));
+      setDraftExists(hasDraft(initialSeed));
+      setStatus('clean');
+      setMessage('');
+      return () => {
+        active = false;
+      };
+    }
 
     async function load() {
       setStatus('loading');
@@ -65,7 +91,7 @@ export function RestaurantHomeEditor({ initialSeed, pageKey }: { initialSeed: Si
       }
 
       setSeed(loadDemoContent(initialSeed, 'draft'));
-      setDraftExists(hasDraft(initialSeed.styleKey));
+      setDraftExists(hasDraft(initialSeed));
       setStatus('clean');
     }
 
@@ -73,7 +99,9 @@ export function RestaurantHomeEditor({ initialSeed, pageKey }: { initialSeed: Si
     return () => {
       active = false;
     };
-  }, [initialSeed]);
+  }, [initialSeed, forceDemo]);
+
+  const qs = editorPersistQuery ? `&${editorPersistQuery}` : '';
 
   const industryPages = useMemo(() => getIndustry(seed.industryKey).corePages, [seed.industryKey]);
 
@@ -89,8 +117,17 @@ export function RestaurantHomeEditor({ initialSeed, pageKey }: { initialSeed: Si
   const addableSectionKeys = useMemo(() => {
     const industry = getIndustry(seed.industryKey);
     const pageDefinition = industry.corePages.find((entry) => entry.key === page.key);
-    return pageDefinition?.allowedSections ?? [];
-  }, [page.key, seed.industryKey]);
+    const allowed = pageDefinition?.allowedSections ?? [];
+    const counts = new Map<string, number>();
+    for (const s of page.sections) {
+      counts.set(s.sectionKey, (counts.get(s.sectionKey) ?? 0) + 1);
+    }
+    return allowed.filter((sectionKey) => {
+      const def = getSection(sectionKey);
+      if (def.repeatable) return true;
+      return (counts.get(sectionKey) ?? 0) === 0;
+    });
+  }, [page.key, page.sections, seed.industryKey]);
 
   function updateSection(sectionId: string, updater: (section: SectionInstance) => SectionInstance) {
     setSeed((current) => ({
@@ -217,14 +254,14 @@ export function RestaurantHomeEditor({ initialSeed, pageKey }: { initialSeed: Si
       return;
     }
 
-    discardDraft(seed.styleKey);
+    discardDraft(seed);
     setSeed(loadDemoContent(initialSeed, 'published'));
     setDraftExists(false);
     setStatus('clean');
   }
 
   function handleReset() {
-    resetPublished(initialSeed.styleKey);
+    resetPublished(initialSeed);
     setSeed(cloneSeed(initialSeed));
     setDraftExists(false);
     setStatus('clean');
@@ -245,7 +282,7 @@ export function RestaurantHomeEditor({ initialSeed, pageKey }: { initialSeed: Si
               {STYLE_KEYS.map((sk) => (
                 <Link
                   key={sk}
-                  href={`/admin/pages/${pageKey}?style=${sk}`}
+                  href={`${editorPathBase}/${pageKey}?style=${sk}${qs}`}
                   className={sk === seed.styleKey ? 'is-active' : undefined}
                 >
                   {STYLE_LABELS[sk]}
@@ -257,7 +294,9 @@ export function RestaurantHomeEditor({ initialSeed, pageKey }: { initialSeed: Si
             {industryPages.map((def) => (
               <Link
                 key={def.key}
-                href={`/admin/pages/${def.key}${contentState.mode === 'demo' ? `?style=${seed.styleKey}` : ''}`}
+                href={`${editorPathBase}/${def.key}${
+                  contentState.mode === 'demo' ? `?style=${seed.styleKey}${qs}` : editorPersistQuery ? `?${editorPersistQuery}` : ''
+                }`}
                 className={def.key === page.key ? 'is-active' : undefined}
               >
                 {def.label}
@@ -416,6 +455,19 @@ function FieldEditor({
   path: readonly string[];
   onChange: (path: readonly string[], value: unknown) => void;
 }) {
+  if (field.type === 'number') {
+    return (
+      <TextField
+        label={field.label}
+        value={typeof value === 'number' && !Number.isNaN(value) ? String(value) : text(value)}
+        onChange={(next) => {
+          const parsed = Number(next);
+          onChange(path, Number.isFinite(parsed) ? parsed : 0);
+        }}
+      />
+    );
+  }
+
   if (field.type === 'textarea' || field.type === 'richText') {
     return <TextArea label={field.label} value={text(value)} onChange={(next) => onChange(path, next)} />;
   }
@@ -464,21 +516,70 @@ function FieldEditor({
         <span>{field.label}</span>
         {items.map((item, index) => (
           <div className="cms-repeat-item" key={index}>
-            {(field.itemFields ?? []).map((itemField) => (
-              <FieldEditor
-                field={itemField}
-                key={itemField.key}
-                path={[...path]}
-                value={item[itemField.key]}
-                onChange={(_, next) => {
-                  const cloned = items.map((entry) => ({ ...entry }));
-                  cloned[index] = { ...cloned[index], [itemField.key]: next };
+            <div className="cms-repeat-toolbar">
+              <button
+                type="button"
+                className="button secondary"
+                onClick={() => {
+                  const cloned = items.filter((_, i) => i !== index);
                   onChange(path, cloned);
                 }}
-              />
-            ))}
+              >
+                Eintrag entfernen
+              </button>
+            </div>
+            {(field.itemFields ?? []).map((itemField) => {
+              if (itemField.type === 'splitHeading') {
+                const cur = split(item[itemField.key]);
+                return (
+                  <div className="cms-field-grid" key={itemField.key}>
+                    <TextField
+                      label={`${field.label} ${index + 1} — ${itemField.label} (Teil 1)`}
+                      value={cur.plain}
+                      onChange={(next) => {
+                        const cloned = items.map((entry) => ({ ...entry }));
+                        cloned[index] = { ...cloned[index], [itemField.key]: { ...cur, plain: next } };
+                        onChange(path, cloned);
+                      }}
+                    />
+                    <TextField
+                      label={`${field.label} ${index + 1} — ${itemField.label} (Teil 2)`}
+                      value={cur.accent}
+                      onChange={(next) => {
+                        const cloned = items.map((entry) => ({ ...entry }));
+                        cloned[index] = { ...cloned[index], [itemField.key]: { ...cur, accent: next } };
+                        onChange(path, cloned);
+                      }}
+                    />
+                  </div>
+                );
+              }
+              return (
+                <FieldEditor
+                  field={itemField}
+                  key={`${index}-${itemField.key}`}
+                  path={[]}
+                  value={item[itemField.key]}
+                  onChange={(_subPath, val) => {
+                    const cloned = items.map((entry) => ({ ...entry }));
+                    cloned[index] = { ...cloned[index], [itemField.key]: val };
+                    onChange(path, cloned);
+                  }}
+                />
+              );
+            })}
           </div>
         ))}
+        <button
+          type="button"
+          className="button secondary"
+          onClick={() => {
+            const row = createDefaultData(field.itemFields ?? []);
+            onChange(path, [...items, row]);
+          }}
+        >
+          Eintrag hinzufügen
+        </button>
       </div>
     );
   }

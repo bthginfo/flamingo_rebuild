@@ -1,5 +1,6 @@
-import type { IndustryKey, PageInstance, SectionInstance } from '../model';
+import type { IndustryKey, PageInstance, SectionInstance, StyleKey } from '../model';
 import type { CollectionSeedItem, SiteSeed } from '../seeds/model';
+import { buildWowSectionInstances } from '../seeds/wow-section-data';
 
 type CollectionDetailRule = {
   industry: IndustryKey;
@@ -25,6 +26,24 @@ const COLLECTION_DETAIL_RULES: readonly CollectionDetailRule[] = [
   { industry: 'wedding', segment: 'unterkunft', collectionKey: 'accommodation', eyebrow: 'Unterkunft', listHref: '/location', listLabel: 'Alle Unterkünfte', ctaHref: '/rsvp' }
 ];
 
+function renumberSections(sections: SectionInstance[]): SectionInstance[] {
+  return sections.map((s, i) => ({ ...s, sortOrder: i + 1 }));
+}
+
+function withWowAfterPageHeader(
+  industryKey: IndustryKey,
+  styleKey: StyleKey,
+  pageKey: string,
+  pageTitle: string,
+  sections: SectionInstance[]
+): SectionInstance[] {
+  const wow = buildWowSectionInstances(industryKey, styleKey, { pageKey, pageTitle });
+  const idx = sections.findIndex((s) => s.sectionKey === 'global.pageHeader');
+  const merged =
+    idx >= 0 ? [...sections.slice(0, idx + 1), ...wow, ...sections.slice(idx + 1)] : [...wow, ...sections];
+  return renumberSections(merged);
+}
+
 export function previewPathFromSegments(segments: string[] | undefined): string {
   if (!segments?.length) return '/';
   return `/${segments.map((s) => decodeURIComponent(s)).join('/')}`;
@@ -39,27 +58,27 @@ export function resolvePreviewPage(seed: SiteSeed, segments: string[] | undefine
 
   if (seed.industryKey === 'restaurant' && parts.length === 2 && parts[0] === 'speisekarte') {
     const item = seed.collections.find((c) => c.collectionKey === 'menuItem' && c.slug === parts[1]);
-    if (item) return buildMenuItemDetailPage(item);
+    if (item) return buildMenuItemDetailPage(item, seed.industryKey, seed.styleKey);
   }
 
   if (seed.industryKey === 'restaurant' && parts.length === 2 && parts[0] === 'erlebnisse') {
     const item = seed.collections.find((c) => c.collectionKey === 'diningExperience' && c.slug === parts[1]);
-    if (item) return buildDiningExperienceDetailPage(item);
+    if (item) return buildDiningExperienceDetailPage(item, seed.industryKey, seed.styleKey);
   }
 
   if (seed.industryKey === 'hotel' && parts.length === 2 && parts[0] === 'zimmer') {
     const item = seed.collections.find((c) => c.collectionKey === 'room' && c.slug === parts[1]);
-    if (item) return buildHotelRoomDetailPage(item);
+    if (item) return buildHotelRoomDetailPage(item, seed.industryKey, seed.styleKey);
   }
 
   if (seed.industryKey === 'hotel' && parts.length === 2 && parts[0] === 'angebote') {
     const item = seed.collections.find((c) => c.collectionKey === 'hotelOffer' && c.slug === parts[1]);
-    if (item) return buildHotelOfferDetailPage(item);
+    if (item) return buildHotelOfferDetailPage(item, seed.industryKey, seed.styleKey);
   }
 
   if (seed.industryKey === 'tourism' && parts.length === 2 && parts[0] === 'touren') {
     const item = seed.collections.find((c) => c.collectionKey === 'tour' && c.slug === parts[1]);
-    if (item) return buildTourDetailPage(item);
+    if (item) return buildTourDetailPage(item, seed.industryKey, seed.styleKey);
   }
 
   if (seed.industryKey === 'fitness' && parts.length === 2 && parts[0] === 'kurse') {
@@ -68,13 +87,18 @@ export function resolvePreviewPage(seed: SiteSeed, segments: string[] | undefine
     );
     if (item) {
       const eyebrow = item.collectionKey === 'scheduleItem' ? 'Termin' : 'Kurs';
-      return buildStandardCollectionDetailPage(item, {
-        eyebrow,
-        urlSegment: 'kurse',
-        listHref: '/kurse',
-        listLabel: 'Zur Kurs-Übersicht',
-        ctaHref: '/kontakt'
-      });
+      return buildStandardCollectionDetailPage(
+        item,
+        {
+          eyebrow,
+          urlSegment: 'kurse',
+          listHref: '/kurse',
+          listLabel: 'Zur Kurs-Übersicht',
+          ctaHref: '/kontakt'
+        },
+        seed.industryKey,
+        seed.styleKey
+      );
     }
   }
 
@@ -82,13 +106,18 @@ export function resolvePreviewPage(seed: SiteSeed, segments: string[] | undefine
     if (seed.industryKey !== rule.industry || parts.length !== 2 || parts[0] !== rule.segment) continue;
     const item = seed.collections.find((c) => c.collectionKey === rule.collectionKey && c.slug === parts[1]);
     if (item) {
-      return buildStandardCollectionDetailPage(item, {
-        eyebrow: rule.eyebrow,
-        urlSegment: rule.segment,
-        listHref: rule.listHref,
-        listLabel: rule.listLabel,
-        ctaHref: rule.ctaHref
-      });
+      return buildStandardCollectionDetailPage(
+        item,
+        {
+          eyebrow: rule.eyebrow,
+          urlSegment: rule.segment,
+          listHref: rule.listHref,
+          listLabel: rule.listLabel,
+          ctaHref: rule.ctaHref
+        },
+        seed.industryKey,
+        seed.styleKey
+      );
     }
   }
 
@@ -97,7 +126,9 @@ export function resolvePreviewPage(seed: SiteSeed, segments: string[] | undefine
 
 function buildStandardCollectionDetailPage(
   item: CollectionSeedItem,
-  config: { eyebrow: string; urlSegment: string; listHref: string; listLabel: string; ctaHref: string }
+  config: { eyebrow: string; urlSegment: string; listHref: string; listLabel: string; ctaHref: string },
+  industryKey: IndustryKey,
+  styleKey: StyleKey
 ): PageInstance {
   const summary = typeof item.data.summary === 'string' ? item.data.summary : '';
   const image = typeof item.data.image === 'string' ? item.data.image : '';
@@ -151,11 +182,11 @@ function buildStandardCollectionDetailPage(
     title: item.title,
     slug: `/${config.urlSegment}/${item.slug}`,
     seo: { title: `${item.title}` },
-    sections
+    sections: withWowAfterPageHeader(industryKey, styleKey, `detail-${item.collectionKey}-${item.id}`, item.title, sections)
   };
 }
 
-function buildHotelRoomDetailPage(item: CollectionSeedItem): PageInstance {
+function buildHotelRoomDetailPage(item: CollectionSeedItem, industryKey: IndustryKey, styleKey: StyleKey): PageInstance {
   const summary = typeof item.data.summary === 'string' ? item.data.summary : '';
   const image = typeof item.data.image === 'string' ? item.data.image : '';
 
@@ -206,11 +237,11 @@ function buildHotelRoomDetailPage(item: CollectionSeedItem): PageInstance {
     title: item.title,
     slug: `/zimmer/${item.slug}`,
     seo: { title: `${item.title} · Zimmer` },
-    sections
+    sections: withWowAfterPageHeader(industryKey, styleKey, `detail-room-${item.id}`, item.title, sections)
   };
 }
 
-function buildTourDetailPage(item: CollectionSeedItem): PageInstance {
+function buildTourDetailPage(item: CollectionSeedItem, industryKey: IndustryKey, styleKey: StyleKey): PageInstance {
   const summary = typeof item.data.summary === 'string' ? item.data.summary : '';
   const image = typeof item.data.image === 'string' ? item.data.image : '';
 
@@ -263,11 +294,11 @@ function buildTourDetailPage(item: CollectionSeedItem): PageInstance {
     title: item.title,
     slug: `/touren/${item.slug}`,
     seo: { title: `${item.title} · Touren` },
-    sections
+    sections: withWowAfterPageHeader(industryKey, styleKey, `detail-tour-${item.id}`, item.title, sections)
   };
 }
 
-function buildHotelOfferDetailPage(item: CollectionSeedItem): PageInstance {
+function buildHotelOfferDetailPage(item: CollectionSeedItem, industryKey: IndustryKey, styleKey: StyleKey): PageInstance {
   const summary = typeof item.data.summary === 'string' ? item.data.summary : '';
   const image = typeof item.data.image === 'string' ? item.data.image : '';
 
@@ -305,11 +336,11 @@ function buildHotelOfferDetailPage(item: CollectionSeedItem): PageInstance {
     title: item.title,
     slug: `/angebote/${item.slug}`,
     seo: { title: `${item.title} · Angebot` },
-    sections
+    sections: withWowAfterPageHeader(industryKey, styleKey, `detail-offer-${item.id}`, item.title, sections)
   };
 }
 
-function buildMenuItemDetailPage(item: CollectionSeedItem): PageInstance {
+function buildMenuItemDetailPage(item: CollectionSeedItem, industryKey: IndustryKey, styleKey: StyleKey): PageInstance {
   const summary = typeof item.data.summary === 'string' ? item.data.summary : '';
   const image = typeof item.data.image === 'string' ? item.data.image : '';
   const price = typeof item.data.price === 'string' ? item.data.price : '';
@@ -361,11 +392,15 @@ function buildMenuItemDetailPage(item: CollectionSeedItem): PageInstance {
     title: item.title,
     slug: `/speisekarte/${item.slug}`,
     seo: { title: `${item.title} · Speisekarte` },
-    sections
+    sections: withWowAfterPageHeader(industryKey, styleKey, `detail-menuItem-${item.id}`, item.title, sections)
   };
 }
 
-function buildDiningExperienceDetailPage(item: CollectionSeedItem): PageInstance {
+function buildDiningExperienceDetailPage(
+  item: CollectionSeedItem,
+  industryKey: IndustryKey,
+  styleKey: StyleKey
+): PageInstance {
   const summary = typeof item.data.summary === 'string' ? item.data.summary : '';
   const image = typeof item.data.image === 'string' ? item.data.image : '';
 
@@ -403,6 +438,12 @@ function buildDiningExperienceDetailPage(item: CollectionSeedItem): PageInstance
     title: item.title,
     slug: `/erlebnisse/${item.slug}`,
     seo: { title: `${item.title} · Erlebnisse` },
-    sections
+    sections: withWowAfterPageHeader(
+      industryKey,
+      styleKey,
+      `detail-diningExperience-${item.id}`,
+      item.title,
+      sections
+    )
   };
 }

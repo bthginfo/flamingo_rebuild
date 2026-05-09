@@ -8,6 +8,7 @@ import {
   ManifestoSection,
   TestimonialsSection
 } from '@/ui/marketing/showcase-shared';
+import { RevealOnScroll } from '@/ui/marketing/RevealOnScroll';
 
 export const metadata: Metadata = {
   title: 'Preise & Pakete',
@@ -31,8 +32,8 @@ export default function PricingPage() {
 
       <BranchMarqueeSection />
 
-      <section className="section surface" id="pakete">
-        <div className="shell pricing-grid">
+      <RevealOnScroll as="section" className="section surface" id="pakete">
+        <div className="shell pricing-grid" data-stagger-grid>
           {pricingTiers.map((tier) => (
             <article className={`card price-card ${tier.featured ? 'featured' : ''}`} key={tier.name}>
               {tier.badge ? (
@@ -55,18 +56,18 @@ export default function PricingPage() {
             </article>
           ))}
         </div>
-      </section>
+      </RevealOnScroll>
 
-      <section className="section">
+      <RevealOnScroll as="section" className="section">
         <div className="shell">
-          <div className="split-grid" style={{ alignItems: 'end', marginBottom: 32 }}>
+          <div className="split-grid" style={{ alignItems: 'end', marginBottom: 32 }} data-stagger-grid>
             <div>
               <p className="eyebrow">Add-ons</p>
               <h2 className="section-title">Wer mehr braucht, bekommt mehr.</h2>
             </div>
             <p className="hero-copy">Buchbar einzeln oder kombiniert. Später nachrüstbar — ohne dass wir bei Null anfangen.</p>
           </div>
-          <div className="feature-grid">
+          <div className="feature-grid" data-stagger-grid>
             {addOns.map((addon) => (
               <article className="card feature-card" key={addon.title}>
                 <h3>{addon.title}</h3>
@@ -76,7 +77,7 @@ export default function PricingPage() {
             ))}
           </div>
         </div>
-      </section>
+      </RevealOnScroll>
 
       <ManifestoSection />
       <TestimonialsSection />

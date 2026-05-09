@@ -21,11 +21,11 @@ export function validateSiteDocument(document: SiteSeed): string[] {
         errors.push(`Section ${section.sectionKey} is not allowed on page ${page.key}.`);
       }
 
-      if (Array.isArray(section.data.items) && !isInlineRepeaterSection(section.sectionKey)) {
+      if (Array.isArray(section.data.items)) {
         for (const rawId of section.data.items) {
-          const id = String(rawId);
-          if (!collectionIds.has(id)) {
-            errors.push(`Section ${section.sectionKey} on page ${page.key} references missing collection item ${id}.`);
+          if (typeof rawId !== 'string') continue;
+          if (!collectionIds.has(rawId)) {
+            errors.push(`Section ${section.sectionKey} on page ${page.key} references missing collection item ${rawId}.`);
           }
         }
       }
@@ -33,8 +33,4 @@ export function validateSiteDocument(document: SiteSeed): string[] {
   }
 
   return errors;
-}
-
-function isInlineRepeaterSection(sectionKey: string): boolean {
-  return sectionKey === 'global.testimonials' || sectionKey === 'global.faq';
 }

@@ -132,5 +132,58 @@ export const globalSections: readonly SectionDefinition[] = [
       { key: 'email', label: 'E-Mail', type: 'email' },
       { key: 'openingHours', label: 'Öffnungszeiten', type: 'openingHours' }
     ]
+  },
+  {
+    key: 'global.statsBand',
+    label: 'Kennzahlen-Band',
+    industries: 'all',
+    styles: 'all',
+    allowedPageKinds: ['core', 'custom'],
+    repeatable: true,
+    fields: [
+      field.text('eyebrow', 'Eyebrow'),
+      field.splitHeading('headline', 'Überschrift'),
+      field.repeater('items', 'Zahlen', [
+        field.text('value', 'Wert', { required: true }),
+        field.text('label', 'Label', { required: true }),
+        field.text('hint', 'Zusatz')
+      ])
+    ]
+  },
+  {
+    key: 'global.trustLogos',
+    label: 'Partner & Logos',
+    industries: 'all',
+    styles: 'all',
+    allowedPageKinds: ['core', 'custom'],
+    repeatable: true,
+    fields: [
+      field.text('eyebrow', 'Eyebrow'),
+      field.splitHeading('headline', 'Überschrift'),
+      field.repeater('items', 'Logos', [
+        field.text('name', 'Name', { required: true }),
+        field.text('logo', 'Logo-URL', { required: true }),
+        field.text('href', 'Link (optional)')
+      ])
+    ]
+  },
+  {
+    key: 'global.bentoHighlights',
+    label: 'Bento-Highlights',
+    industries: 'all',
+    styles: 'all',
+    allowedPageKinds: ['core', 'custom'],
+    repeatable: true,
+    fields: [
+      field.text('eyebrow', 'Eyebrow'),
+      field.splitHeading('headline', 'Überschrift'),
+      field.repeater('items', 'Kacheln', [
+        field.text('kicker', 'Kicker'),
+        field.text('title', 'Titel', { required: true }),
+        field.textarea('body', 'Text'),
+        field.text('image', 'Bild-URL'),
+        field.text('layoutSpan', 'Breite (1 oder 2)')
+      ])
+    ]
   }
 ];

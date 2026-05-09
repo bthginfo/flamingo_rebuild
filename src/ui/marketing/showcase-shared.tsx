@@ -2,6 +2,8 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { agency } from '@/ui/marketing/data';
 import { branchMarquee, manifestoBlocks, testimonials } from '@/ui/marketing/showcase-content';
+import { MouseGlow } from '@/ui/marketing/MouseGlow';
+import { RevealOnScroll } from '@/ui/marketing/RevealOnScroll';
 
 export function LandingHeroShowcase({
   id = 'top',
@@ -27,6 +29,9 @@ export function LandingHeroShowcase({
   return (
     <section className="fm-landing-hero" id={id}>
       <div className="fm-landing-hero__bg" aria-hidden />
+      <div className="fm-landing-hero__glow">
+        <MouseGlow />
+      </div>
       <img className="fm-landing-hero__mark" src={agency.logoMark} alt="" />
       <div className="shell fm-landing-hero__inner">
         <p className="fm-landing-hero__pulse">
@@ -56,7 +61,7 @@ export function LandingHeroShowcase({
         </div>
       </div>
       <a className="fm-scroll-hint" href={scrollTargetId} aria-label="Weiter scrollen">
-        <span>Scroll</span>
+        <span className="fm-scroll-hint__label">Scroll</span>
         <span className="fm-scroll-line" aria-hidden />
       </a>
     </section>
@@ -88,14 +93,14 @@ export function BranchMarqueeSection({ id = 'mehr' }: { id?: string }) {
 
 export function ManifestoSection() {
   return (
-    <section className="fm-manifesto">
+    <RevealOnScroll as="section" className="fm-manifesto">
       <div className="shell">
         <p className="eyebrow fm-manifesto__eyebrow">Was uns wichtig ist</p>
         <h2 className="fm-manifesto__title">
           <span className="fm-manifesto__muted">Wir bauen keine Templates.</span> Wir bauen <em className="fm-italic-pop">Werkzeuge</em>, mit denen Du
           weiterarbeiten kannst – auch wenn wir nicht da sind.
         </h2>
-        <div className="fm-manifesto__grid">
+        <div className="fm-manifesto__grid" data-stagger-grid>
           {manifestoBlocks.map((b, i) => (
             <article key={b.title}>
               <p className="fm-mono-label">/ {String(i + 1).padStart(2, '0')}</p>
@@ -105,13 +110,13 @@ export function ManifestoSection() {
           ))}
         </div>
       </div>
-    </section>
+    </RevealOnScroll>
   );
 }
 
 export function TestimonialsSection() {
   return (
-    <section className="section surface">
+    <RevealOnScroll as="section" className="section surface fm-testimonials-reveal">
       <div className="shell">
         <p className="eyebrow">Stimmen</p>
         <h2 className="section-title">
@@ -119,7 +124,7 @@ export function TestimonialsSection() {
           <br />
           <em>Kund:innen sagen.</em>
         </h2>
-        <div className="fm-quote-grid">
+        <div className="fm-quote-grid" data-stagger-grid>
           {testimonials.map((t) => (
             <blockquote key={t.name} className="fm-quote">
               <p>“{t.quote}”</p>
@@ -128,13 +133,13 @@ export function TestimonialsSection() {
           ))}
         </div>
       </div>
-    </section>
+    </RevealOnScroll>
   );
 }
 
 export function CtaFooterSection() {
   return (
-    <section className="fm-cta-footer">
+    <RevealOnScroll as="section" className="fm-cta-footer">
       <div className="shell fm-cta-footer__inner">
         <h2 className="section-title" style={{ color: '#fff' }}>
           Bauen wir
@@ -153,6 +158,6 @@ export function CtaFooterSection() {
           </Link>
         </div>
       </div>
-    </section>
+    </RevealOnScroll>
   );
 }

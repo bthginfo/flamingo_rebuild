@@ -6,6 +6,7 @@ const navItems = [
   { href: '/prozess', label: 'Ablauf' },
   { href: '/preise', label: 'Preise' },
   { href: '/ueber-uns', label: 'Über uns' },
+  { href: '/admin-demo/home', label: 'Admin-Demo' },
   { href: `mailto:${agency.email}`, label: 'Kontakt' },
   { href: '/admin', label: 'Admin' }
 ];

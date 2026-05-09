@@ -41,7 +41,16 @@ export function standardServiceCollection(
     ],
     detailPage: {
       pathPattern: `${slugPrefix}/[slug]`,
-      allowedSections: ['global.pageHeader', 'global.textImage', 'global.galleryGrid', 'global.faq', 'global.contactCta'],
+      allowedSections: [
+        'global.pageHeader',
+        'global.textImage',
+        'global.galleryGrid',
+        'global.faq',
+        'global.contactCta',
+        'global.statsBand',
+        'global.trustLogos',
+        'global.bentoHighlights'
+      ],
       defaultSections: ['global.pageHeader', 'global.textImage', 'global.contactCta']
     }
   };

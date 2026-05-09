@@ -11,7 +11,10 @@ const globalAllowed = [
   'global.testimonials',
   'global.faq',
   'global.contactCta',
-  'global.mapContact'
+  'global.mapContact',
+  'global.statsBand',
+  'global.trustLogos',
+  'global.bentoHighlights'
 ] as const;
 
 export const industries: readonly IndustryDefinition[] = [
@@ -153,8 +156,15 @@ export const industries: readonly IndustryDefinition[] = [
         ],
         detailPage: {
           pathPattern: '/kurse/[slug]',
-          allowedSections: ['global.pageHeader', 'global.textImage', 'global.contactCta'],
-          defaultSections: ['global.pageHeader', 'global.contactCta']
+          allowedSections: [
+            'global.pageHeader',
+            'global.textImage',
+            'global.contactCta',
+            'global.statsBand',
+            'global.trustLogos',
+            'global.bentoHighlights'
+          ],
+          defaultSections: ['global.pageHeader', 'global.textImage', 'global.contactCta']
         }
       }
     ]

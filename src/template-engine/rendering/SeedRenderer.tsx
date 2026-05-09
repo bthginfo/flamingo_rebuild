@@ -103,6 +103,12 @@ function SectionRenderer({
       return <RsvpSection section={section} previewBasePath={previewBasePath} />;
     case 'global.contactCta':
       return <ContactCta section={section} previewBasePath={previewBasePath} />;
+    case 'global.statsBand':
+      return <StatsBandSection section={section} styleKey={styleKey} />;
+    case 'global.trustLogos':
+      return <TrustLogosSection section={section} styleKey={styleKey} />;
+    case 'global.bentoHighlights':
+      return <BentoHighlightsSection section={section} styleKey={styleKey} />;
     default:
       return (
         <section className="tenant-section">
@@ -480,6 +486,123 @@ function ContactCta({ section, previewBasePath }: { section: SectionInstance; pr
         </h2>
         <p className="tenant-section-intro">{asString(section.data.subline)}</p>
         <CtaButton value={section.data.cta} previewBasePath={previewBasePath} />
+      </div>
+    </section>
+  );
+}
+
+function arrayItems(value: unknown): Record<string, unknown>[] {
+  return Array.isArray(value) ? value.filter(isRecord) : [];
+}
+
+function StatsBandSection({ section, styleKey }: { section: SectionInstance; styleKey: StyleKey }) {
+  const items = arrayItems(section.data.items);
+  const headline = asSplit(section.data.headline);
+  return (
+    <section className={`tenant-wow-stats tenant-wow-stats--${styleKey}`}>
+      <div className="tenant-wow-stats__glow" aria-hidden />
+      <div className="shell tenant-wow-stats__inner">
+        <div className="tenant-wow-stats__intro">
+          <p className="eyebrow">{asString(section.data.eyebrow)}</p>
+          <h2 className="tenant-wow-stats__title">
+            {headline.plain}
+            {headline.accent ? <em>{headline.accent}</em> : null}
+          </h2>
+        </div>
+        <ul className="tenant-wow-stats__grid">
+          {items.map((row, i) => (
+            <li key={i} className="tenant-wow-stats__card">
+              <span className="tenant-wow-stats__value">{asString(row.value)}</span>
+              <span className="tenant-wow-stats__label">{asString(row.label)}</span>
+              {asString(row.hint) ? <span className="tenant-wow-stats__hint">{asString(row.hint)}</span> : null}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
+function TrustLogosSection({ section, styleKey }: { section: SectionInstance; styleKey: StyleKey }) {
+  const items = arrayItems(section.data.items);
+  const headline = asSplit(section.data.headline);
+  return (
+    <section className={`tenant-wow-trust tenant-wow-trust--${styleKey}`}>
+      <div className="shell">
+        <div className="tenant-wow-trust__head">
+          <p className="eyebrow">{asString(section.data.eyebrow)}</p>
+          <h2 className="tenant-wow-trust__title">
+            {headline.plain}
+            {headline.accent ? <em>{headline.accent}</em> : null}
+          </h2>
+        </div>
+        <div className="tenant-wow-trust__row">
+          {items.map((row, i) => {
+            const logo = asString(row.logo);
+            const name = asString(row.name);
+            const href = asString(row.href);
+            const inner = (
+              <>
+                {logo ? (
+                  <span className="tenant-wow-trust__logo-wrap">
+                    <img src={logo} alt="" loading="lazy" />
+                  </span>
+                ) : (
+                  <span className="tenant-wow-trust__mono">{name.slice(0, 2).toUpperCase()}</span>
+                )}
+                <span className="tenant-wow-trust__name">{name}</span>
+              </>
+            );
+            return href ? (
+              <a key={i} className="tenant-wow-trust__cell" href={href} target="_blank" rel="noreferrer">
+                {inner}
+              </a>
+            ) : (
+              <div key={i} className="tenant-wow-trust__cell">
+                {inner}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function BentoHighlightsSection({ section, styleKey }: { section: SectionInstance; styleKey: StyleKey }) {
+  const items = arrayItems(section.data.items);
+  const headline = asSplit(section.data.headline);
+  return (
+    <section className={`tenant-wow-bento tenant-wow-bento--${styleKey}`}>
+      <div className="shell">
+        <div className="tenant-wow-bento__head">
+          <p className="eyebrow">{asString(section.data.eyebrow)}</p>
+          <h2 className="tenant-wow-bento__title">
+            {headline.plain}
+            {headline.accent ? <em>{headline.accent}</em> : null}
+          </h2>
+        </div>
+        <div className="tenant-wow-bento__grid">
+          {items.map((row, i) => {
+            const span = asString(row.layoutSpan) === '2' ? 'tenant-wow-bento__tile--wide' : '';
+            const img = asString(row.image);
+            return (
+              <article key={i} className={`tenant-wow-bento__tile ${span}`}>
+                {img ? (
+                  <div className="tenant-wow-bento__visual">
+                    <img src={img} alt="" loading="lazy" />
+                    <div className="tenant-wow-bento__shade" />
+                  </div>
+                ) : null}
+                <div className="tenant-wow-bento__body">
+                  {asString(row.kicker) ? <p className="tenant-wow-bento__kicker">{asString(row.kicker)}</p> : null}
+                  <h3>{asString(row.title)}</h3>
+                  {asString(row.body) ? <p>{asString(row.body)}</p> : null}
+                </div>
+              </article>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

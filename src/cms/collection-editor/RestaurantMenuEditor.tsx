@@ -77,7 +77,7 @@ export function RestaurantMenuEditor({
       }
 
       setSeed(loadDemoContent(initialSeed, 'draft'));
-      setDraftExists(hasDraft(initialSeed.styleKey));
+      setDraftExists(hasDraft(initialSeed));
       setStatus('clean');
     }
 
@@ -195,14 +195,14 @@ export function RestaurantMenuEditor({
       return;
     }
 
-    discardDraft(seed.styleKey);
+    discardDraft(seed);
     setSeed(loadDemoContent(initialSeed, 'published'));
     setDraftExists(false);
     setStatus('clean');
   }
 
   function handleReset() {
-    resetPublished(initialSeed.styleKey);
+    resetPublished(initialSeed);
     setSeed(cloneSeed(initialSeed));
     setDraftExists(false);
     setStatus('clean');

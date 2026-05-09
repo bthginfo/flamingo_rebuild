@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "node ./scripts/migrate-if-configured.mjs && next build",
-    "lint": "next lint",
+    "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "validate:registry": "tsx scripts/validate-registry.ts",
     "db:generate": "drizzle-kit generate",
@@ -29,6 +29,7 @@
     "zod": "^3.24.0"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.5",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^22.10.0",
     "@types/react": "^19.0.0",

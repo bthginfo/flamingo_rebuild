@@ -1,8 +1,9 @@
 import { getIndustry, getStyle } from '../registry';
 import type { IndustryKey, StyleKey } from '../model';
 import { getDemoSeed } from '../seeds';
+import { Suspense } from 'react';
 import { DemoPreviewClient } from './DemoPreviewClient';
-import { PreviewChrome } from './PreviewChrome';
+import { PreviewFab } from './PreviewFab';
 
 export function TemplatePreview({
   industryKey,
@@ -33,7 +34,9 @@ export function TemplatePreview({
 
   return (
     <>
-      <PreviewChrome industryKey={industryKey} styleKey={styleKey} pathSegments={pathSegments} />
+      <Suspense fallback={null}>
+        <PreviewFab industryKey={industryKey} styleKey={styleKey} pathSegments={pathSegments} />
+      </Suspense>
       <main>
         <section className="section">
           <div className="shell">
@@ -46,8 +49,8 @@ export function TemplatePreview({
               <a className="button" href="#sections">
                 Abschnitte ansehen
               </a>
-              <a className="button secondary" href="/admin">
-                Admin Demo
+              <a className="button secondary" href="/admin-demo/home?industry=restaurant&style=classic">
+                Admin-Demo
               </a>
             </div>
           </div>

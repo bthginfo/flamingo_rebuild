@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { agency } from '@/ui/marketing/data';
+import { RevealOnScroll } from '@/ui/marketing/RevealOnScroll';
 import {
   BranchMarqueeSection,
   CtaFooterSection,
@@ -45,7 +46,7 @@ export default function TemplatesPage() {
           {(Object.keys(CORE_TEMPLATE_META) as CoreTemplateKey[]).map((k, i) => {
             const m = CORE_TEMPLATE_META[k];
             return (
-              <div key={k} className="fm-tpl-block">
+              <RevealOnScroll key={k} className="fm-tpl-block">
                 <div className="fm-tpl-block__head">
                   <div>
                     <p className="fm-tpl-kicker" style={{ color: m.accent }}>
@@ -60,7 +61,7 @@ export default function TemplatesPage() {
                   </div>
                   <p className="fm-mono-label fm-tpl-meta">3 Stile · Live ansehen</p>
                 </div>
-                <div className="fm-style-grid">
+                <div className="fm-style-grid" data-stagger-grid>
                   {STYLE_STRIP.map((s) => (
                     <Link key={s.id} href={previewHref(k, s.id)} className="fm-style-card">
                       <div className="fm-style-card__visual">
@@ -81,11 +82,11 @@ export default function TemplatesPage() {
                     </Link>
                   ))}
                 </div>
-              </div>
+              </RevealOnScroll>
             );
           })}
 
-          <div className="fm-tpl-divider">
+          <RevealOnScroll className="fm-tpl-divider">
             <p className="eyebrow">Weitere Branchen</p>
             <h2 className="section-title">
               Auch dafür haben wir
@@ -96,12 +97,12 @@ export default function TemplatesPage() {
               Spezialisierte Konzepte im gleichen Handschrift-Stil: klar, warm, mit Liebe zum Detail. Wenn Deine Branche
               hier noch fehlt, sprich uns an — wir erweitern das Portfolio laufend.
             </p>
-          </div>
+          </RevealOnScroll>
 
           {(Object.keys(EXTRA_TEMPLATE_META) as ExtraTemplateKey[]).map((k, i) => {
             const m = EXTRA_TEMPLATE_META[k];
             return (
-              <div key={k} className="fm-tpl-block">
+              <RevealOnScroll key={k} className="fm-tpl-block">
                 <div className="fm-tpl-block__head">
                   <div>
                     <p className="fm-tpl-kicker" style={{ color: m.accent }}>
@@ -135,7 +136,7 @@ export default function TemplatesPage() {
                     </Link>
                   </div>
                 </div>
-              </div>
+              </RevealOnScroll>
             );
           })}
         </div>

@@ -8,6 +8,7 @@ import {
   ManifestoSection,
   TestimonialsSection
 } from '@/ui/marketing/showcase-shared';
+import { RevealOnScroll } from '@/ui/marketing/RevealOnScroll';
 
 export const metadata: Metadata = {
   title: 'Ablauf',
@@ -31,12 +32,12 @@ export default function ProcessPage() {
 
       <BranchMarqueeSection />
 
-      <section className="section surface" id="ablauf">
-        <div className="shell split-grid">
+      <RevealOnScroll as="section" className="section surface" id="ablauf">
+        <div className="shell split-grid" data-stagger-grid>
           <div className="image-panel">
             <img src={imageAssets.process} alt="Team plant Website-Projekt" />
           </div>
-          <div className="timeline">
+          <div className="timeline" data-stagger-grid>
             {processSteps.map((step) => (
               <article className="card timeline-card" key={step.title}>
                 <h2>{step.title}</h2>
@@ -45,9 +46,9 @@ export default function ProcessPage() {
             ))}
           </div>
         </div>
-      </section>
+      </RevealOnScroll>
 
-      <section className="section fm-device-strip">
+      <RevealOnScroll as="section" className="section fm-device-strip">
         <div className="shell">
           <p className="eyebrow">Nächster Schritt</p>
           <h2 className="section-title">
@@ -59,7 +60,7 @@ export default function ProcessPage() {
             Schreib uns mit ein paar Sätzen zu Deinem Betrieb — oder stöbert in Ruhe in den Templates und der
             Live-Vorschau. Wir melden uns persönlich.
           </p>
-          <div className="fm-device-grid">
+          <div className="fm-device-grid" data-stagger-grid>
             <Link href="/templates#galerie" className="fm-device-card">
               <img src={imageAssets.heroDevice} alt="" />
               <div>
@@ -83,7 +84,7 @@ export default function ProcessPage() {
             </Link>
           </div>
         </div>
-      </section>
+      </RevealOnScroll>
 
       <ManifestoSection />
       <TestimonialsSection />

@@ -7,6 +7,7 @@ import {
   ManifestoSection,
   TestimonialsSection
 } from '@/ui/marketing/showcase-shared';
+import { RevealOnScroll } from '@/ui/marketing/RevealOnScroll';
 
 export const metadata: Metadata = {
   title: 'Über uns',
@@ -30,8 +31,8 @@ export default function AboutPage() {
 
       <BranchMarqueeSection />
 
-      <section className="section surface">
-        <div className="shell split-grid">
+      <RevealOnScroll as="section" className="section surface">
+        <div className="shell split-grid" data-stagger-grid>
           <div>
             <p className="eyebrow">Haltung</p>
             <h2 className="section-title">Gute Websites sind konkret.</h2>
@@ -44,15 +45,15 @@ export default function AboutPage() {
             <img src={imageAssets.about} alt="FlamingoMedia Team arbeitet gemeinsam" />
           </div>
         </div>
-      </section>
+      </RevealOnScroll>
 
-      <section className="section" id="team">
+      <RevealOnScroll as="section" className="section" id="team">
         <div className="shell">
           <p className="eyebrow">Team</p>
           <h2 className="section-title" style={{ marginBottom: 34 }}>
             Die Menschen dahinter.
           </h2>
-          <div className="team-grid">
+          <div className="team-grid" data-stagger-grid>
             {team.map((member) => (
               <article className="card team-card" key={member.name}>
                 <img src={member.image} alt={member.name} />
@@ -63,7 +64,7 @@ export default function AboutPage() {
             ))}
           </div>
         </div>
-      </section>
+      </RevealOnScroll>
 
       <ManifestoSection />
       <TestimonialsSection />

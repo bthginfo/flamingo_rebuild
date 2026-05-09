@@ -1,12 +1,11 @@
 'use client';
 
-import type { StyleKey } from '@/template-engine/model';
 import type { SiteSeed } from '@/template-engine/seeds/model';
 
 export type DemoContentMode = 'published' | 'draft';
 
-function storageBase(styleKey: StyleKey): string {
-  return `flamingo-rebuild.demo.restaurant.${styleKey}`;
+function storageBase(seed: SiteSeed): string {
+  return `flamingo-rebuild.demo.${seed.industryKey}.${seed.styleKey}`;
 }
 
 export function cloneSeed(seed: SiteSeed): SiteSeed {
@@ -15,7 +14,7 @@ export function cloneSeed(seed: SiteSeed): SiteSeed {
 
 export function loadDemoContent(seed: SiteSeed, mode: DemoContentMode): SiteSeed {
   if (typeof window === 'undefined') return seed;
-  const baseKey = storageBase(seed.styleKey);
+  const baseKey = storageBase(seed);
   const draft = readSeed(`${baseKey}.draft`);
   const published = readSeed(`${baseKey}.published`);
   if (mode === 'draft') return draft ?? published ?? seed;
@@ -24,32 +23,32 @@ export function loadDemoContent(seed: SiteSeed, mode: DemoContentMode): SiteSeed
 
 export function saveDraft(seed: SiteSeed) {
   if (typeof window === 'undefined') return;
-  const baseKey = storageBase(seed.styleKey);
+  const baseKey = storageBase(seed);
   localStorage.setItem(`${baseKey}.draft`, JSON.stringify(seed));
 }
 
 export function publishDraft(seed: SiteSeed) {
   if (typeof window === 'undefined') return;
-  const baseKey = storageBase(seed.styleKey);
+  const baseKey = storageBase(seed);
   localStorage.setItem(`${baseKey}.published`, JSON.stringify(seed));
   localStorage.removeItem(`${baseKey}.draft`);
 }
 
-export function discardDraft(styleKey: StyleKey) {
+export function discardDraft(seed: SiteSeed) {
   if (typeof window === 'undefined') return;
-  localStorage.removeItem(`${storageBase(styleKey)}.draft`);
+  localStorage.removeItem(`${storageBase(seed)}.draft`);
 }
 
-export function resetPublished(styleKey: StyleKey) {
+export function resetPublished(seed: SiteSeed) {
   if (typeof window === 'undefined') return;
-  const base = storageBase(styleKey);
+  const base = storageBase(seed);
   localStorage.removeItem(`${base}.published`);
   localStorage.removeItem(`${base}.draft`);
 }
 
-export function hasDraft(styleKey: StyleKey): boolean {
+export function hasDraft(seed: SiteSeed): boolean {
   if (typeof window === 'undefined') return false;
-  return localStorage.getItem(`${storageBase(styleKey)}.draft`) !== null;
+  return localStorage.getItem(`${storageBase(seed)}.draft`) !== null;
 }
 
 function readSeed(key: string): SiteSeed | undefined {

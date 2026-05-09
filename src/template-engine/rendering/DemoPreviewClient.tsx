@@ -1,13 +1,13 @@
 'use client';
 
-import { useMemo, useEffect, useState } from 'react';
+import { Suspense, useMemo, useEffect, useState } from 'react';
 import type { IndustryKey, StyleKey } from '../model';
 import type { SiteSeed } from '../seeds/model';
 import { loadDemoContent } from '@/cms/demo-store';
 import { loadAdminDocument } from '@/cms/admin-content-api';
 import { SeedPageRenderer } from './SeedRenderer';
 import { resolvePreviewPage } from './preview-route';
-import { PreviewChrome } from './PreviewChrome';
+import { PreviewFab } from './PreviewFab';
 
 export function DemoPreviewClient({
   industryKey,
@@ -59,7 +59,9 @@ export function DemoPreviewClient({
 
   return (
     <>
-      <PreviewChrome industryKey={industryKey} styleKey={styleKey} pathSegments={pathSegments} />
+      <Suspense fallback={null}>
+        <PreviewFab industryKey={industryKey} styleKey={styleKey} pathSegments={pathSegments} />
+      </Suspense>
       <SeedPageRenderer seed={seed} page={page} styleKey={styleKey} previewBasePath={previewBasePath} />
     </>
   );
