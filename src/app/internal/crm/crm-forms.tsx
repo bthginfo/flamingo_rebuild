@@ -281,7 +281,11 @@ function ProvisionTenantDialog(props: {
                 />
               </label>
               <label>
-                Content-JSON (optional, Perplexity-Export)
+                Content-JSON (optional, KI-Export)
+                <span style={{ display: 'block', fontSize: 13, color: 'var(--muted)', fontWeight: 400, marginBottom: 6 }}>
+                  Vorlage: <code>docs/rebuild-content-template.json</code> · Prompt: <code>docs/rebuild-ki-prompt.md</code> — wird mit dem
+                  Demo-Seed zusammengeführt (sicher: Name, Brand, Kontakt, Navigation).
+                </span>
                 <input
                   type="file"
                   accept="application/json,.json"

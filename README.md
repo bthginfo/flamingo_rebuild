@@ -93,6 +93,8 @@ Der **Kunden-Admin** (`/admin`, `/admin/pages`, …) erfordert wie bisher eine g
 
 Mit aktivierter Datenbank werden Prospects verwaltet und Tenants provisioniert: Insert in `flamingo_rebuild.tenants` mit bcrypt-Hash, **veröffentlichte** Site-Version aus Demo-Seed (alle **neun** Branchen × drei Stile), optional Merge mit **Content-JSON**, danach Draft-Klon für die Bearbeitung. Leeres Admin-Passwort im Dialog erzeugt ein **automatisches Passwort** (wird nach dem Speichern in der Erfolgsmeldung angezeigt — bitte sicher notieren).
 
+**KI-gefüllte Inhalte:** Vorlage `docs/rebuild-content-template.json`, System-/Arbeitsprompt `docs/rebuild-ki-prompt.md` — JSON im Provisionierungs-Dialog einfügen oder als Datei wählen. Schlüssel mit Unterstrich (`_…`) werden beim Import automatisch entfernt.
+
 Showcase: [http://localhost:3000/templates](http://localhost:3000/templates) bei `npm run dev`.
 
 ### Admin: wer loggt sich wo ein?

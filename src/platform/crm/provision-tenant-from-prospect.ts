@@ -76,6 +76,22 @@ function cloneSeed(seed: SiteSeed): SiteSeed {
   return JSON.parse(JSON.stringify(seed)) as SiteSeed;
 }
 
+function stripUnderscoreKeys(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map(stripUnderscoreKeys);
+  }
+  if (value && typeof value === 'object') {
+    const o = value as Record<string, unknown>;
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(o)) {
+      if (k.startsWith('_')) continue;
+      out[k] = stripUnderscoreKeys(v);
+    }
+    return out;
+  }
+  return value;
+}
+
 function mergeSiteSeedFromJson(
   base: SiteSeed,
   jsonText: string
@@ -86,6 +102,7 @@ function mergeSiteSeedFromJson(
   } catch {
     return { ok: false, error: 'Content-JSON ist kein gültiges JSON.' };
   }
+  patch = stripUnderscoreKeys(patch);
   if (!patch || typeof patch !== 'object' || Array.isArray(patch)) {
     return { ok: false, error: 'Content-JSON muss ein Objekt sein.' };
   }

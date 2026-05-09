@@ -1,0 +1,33 @@
+{
+  "_readme": "Diese Datei ist eine Vorlage fuer KI + Mensch. Alle Schluessel mit Unterstrich (_) werden beim Import automatisch entfernt — die KI darf sie also als Hilfe behalten, bis zur finalen Ausgabe.",
+  "_workflow": "1) Branche/Stil im CRM-Dialog waehlen (legt Demo-Seed fest). 2) Nur die Felder ausfuellen, die ihr ueberschreiben wollt. 3) JSON beim Tenant anlegen einfuegen oder als Datei waehlen. Sicher: tenantName + global.brand + global.contact (+ navigation). riskant: komplette pages/collections ersetzen — nur wenn die Struktur exakt zur Registry passt.",
+
+  "tenantName": "",
+
+  "global": {
+    "brand": {
+      "name": "",
+      "tagline": ""
+    },
+    "contact": {
+      "phone": "",
+      "email": "",
+      "address": ""
+    },
+    "navigation": [
+      { "label": "Start", "href": "/" },
+      { "label": "Kontakt", "href": "/kontakt" }
+    ]
+  },
+
+  "_optional_top_level": "Die folgenden Schluessel sind nur fuer Fortgeschrittene. Fehler fuehren zu Validierungsfehlern beim Provisionieren.",
+
+  "industryKey": "",
+  "_industryKey_options": ["restaurant", "hotel", "tourism", "salon", "tradesman", "consulting", "medical", "fitness", "wedding"],
+
+  "styleKey": "",
+  "_styleKey_options": ["classic", "modern", "bold"],
+
+  "pages": null,
+  "collections": null
+}
