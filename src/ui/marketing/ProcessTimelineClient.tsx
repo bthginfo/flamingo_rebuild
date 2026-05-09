@@ -1,14 +1,44 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ProcessPhase } from '@/ui/marketing/data';
 
 export function ProcessTimelineClient({ steps }: { steps: readonly ProcessPhase[] }) {
   const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
   const timelineRef = useRef<HTMLDivElement>(null);
+  const pillsRef = useRef<HTMLDivElement>(null);
+  const pillElsRef = useRef<(HTMLButtonElement | null)[]>([]);
   const [progress, setProgress] = useState(0);
   const [activeIdx, setActiveIdx] = useState(0);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const updateScrollHints = useCallback(() => {
+    const el = pillsRef.current;
+    if (!el) return;
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    setCanScrollLeft(scrollLeft > 4);
+    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 4);
+  }, []);
+
+  useEffect(() => {
+    const el = pillsRef.current;
+    if (!el) return;
+    updateScrollHints();
+    el.addEventListener('scroll', updateScrollHints, { passive: true });
+    window.addEventListener('resize', updateScrollHints);
+    return () => {
+      el.removeEventListener('scroll', updateScrollHints);
+      window.removeEventListener('resize', updateScrollHints);
+    };
+  }, [updateScrollHints]);
+
+  useEffect(() => {
+    const pill = pillElsRef.current[activeIdx];
+    pill?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  }, [activeIdx]);
 
   useEffect(() => {
     let raf = 0;
@@ -60,6 +90,12 @@ export function ProcessTimelineClient({ steps }: { steps: readonly ProcessPhase[
     window.scrollTo({ top, behavior: 'smooth' });
   };
 
+  const scrollPills = (dir: -1 | 1) => {
+    const el = pillsRef.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * Math.min(220, el.clientWidth * 0.65), behavior: 'smooth' });
+  };
+
   return (
     <>
       <div className="fm-process-sticky" aria-label="Aktueller Schritt">
@@ -68,24 +104,53 @@ export function ProcessTimelineClient({ steps }: { steps: readonly ProcessPhase[
             <span className="fm-process-sticky__meta">
               Schritt {String(activeIdx + 1).padStart(2, '0')}/{String(steps.length).padStart(2, '0')}
             </span>
-            <div className="fm-process-sticky__pills">
-              {steps.map((s, i) => {
-                const reached = i <= activeIdx;
-                return (
-                  <button
-                    key={s.title}
-                    type="button"
-                    onClick={() => jumpTo(i)}
-                    title={`${s.tag} – ${s.title}`}
-                    className={`fm-process-pill ${i === activeIdx ? 'is-active' : ''} ${reached ? 'is-reached' : ''}`}
-                  >
-                    <span className="fm-process-pill__num">{String(i + 1).padStart(2, '0')}</span>
-                    <span className="fm-process-pill__full">{s.title}</span>
-                    <span className="fm-process-pill__short">{s.tag}</span>
-                  </button>
-                );
-              })}
+
+            <div className="fm-process-sticky__rail">
+              <button
+                type="button"
+                className="fm-process-sticky__chev"
+                aria-label="Vorherige Schritte"
+                disabled={!canScrollLeft}
+                onClick={() => scrollPills(-1)}
+              >
+                <ChevronLeft size={18} strokeWidth={2} aria-hidden />
+              </button>
+
+              <div className="fm-process-sticky__pills-clip">
+                <div ref={pillsRef} className="fm-process-sticky__pills">
+                  {steps.map((s, i) => {
+                    const reached = i <= activeIdx;
+                    return (
+                      <button
+                        key={s.title}
+                        ref={(el) => {
+                          pillElsRef.current[i] = el;
+                        }}
+                        type="button"
+                        onClick={() => jumpTo(i)}
+                        title={`${s.tag} – ${s.title}`}
+                        className={`fm-process-pill ${i === activeIdx ? 'is-active' : ''} ${reached ? 'is-reached' : ''}`}
+                      >
+                        <span className="fm-process-pill__num">{String(i + 1).padStart(2, '0')}</span>
+                        <span className="fm-process-pill__full">{s.title}</span>
+                        <span className="fm-process-pill__short">{s.tag}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <button
+                type="button"
+                className="fm-process-sticky__chev"
+                aria-label="Weitere Schritte"
+                disabled={!canScrollRight}
+                onClick={() => scrollPills(1)}
+              >
+                <ChevronRight size={18} strokeWidth={2} aria-hidden />
+              </button>
             </div>
+
             <div className="fm-process-sticky__bar-wrap" aria-hidden>
               <div className="fm-process-sticky__bar">
                 <div className="fm-process-sticky__bar-fill" style={{ width: `${Math.round(progress * 100)}%` }} />
@@ -114,9 +179,7 @@ export function ProcessTimelineClient({ steps }: { steps: readonly ProcessPhase[
                 return (
                   <li key={s.title} className="fm-process-step">
                     <div className="fm-process-node-wrap" aria-hidden>
-                      <span
-                        className={`fm-process-node ${reached ? 'is-on' : ''} ${isActive ? 'is-pulse' : ''}`}
-                      >
+                      <span className={`fm-process-node ${reached ? 'is-on' : ''} ${isActive ? 'is-pulse' : ''}`}>
                         {String(i + 1).padStart(2, '0')}
                       </span>
                     </div>
@@ -133,9 +196,7 @@ export function ProcessTimelineClient({ steps }: { steps: readonly ProcessPhase[
                             {icon}
                           </span>
                           <div className={left ? 'fm-process-card__titles is-left' : 'fm-process-card__titles'}>
-                            <p className="fm-process-card__kicker">
-                              Schritt {String(i + 1).padStart(2, '0')}
-                            </p>
+                            <p className="fm-process-card__kicker">Schritt {String(i + 1).padStart(2, '0')}</p>
                             <p className="fm-process-card__phase">{s.tag}</p>
                           </div>
                         </div>

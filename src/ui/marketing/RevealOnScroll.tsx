@@ -1,19 +1,20 @@
 'use client';
 
-import { createElement, useEffect, useLayoutEffect, useRef, type ReactNode } from 'react';
+import { createElement, useEffect, useLayoutEffect, useRef, type CSSProperties, type ReactNode } from 'react';
 
 type RevealOnScrollProps = {
   children: ReactNode;
   className?: string;
   as?: 'div' | 'section';
   id?: string;
+  style?: CSSProperties;
 };
 
 /**
  * Adds `is-revealed` when the block enters the viewport (once).
  * Uses `fm-reveal--armed` after mount so SSR shows content; motion only after arm + intersect.
  */
-export function RevealOnScroll({ children, className = '', as: tag = 'div', id }: RevealOnScrollProps) {
+export function RevealOnScroll({ children, className = '', as: tag = 'div', id, style }: RevealOnScrollProps) {
   const ref = useRef<HTMLElement | null>(null);
 
   useLayoutEffect(() => {
@@ -47,5 +48,5 @@ export function RevealOnScroll({ children, className = '', as: tag = 'div', id }
 
   const merged = ['fm-reveal', className].filter(Boolean).join(' ');
 
-  return createElement(tag, { ref, className: merged, ...(id ? { id } : {}) }, children);
+  return createElement(tag, { ref, className: merged, style, ...(id ? { id } : {}) }, children);
 }

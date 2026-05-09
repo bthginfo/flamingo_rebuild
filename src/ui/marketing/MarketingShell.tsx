@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { agency, marqueeItems } from './data';
 import { CookieNotice } from '@/ui/marketing/CookieNotice';
+import { SHOWCASE_INDUSTRY_ORDER, SHOWCASE_TEMPLATE_META, previewHref } from '@/ui/marketing/template-showcase-data';
 
 const navItems = [
   { href: '/templates', label: 'Templates' },
@@ -20,7 +21,10 @@ export function MarketingShell({ children }: { children: React.ReactNode }) {
       <div className="top-marquee" aria-label="Flamingo Hinweise">
         <div className="marquee-track">
           {[...marqueeItems, ...marqueeItems].map((item, index) => (
-            <span key={`${item}-${index}`}>{item}<b>✦</b></span>
+            <span key={`${item}-${index}`}>
+              {item}
+              <b>✦</b>
+            </span>
           ))}
         </div>
       </div>
@@ -31,10 +35,10 @@ export function MarketingShell({ children }: { children: React.ReactNode }) {
           </Link>
           <nav className="main-nav" aria-label="Hauptnavigation">
             {navItems.map((item) => (
-                <Link href={item.href} key={item.href}>
-                  {item.label}
-                </Link>
-              ))}
+              <Link href={item.href} key={item.href}>
+                {item.label}
+              </Link>
+            ))}
           </nav>
           <Link href="/kontakt" className="nav-cta">
             Beratung →
@@ -43,6 +47,16 @@ export function MarketingShell({ children }: { children: React.ReactNode }) {
       </header>
       {children}
       <footer className="marketing-footer">
+        <div className="marketing-footer__band" aria-hidden />
+        <div className="shell marketing-footer__cta">
+          <div>
+            <p className="marketing-footer__cta-kicker">Projekt starten</p>
+            <p className="marketing-footer__cta-title">Kurz Bescheid sagen — wir melden uns mit einer ehrlichen Einschätzung.</p>
+          </div>
+          <Link href="/kontakt" className="button">
+            Beratung anfragen
+          </Link>
+        </div>
         <div className="shell marketing-footer__top">
           <div className="marketing-footer__brand">
             <Image
@@ -72,9 +86,11 @@ export function MarketingShell({ children }: { children: React.ReactNode }) {
           </div>
           <div>
             <p className="footer-title">Live ansehen</p>
-            <Link href="/preview/restaurant/classic">Restaurant</Link>
-            <Link href="/preview/salon/classic">Salon</Link>
-            <Link href="/preview/tradesman/classic">Handwerk</Link>
+            {SHOWCASE_INDUSTRY_ORDER.map((key) => (
+              <Link key={key} href={previewHref(key, 'classic')}>
+                {SHOWCASE_TEMPLATE_META[key].label}
+              </Link>
+            ))}
           </div>
           <div>
             <p className="footer-title">Rechtliches</p>
@@ -89,7 +105,9 @@ export function MarketingShell({ children }: { children: React.ReactNode }) {
           </div>
         </div>
         <div className="shell marketing-footer__bottom">
-          <span>© {new Date().getFullYear()} {agency.name}. Alle Rechte vorbehalten.</span>
+          <span>
+            © {new Date().getFullYear()} {agency.name}. Alle Rechte vorbehalten.
+          </span>
           <span className="marketing-footer__mono">Made with care · Innsbruck</span>
         </div>
       </footer>

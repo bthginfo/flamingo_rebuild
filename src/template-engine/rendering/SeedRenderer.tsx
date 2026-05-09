@@ -36,8 +36,8 @@ export function SeedPageRenderer({
     accentHex && accentHex.length > 0 ? ({ ['--tenant-accent']: accentHex } as CSSProperties) : undefined;
 
   return (
-    <div className="tenant-site-wrap">
-      <main className={`tenant-preview tenant-preview--${styleKey}`} style={accentStyle}>
+    <div className="tenant-site-wrap" data-industry={seed.industryKey} data-style={styleKey} style={accentStyle}>
+      <main className={`tenant-preview tenant-preview--${styleKey}`}>
         <PreviewNav seed={seed} previewBasePath={previewBasePath} />
         {sortedSections.map((section) => (
           <SectionRenderer
@@ -61,7 +61,8 @@ function PreviewFooter({ seed, previewBasePath }: { seed: SiteSeed; previewBaseP
   const privacyHref = integ?.privacyHref ?? '/datenschutz';
   const year = new Date().getFullYear();
   return (
-    <footer className="tenant-footer">
+    <footer className="tenant-footer tenant-footer--premium">
+      <div className="tenant-footer__glow" aria-hidden />
       <div className="shell tenant-footer__inner">
         <div className="tenant-footer__brand">
           <strong>{seed.global.brand.name}</strong>
@@ -74,9 +75,11 @@ function PreviewFooter({ seed, previewBasePath }: { seed: SiteSeed; previewBaseP
             </Link>
           ))}
         </nav>
-        <div className="tenant-footer__meta">
+        <div className="tenant-footer__legal">
           <Link href={`${previewBasePath}${imprintHref}`}>Impressum</Link>
-          <span aria-hidden>·</span>
+          <span aria-hidden className="tenant-footer__dot">
+            ·
+          </span>
           <Link href={`${previewBasePath}${privacyHref}`}>Datenschutz</Link>
           <span className="tenant-footer__copy">© {year}</span>
         </div>

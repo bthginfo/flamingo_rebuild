@@ -122,14 +122,14 @@ export default function MarketingHomePage() {
             <div>
               <p className="eyebrow">Templates</p>
               <h2 className="section-title">
-                Sechs Branchen.
+                Neun Branchen.
                 <br />
-                <em>Endlos viele Welten.</em>
+                <em>Drei Stile pro Template.</em>
               </h2>
             </div>
             <p className="hero-copy" style={{ margin: 0 }}>
-              Drei Templates sind sofort live klickbar, drei weitere Branchen zeigen, wie sich der Studio-Stil anpassen
-              lässt. Mehr Branchen jederzeit auf Anfrage.
+              Von Restaurant bis Wedding: jede Branche mit Classic, Modern und Bold — live im Browser. Details und
+              Modul-Übersicht auf der Templates-Seite.
             </p>
           </div>
           <div className="fm-portrait-grid" data-stagger-grid>
