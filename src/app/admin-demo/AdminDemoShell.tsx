@@ -16,12 +16,18 @@ import { useMemo } from 'react';
 import { INDUSTRY_KEYS, STYLE_KEYS, type IndustryKey, type StyleKey } from '@/template-engine/model';
 import { getIndustry } from '@/template-engine/registry';
 
+const STYLE_LABELS: Record<StyleKey, string> = {
+  classic: 'Klassisch',
+  modern: 'Modern',
+  bold: 'Bold'
+};
+
 const GLOBAL_NAV = [
-  { href: '/admin/navigation', label: 'Navigation & Footer', icon: Link2, demo: 'login' as const },
-  { href: '/admin/seo', label: 'SEO & Sichtbarkeit', icon: Search, demo: 'login' as const },
-  { href: '/admin/integrations', label: 'SMTP & Skripte', icon: Code2, demo: 'login' as const },
-  { href: '/admin/media', label: 'Medien', icon: ImageIcon, demo: 'login' as const },
-  { href: '/admin/collections', label: 'Inhalte', icon: Boxes, demo: 'login' as const }
+  { href: '/admin/navigation', label: 'Navigation & Footer', icon: Link2, demoHref: null as string | null },
+  { href: '/admin/seo', label: 'SEO & Sichtbarkeit', icon: Search, demoHref: '/admin-demo/seo' },
+  { href: '/admin/integrations', label: 'SMTP & Skripte', icon: Code2, demoHref: null },
+  { href: '/admin/media', label: 'Medien', icon: ImageIcon, demoHref: null },
+  { href: '/admin/collections', label: 'Inhalte', icon: Boxes, demoHref: null }
 ] as const;
 
 function parseIndustry(v: string | null): IndustryKey {
@@ -91,16 +97,55 @@ export function AdminDemoShell({ children }: { children: ReactNode }) {
                 <LayoutDashboard size={18} strokeWidth={1.75} aria-hidden />
                 <span>Übersicht (Demo)</span>
               </Link>
-              {GLOBAL_NAV.map(({ href, label, icon: Icon }) => (
-                <Link key={href} href={`/admin/login?next=${encodeURIComponent(href)}`} title="Nur im geschützten Admin verfügbar">
+              {GLOBAL_NAV.map(({ href, label, icon: Icon, demoHref }) => (
+                <Link
+                  key={href}
+                  href={demoHref ? `${demoHref}?${qs}` : `/admin/login?next=${encodeURIComponent(href)}`}
+                  title={demoHref ? undefined : 'Nur im geschützten Admin verfügbar'}
+                  className={demoHref && pathname === demoHref ? 'is-active' : undefined}
+                >
                   <Icon size={18} strokeWidth={1.75} aria-hidden />
                   <span>{label}</span>
                 </Link>
               ))}
             </nav>
             <p className="admin-demo-sidebar-note">
-              Seiten-Editor unten: Änderungen nur in <strong>localStorage</strong>. Globale Bereiche → echter Admin.
+              Seiten-Editor &amp; SEO-Demo: Entwurf nur in <strong>localStorage</strong>. Andere globale Bereiche → echter
+              Admin.
             </p>
+          </div>
+
+          <div className="admin-app__sidebar-card">
+            <p className="admin-app__sidebar-heading">Demo · Branche &amp; Stil</p>
+            <p className="admin-demo-sidebar-meta">Branche</p>
+            <div className="admin-demo-sidebar-pills" aria-label="Branche wählen">
+              {INDUSTRY_KEYS.map((k) => (
+                <Link
+                  key={k}
+                  href={`${demoBasePath}?industry=${encodeURIComponent(k)}&style=${encodeURIComponent(style)}`}
+                  className={k === industry ? 'is-active' : undefined}
+                >
+                  {getIndustry(k).label}
+                </Link>
+              ))}
+            </div>
+            <p className="admin-demo-sidebar-meta" style={{ marginTop: 12 }}>
+              Stil
+            </p>
+            <div className="admin-demo-sidebar-pills" aria-label="Stil wählen">
+              {STYLE_KEYS.map((s) => (
+                <Link
+                  key={s}
+                  href={`${demoBasePath}?industry=${encodeURIComponent(industry)}&style=${encodeURIComponent(s)}`}
+                  className={s === style ? 'is-active' : undefined}
+                >
+                  {STYLE_LABELS[s]}
+                </Link>
+              ))}
+            </div>
+            <Link className="admin-demo-sidebar-marketing" href="/">
+              Marketing-Site
+            </Link>
           </div>
 
           <div className="admin-app__sidebar-card">
@@ -119,39 +164,7 @@ export function AdminDemoShell({ children }: { children: ReactNode }) {
           </div>
         </aside>
 
-        <main className="admin-app__main">
-          <div className="admin-demo-inline-banner">
-            <div className="admin-demo-inline-banner__row">
-              <span>
-                <strong>Demo</strong> — nur localStorage
-              </span>
-              <span className="admin-demo-inline-banner__pills" aria-label="Branche wählen">
-                {INDUSTRY_KEYS.map((k) => (
-                  <Link
-                    key={k}
-                    href={`${demoBasePath}?industry=${encodeURIComponent(k)}&style=${encodeURIComponent(style)}`}
-                    className={k === industry ? 'is-active' : undefined}
-                  >
-                    {getIndustry(k).label}
-                  </Link>
-                ))}
-              </span>
-              <span className="admin-demo-inline-banner__pills" aria-label="Stil wählen">
-                {STYLE_KEYS.map((s) => (
-                  <Link
-                    key={s}
-                    href={`${demoBasePath}?industry=${encodeURIComponent(industry)}&style=${encodeURIComponent(s)}`}
-                    className={s === style ? 'is-active' : undefined}
-                  >
-                    {s}
-                  </Link>
-                ))}
-              </span>
-              <Link href="/">Marketing-Site</Link>
-            </div>
-          </div>
-          {children}
-        </main>
+        <main className="admin-app__main admin-app__main--demo">{children}</main>
       </div>
     </div>
   );

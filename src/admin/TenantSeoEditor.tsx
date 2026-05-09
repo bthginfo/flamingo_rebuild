@@ -9,15 +9,34 @@ import {
   saveAdminDraft,
   type AdminContentState
 } from '@/cms/admin-content-api';
+import { discardDraft, loadDemoContent, publishDraft, saveDraft } from '@/cms/demo-store';
 import type { SiteSeed } from '@/template-engine/seeds/model';
 
-type SeoRow = { pageId: string; pageKey: string; pageTitle: string; slug: string; metaTitle: string; metaDescription: string };
+type SeoRow = {
+  pageId: string;
+  pageKey: string;
+  pageTitle: string;
+  slug: string;
+  metaTitle: string;
+  metaDescription: string;
+};
 
 function asSeoString(value: unknown): string {
   return typeof value === 'string' ? value : '';
 }
 
-export function TenantSeoEditor() {
+function rowsFromSeed(doc: SiteSeed): SeoRow[] {
+  return doc.pages.map((page) => ({
+    pageId: page.id,
+    pageKey: page.key,
+    pageTitle: page.title,
+    slug: page.slug,
+    metaTitle: asSeoString(page.seo.title),
+    metaDescription: asSeoString(page.seo.description)
+  }));
+}
+
+export function TenantSeoEditor({ demoCanonicalSeed }: { demoCanonicalSeed?: SiteSeed }) {
   const [contentState, setContentState] = useState<AdminContentState>({ mode: 'demo' });
   const [seed, setSeed] = useState<SiteSeed | null>(null);
   const [rows, setRows] = useState<SeoRow[]>([]);
@@ -40,16 +59,7 @@ export function TenantSeoEditor() {
     try {
       const doc = await loadAdminDocument(cs.tenantSlug, true);
       setSeed(doc);
-      setRows(
-        doc.pages.map((page) => ({
-          pageId: page.id,
-          pageKey: page.key,
-          pageTitle: page.title,
-          slug: page.slug,
-          metaTitle: asSeoString(page.seo.title),
-          metaDescription: asSeoString(page.seo.description)
-        }))
-      );
+      setRows(rowsFromSeed(doc));
       setStatus('ready');
     } catch (error) {
       setStatus('error');
@@ -58,8 +68,17 @@ export function TenantSeoEditor() {
   }, []);
 
   useEffect(() => {
+    if (demoCanonicalSeed) {
+      setContentState({ mode: 'demo' });
+      const doc = loadDemoContent(demoCanonicalSeed, 'draft');
+      setSeed(doc);
+      setRows(rowsFromSeed(doc));
+      setStatus('ready');
+      setMessage('');
+      return;
+    }
     void load();
-  }, [load]);
+  }, [demoCanonicalSeed, load]);
 
   function updateRow(pageId: string, patch: Partial<Pick<SeoRow, 'metaTitle' | 'metaDescription' | 'slug'>>) {
     setRows((current) => current.map((row) => (row.pageId === pageId ? { ...row, ...patch } : row)));
@@ -88,7 +107,26 @@ export function TenantSeoEditor() {
   }
 
   async function handleSave() {
-    if (!seed || contentState.mode !== 'api' || !contentState.tenantSlug) return;
+    if (!seed) return;
+    if (demoCanonicalSeed && contentState.mode === 'demo') {
+      setStatus('saving');
+      setMessage('');
+      try {
+        const next = buildNextSeed();
+        if (!next) {
+          setStatus('ready');
+          return;
+        }
+        saveDraft(next);
+        setSeed(next);
+        setStatus('saved');
+      } catch (error) {
+        setStatus('error');
+        setMessage(error instanceof Error ? error.message : 'Speichern fehlgeschlagen.');
+      }
+      return;
+    }
+    if (contentState.mode !== 'api' || !contentState.tenantSlug) return;
     setStatus('saving');
     setMessage('');
     try {
@@ -107,7 +145,27 @@ export function TenantSeoEditor() {
   }
 
   async function handlePublish() {
-    if (!seed || contentState.mode !== 'api' || !contentState.tenantSlug) return;
+    if (!seed) return;
+    if (demoCanonicalSeed && contentState.mode === 'demo') {
+      setStatus('publishing');
+      setMessage('');
+      try {
+        const next = buildNextSeed();
+        if (!next) {
+          setStatus('ready');
+          return;
+        }
+        saveDraft(next);
+        publishDraft(next);
+        setSeed(next);
+        setStatus('saved');
+      } catch (error) {
+        setStatus('error');
+        setMessage(error instanceof Error ? error.message : 'Veröffentlichen fehlgeschlagen.');
+      }
+      return;
+    }
+    if (contentState.mode !== 'api' || !contentState.tenantSlug) return;
     setStatus('publishing');
     setMessage('');
     try {
@@ -127,6 +185,21 @@ export function TenantSeoEditor() {
   }
 
   async function handleDiscard() {
+    if (demoCanonicalSeed && seed) {
+      setStatus('discarding');
+      setMessage('');
+      try {
+        discardDraft(seed);
+        const doc = loadDemoContent(demoCanonicalSeed, 'published');
+        setSeed(doc);
+        setRows(rowsFromSeed(doc));
+        setStatus('ready');
+      } catch (error) {
+        setStatus('error');
+        setMessage(error instanceof Error ? error.message : 'Verwerfen fehlgeschlagen.');
+      }
+      return;
+    }
     if (contentState.mode !== 'api' || !contentState.tenantSlug) return;
     setStatus('discarding');
     setMessage('');
@@ -140,13 +213,16 @@ export function TenantSeoEditor() {
     }
   }
 
-  if (status === 'demo') {
+  if (status === 'demo' && !demoCanonicalSeed) {
     return (
       <div className="card" style={{ marginTop: 24 }}>
         <h2>Demo-Modus</h2>
         <p style={{ color: 'var(--muted)' }}>
           SEO-Felder live speichern geht mit Admin-Login und Datenbank. Im Demo-Modus liegen Meta-Daten im Seed bzw. in
           den Seiten-Metadaten der lokalen Vorschau.
+        </p>
+        <p style={{ color: 'var(--muted)', marginTop: 12 }}>
+          Unter <strong>/admin-demo/seo</strong> kannst du dieselben Felder nur mit <strong>localStorage</strong> ausprobieren.
         </p>
       </div>
     );
@@ -171,12 +247,24 @@ export function TenantSeoEditor() {
     );
   }
 
+  const isLocalDemo = Boolean(demoCanonicalSeed && contentState.mode === 'demo');
+
   return (
     <div className="card" style={{ marginTop: 24 }}>
       <p className="eyebrow">Pro Seite</p>
       <p style={{ color: 'var(--muted)', marginBottom: 20 }}>
-        <code>title</code> und <code>description</code> im <code>seo</code>-Objekt. Speichern legt den Entwurf ab;
-        „Veröffentlichen“ schreibt live (nach erneutem Laden der öffentlichen Site sichtbar).
+        <code>title</code> und <code>description</code> im <code>seo</code>-Objekt.{' '}
+        {isLocalDemo ? (
+          <>
+            Im Admin-Demo werden Entwurf und Veröffentlichen nur in <strong>localStorage</strong> geschrieben (gleicher Speicher
+            wie der Seiten-Editor).
+          </>
+        ) : (
+          <>
+            Speichern legt den Entwurf ab; „Veröffentlichen“ schreibt live (nach erneutem Laden der öffentlichen Site
+            sichtbar).
+          </>
+        )}
       </p>
       {message && status === 'error' ? <p className="cms-error-text">{message}</p> : null}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>

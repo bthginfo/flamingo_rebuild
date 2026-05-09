@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation';
-import { RestaurantHomeEditor } from '@/cms/page-editor/RestaurantHomeEditor';
-import { getIndustry } from '@/template-engine/registry';
+import { TenantSeoEditor } from '@/admin/TenantSeoEditor';
 import { INDUSTRY_KEYS, STYLE_KEYS, type IndustryKey, type StyleKey } from '@/template-engine/model';
 import { getDemoSeed } from '@/template-engine/seeds';
 
@@ -14,35 +13,27 @@ function parseStyle(v: string | undefined): StyleKey {
   return 'classic';
 }
 
-export default async function AdminDemoEditorPage({
-  params,
+export default async function AdminDemoSeoPage({
   searchParams
 }: {
-  params: Promise<{ pageKey: string }>;
   searchParams: Promise<{ industry?: string; style?: string }>;
 }) {
-  const { pageKey } = await params;
   const sp = await searchParams;
   const industry = parseIndustry(sp.industry);
   const style = parseStyle(sp.style);
-
-  const allowedKeys = new Set(getIndustry(industry).corePages.map((p) => p.key));
-  if (!allowedKeys.has(pageKey)) {
-    notFound();
-  }
-
   const initialSeed = getDemoSeed(industry, style);
   if (!initialSeed) {
     notFound();
   }
 
   return (
-    <RestaurantHomeEditor
-      initialSeed={initialSeed}
-      pageKey={pageKey}
-      editorPathBase="/admin-demo"
-      editorPersistQuery={`industry=${encodeURIComponent(industry)}&style=${encodeURIComponent(style)}`}
-      forceDemo
-    />
+    <div className="admin-surface">
+      <p className="eyebrow">SEO & Sichtbarkeit · Demo</p>
+      <h1 style={{ marginTop: 8, fontFamily: "Georgia, 'Times New Roman', serif" }}>Meta & URLs</h1>
+      <p style={{ color: 'var(--muted)', maxWidth: 640 }}>
+        Gleicher Demo-Speicher wie im Seiten-Editor (<strong>localStorage</strong>) — keine Datenbank, kein Tenant.
+      </p>
+      <TenantSeoEditor demoCanonicalSeed={initialSeed} />
+    </div>
   );
 }

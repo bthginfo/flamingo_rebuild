@@ -115,7 +115,7 @@ export function RestaurantHomeEditor({
     setWorkspaceTab('edit');
   }, [pageKey]);
 
-  const qs = editorPersistQuery ? `&${editorPersistQuery}` : '';
+  const industryStyleQs = `industry=${encodeURIComponent(seed.industryKey)}&style=${encodeURIComponent(seed.styleKey)}`;
 
   const industryPages = useMemo(() => getIndustry(seed.industryKey).corePages, [seed.industryKey]);
 
@@ -289,6 +289,7 @@ export function RestaurantHomeEditor({
 
   const useShellPageNav = !forceDemo && editorPathBase === '/admin/pages';
   const useFloatingDock = useShellPageNav;
+  const hideDemoDuplicateNav = forceDemo;
 
   return (
     <main className="cms-workspace">
@@ -300,12 +301,12 @@ export function RestaurantHomeEditor({
           <h1>{page.title} bearbeiten</h1>
           <p>{statusLabel(status, draftExists, contentState)}</p>
           {message ? <p className={status === 'error' ? 'cms-error-text' : undefined}>{message}</p> : null}
-          {contentState.mode === 'demo' ? (
+          {contentState.mode === 'demo' && !hideDemoDuplicateNav ? (
             <nav className="cms-style-tabs" aria-label="Vorschau-Stil">
               {STYLE_KEYS.map((sk) => (
                 <Link
                   key={sk}
-                  href={`${editorPathBase}/${pageKey}?style=${sk}${qs}`}
+                  href={`${editorPathBase}/${pageKey}?industry=${encodeURIComponent(seed.industryKey)}&style=${encodeURIComponent(sk)}`}
                   className={sk === seed.styleKey ? 'is-active' : undefined}
                 >
                   {STYLE_LABELS[sk]}
@@ -313,13 +314,17 @@ export function RestaurantHomeEditor({
               ))}
             </nav>
           ) : null}
-          {useShellPageNav ? null : (
+          {useShellPageNav || hideDemoDuplicateNav ? null : (
             <nav className="cms-page-tabs" aria-label="Seiten">
               {industryPages.map((def) => (
                 <Link
                   key={def.key}
                   href={`${editorPathBase}/${def.key}${
-                    contentState.mode === 'demo' ? `?style=${seed.styleKey}${qs}` : editorPersistQuery ? `?${editorPersistQuery}` : ''
+                    contentState.mode === 'demo'
+                      ? `?${industryStyleQs}`
+                      : editorPersistQuery
+                        ? `?${editorPersistQuery}`
+                        : ''
                   }`}
                   className={def.key === page.key ? 'is-active' : undefined}
                 >
@@ -652,7 +657,7 @@ function FieldEditor({
   if (field.type === 'cta') {
     const current = cta(value);
     return (
-      <>
+      <div className="cms-field-split-heading cms-field-split-heading--stack">
         <TextField label={`${field.label} Text`} value={current.label} onChange={(next) => onChange([...path, 'label'], next)} />
         <LinkTargetEditor
           label={`${field.label} Ziel`}
@@ -660,7 +665,7 @@ function FieldEditor({
           seed={seed}
           onLinkChange={(link) => onChange([...path, 'link'], link)}
         />
-      </>
+      </div>
     );
   }
 
