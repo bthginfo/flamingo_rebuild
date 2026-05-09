@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { Suspense } from 'react';
 import { INDUSTRY_KEYS } from '@/template-engine/model';
 import { getIndustry } from '@/template-engine/registry';
+import { AdminDemoIndustryNav } from './AdminDemoIndustryNav';
 
 export const metadata: Metadata = {
   title: 'Admin-Demo',
@@ -23,13 +25,19 @@ export default function AdminDemoLayout({ children }: { children: ReactNode }) {
             <span className="admin-demo-topbar__sep">·</span>
             <Link href="/admin/login">Echter Admin-Login</Link>
           </p>
-          <nav className="admin-demo-topbar__industries" aria-label="Branche wechseln (Demo)">
-            {INDUSTRY_KEYS.map((k) => (
-              <Link key={k} href={`/admin-demo/home?industry=${k}&style=classic`}>
-                {getIndustry(k).label}
-              </Link>
-            ))}
-          </nav>
+          <Suspense
+            fallback={
+              <nav className="admin-demo-topbar__industries" aria-label="Branche wechseln (Demo)">
+                {INDUSTRY_KEYS.map((k) => (
+                  <Link key={k} href={`/admin-demo/home?industry=${encodeURIComponent(k)}&style=classic`}>
+                    {getIndustry(k).label}
+                  </Link>
+                ))}
+              </nav>
+            }
+          >
+            <AdminDemoIndustryNav />
+          </Suspense>
         </div>
       </div>
       {children}
