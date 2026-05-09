@@ -103,7 +103,17 @@ Wenn die **Plattform**-`.env.local` / Vercel-Umgebung **`VERCEL_TOKEN`**, **`VER
 2. **Umgebungsvariablen** auf diesem Projekt gesetzt: u. a. dieselbe **`POSTGRES_URL`** (gemeinsame Neon-DB), **`FLAMINGO_REBUILD_DB=1`**, ein **neu generiertes `AUTH_SECRET`**, **`FLAMINGO_SINGLE_TENANT_SLUG`** (= Slug), **`NEXT_PUBLIC_SITE_URL`**, optional **`BLOB_READ_WRITE_TOKEN`**. Internes CRM-Passwort wird **nicht** kopiert.
 3. Ein **Production-Deploy** von `main` angestoßen.
 
-Auf dem **Kunden-Vercel-Projekt** gilt **Single-Tenant-Modus**: `FLAMINGO_SINGLE_TENANT_SLUG` sperrt die App auf genau diesen Slug (Middleware leitet `/` auf `/site/<slug>/…`, `/internal` ist **404**, Login mit anderem Slug wird abgelehnt). **Eigene Domain** verbindest du in Vercel wie gewohnt mit diesem Projekt; **SMTP** kannst du weiterhin im **Tenant-Admin** unter Integrationen pflegen oder zusätzliche Keys nur auf dem Kunden-Projekt in Vercel setzen (Code liest SMTP aktuell aus der Site-DB, nicht aus separaten SMTP-Env-Variablen — für reine Env-SMTP wäre ein kleiner Follow-up nötig).
+Auf dem **Kunden-Vercel-Projekt** gilt **Single-Tenant-Modus**: `FLAMINGO_SINGLE_TENANT_SLUG` sperrt die App auf genau diesen Slug (Middleware leitet `/` auf `/site/<slug>/…`, **`/internal` ist 404** — Kunden haben **kein internes CRM**, nur ihr **Tenant-Admin**; Login mit **fremdem** Slug wird abgelehnt). **`FLAMINGO_INTERNAL_CRM_PASSWORD_HASH`** gehört **nur** auf die **Plattform**-Vercel-Umgebung (Showcase), nicht auf provisionierte Kundenprojekte. **Eigene Domain** verbindest du in Vercel wie gewohnt mit dem Kundenprojekt; **Kontaktformulare auf Kundenwebsites** nutzen die jeweilige Site-Konfiguration (Admin), nicht die Marketing-SMTP-Variablen unten.
+
+### Showcase: Kontaktformular (`/kontakt`) und SMTP (Marketing)
+
+Die **Marketing-Seite** (`/kontakt`, Formular-Komponente `ContactForm`) sendet per **`POST /api/marketing/contact`** E-Mail über **Umgebungsvariablen** (gleicher Code wie lokal in `.env.example` dokumentiert):
+
+- `SMTP_HOST`, `SMTP_PORT` (Standard 587), `SMTP_USER`, `SMTP_PASS`
+- `MAIL_FROM`, `MAIL_TO`
+- optional `MAIL_AUTOREPLY` (`on` / `1` / `true` — kurze Bestätigung an die Absenderadresse)
+
+Setze diese Werte auf dem **Showcase-/Plattform-Vercel-Projekt** (`flamingomedia.online`). Fehlen sie, antwortet die Route mit **503** und das Formular **fällt auf `mailto:`** zurück.
 
 **Migration:** Nach `git pull` einmal `npm run db:migrate` (neue Spalten `vercel_project_id` / `vercel_project_name` an `tenants`).
 
