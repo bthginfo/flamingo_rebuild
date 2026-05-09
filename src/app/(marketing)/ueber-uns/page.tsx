@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { agency, imageAssets, team } from '@/ui/marketing/data';
+import { agency, team } from '@/ui/marketing/data';
 import {
   BranchMarqueeSection,
   CtaFooterSection,
@@ -12,7 +12,7 @@ import { RevealOnScroll } from '@/ui/marketing/RevealOnScroll';
 export const metadata: Metadata = {
   title: 'Über uns',
   description:
-    'FlamingoMedia aus Innsbruck: Team, Haltung und Arbeitsweise — Websites, Foto und Video für lokale Marken in der DACH-Region.'
+    'FlamingoMedia ist eine Werkstatt für Websites, Foto und Video. Zwei Menschen, ein Hund, viel Kaffee — Handwerk vor Marketing-Sprech.'
 };
 
 export default function AboutPage() {
@@ -20,11 +20,11 @@ export default function AboutPage() {
     <main>
       <LandingHeroShowcase
         pulse={agency.tagline}
-        titleLine1="Werkstatt für Websites,"
-        titleEmphasis="Foto und Video."
-        lead="FlamingoMedia arbeitet für lokale Marken, die online hochwertig wirken wollen — mit echten Bildern, klaren Angeboten und einem Team, das mitdenkt statt Templates zu verstecken."
+        titleLine1="Ein kleines Studio."
+        titleEmphasis="Ein klarer Anspruch."
+        lead="FlamingoMedia ist eine Werkstatt für Websites, Foto und Video. Zwei Menschen, ein Hund, viel Kaffee. Wir glauben an Handwerk vor Marketing-Sprech."
         monoAside="/ Innsbruck · DACH"
-        primaryCta={{ href: '#team', label: 'Team kennenlernen →' }}
+        primaryCta={{ href: '#team', label: 'Das Team →' }}
         secondaryCta={{ href: '/templates', label: 'Templates ansehen' }}
         scrollTargetId="#mehr"
       />
@@ -34,32 +34,36 @@ export default function AboutPage() {
       <RevealOnScroll as="section" className="section surface">
         <div className="shell split-grid" data-stagger-grid>
           <div>
-            <p className="eyebrow">Haltung</p>
-            <h2 className="section-title">Gute Websites sind konkret.</h2>
+            <h2 className="section-title">
+              Studio in Innsbruck.
+              <br />
+              <em>Kunden in der DACH-Region.</em>
+            </h2>
             <p className="hero-copy">
-              Wir zeigen echte Angebote, echte Abläufe, echte Menschen und klare nächste Schritte. Kein austauschbarer
-              Standard — jede Branche bekommt Rhythmus und Bildsprache, die zu den Gästen passen, die Du im Laden auch
-              siehst.
+              Wir sind ein kleines, unkompliziertes Team aus Tech-Enthusiast:innen und Gestalter:innen. Lieber kurze Wege
+              als lange Briefings. Lieber direkt sprechen als zehnseitige Konzepte schicken.
             </p>
-          </div>
-          <div className="image-panel">
-            <img src={imageAssets.about} alt="FlamingoMedia Team arbeitet gemeinsam" />
+            <p className="hero-copy" style={{ marginTop: 16 }}>
+              Unsere Kunden sind Restaurants, Salons, Handwerksbetriebe, Praxen, Kanzleien, Studios und viele mehr – in
+              Innsbruck, München, Ingolstadt und überall dort, wo gute Arbeit zählt. Über 65 % der Aufträge kommen von
+              Empfehlungen.
+            </p>
           </div>
         </div>
       </RevealOnScroll>
 
       <RevealOnScroll as="section" className="section" id="team">
         <div className="shell">
-          <p className="eyebrow">Team</p>
-          <h2 className="section-title" style={{ marginBottom: 34 }}>
-            Die Menschen dahinter.
-          </h2>
+          <p className="eyebrow">Das Team.</p>
           <div className="team-grid" data-stagger-grid>
-            {team.map((member) => (
+            {team.map((member, index) => (
               <article className="card team-card" key={member.name}>
+                <p className="fm-mono-label">/ {String(index + 1).padStart(2, '0')}</p>
                 <img src={member.image} alt={member.name} />
-                <p className="eyebrow">{member.role}</p>
                 <h3>{member.name}</h3>
+                <p className="eyebrow" style={{ marginTop: 4 }}>
+                  {member.role}
+                </p>
                 <p>{member.text}</p>
               </article>
             ))}

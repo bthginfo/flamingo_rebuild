@@ -14,7 +14,13 @@ import {
   type AdminContentState
 } from '@/cms/admin-content-api';
 import { SeedPageRenderer } from '@/template-engine/rendering/SeedRenderer';
+import {
+  PREVIEW_ACCENT_IDS,
+  resolvePreviewAccentHex,
+  type PreviewAccentId
+} from '@/template-engine/rendering/preview-accent-palette';
 import { getIndustry, getSection } from '@/template-engine/registry';
+import { ImageFieldEditor, LinkTargetEditor } from '@/cms/page-editor/field-editors';
 
 const STYLE_LABELS: Record<StyleKey, string> = {
   classic: 'Klassisch',
@@ -57,6 +63,7 @@ export function RestaurantHomeEditor({
   const [contentState, setContentState] = useState<AdminContentState>({ mode: 'demo' });
   const [message, setMessage] = useState('');
   const [workspaceTab, setWorkspaceTab] = useState<WorkspaceTab>('edit');
+  const [previewAccentId, setPreviewAccentId] = useState<PreviewAccentId | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -274,6 +281,12 @@ export function RestaurantHomeEditor({
     setStatus('clean');
   }
 
+  const tenantSlugForUpload =
+    !forceDemo && contentState.mode === 'api' && contentState.tenantSlug ? contentState.tenantSlug : null;
+
+  const useShellPageNav = !forceDemo && editorPathBase === '/admin/pages';
+  const useFloatingDock = useShellPageNav;
+
   return (
     <main className="cms-workspace">
       <div className="cms-toolbar">
@@ -297,19 +310,21 @@ export function RestaurantHomeEditor({
               ))}
             </nav>
           ) : null}
-          <nav className="cms-page-tabs" aria-label="Seiten">
-            {industryPages.map((def) => (
-              <Link
-                key={def.key}
-                href={`${editorPathBase}/${def.key}${
-                  contentState.mode === 'demo' ? `?style=${seed.styleKey}${qs}` : editorPersistQuery ? `?${editorPersistQuery}` : ''
-                }`}
-                className={def.key === page.key ? 'is-active' : undefined}
-              >
-                {def.label}
-              </Link>
-            ))}
-          </nav>
+          {useShellPageNav ? null : (
+            <nav className="cms-page-tabs" aria-label="Seiten">
+              {industryPages.map((def) => (
+                <Link
+                  key={def.key}
+                  href={`${editorPathBase}/${def.key}${
+                    contentState.mode === 'demo' ? `?style=${seed.styleKey}${qs}` : editorPersistQuery ? `?${editorPersistQuery}` : ''
+                  }`}
+                  className={def.key === page.key ? 'is-active' : undefined}
+                >
+                  {def.label}
+                </Link>
+              ))}
+            </nav>
+          )}
           <nav className="cms-workspace-tabs" role="tablist" aria-label="Arbeitsbereich">
             <button
               type="button"
@@ -333,33 +348,35 @@ export function RestaurantHomeEditor({
             </button>
           </nav>
         </div>
-        <div className="cms-actions">
-          <a className="button secondary" href={previewHref(contentState, seed, page)} target="_blank" rel="noreferrer">
-            Im Browser öffnen
-          </a>
-          <button
-            className="button secondary"
-            onClick={() => void handleDiscard()}
-            type="button"
-            disabled={toolbarBusy(status)}
-          >
-            {status === 'discarding' ? 'Verwerfen…' : 'Entwurf verwerfen'}
-          </button>
-          <button className="button secondary" onClick={handleReset} type="button" disabled={toolbarBusy(status)}>
-            Demo zurücksetzen
-          </button>
-          <button
-            className="button secondary"
-            onClick={() => void handleSave()}
-            type="button"
-            disabled={toolbarBusy(status)}
-          >
-            {status === 'saving' ? 'Speichert…' : 'Entwurf speichern'}
-          </button>
-          <button className="button" onClick={() => void handlePublish()} type="button" disabled={toolbarBusy(status)}>
-            {status === 'publishing' ? 'Veröffentlicht…' : 'Speichern & veröffentlichen'}
-          </button>
-        </div>
+        {useFloatingDock ? null : (
+          <div className="cms-actions">
+            <a className="button secondary" href={previewHref(contentState, seed, page, previewAccentId)} target="_blank" rel="noreferrer">
+              Im Browser öffnen
+            </a>
+            <button
+              className="button secondary"
+              onClick={() => void handleDiscard()}
+              type="button"
+              disabled={toolbarBusy(status)}
+            >
+              {status === 'discarding' ? 'Verwerfen…' : 'Entwurf verwerfen'}
+            </button>
+            <button className="button secondary" onClick={handleReset} type="button" disabled={toolbarBusy(status)}>
+              Demo zurücksetzen
+            </button>
+            <button
+              className="button secondary"
+              onClick={() => void handleSave()}
+              type="button"
+              disabled={toolbarBusy(status)}
+            >
+              {status === 'saving' ? 'Speichert…' : 'Entwurf speichern'}
+            </button>
+            <button className="button" onClick={() => void handlePublish()} type="button" disabled={toolbarBusy(status)}>
+              {status === 'publishing' ? 'Veröffentlicht…' : 'Speichern & veröffentlichen'}
+            </button>
+          </div>
+        )}
       </div>
 
       <div className={`cms-workspace-body cms-workspace-body--${workspaceTab}`}>
@@ -391,6 +408,8 @@ export function RestaurantHomeEditor({
               <SectionEditor
                 key={section.id}
                 section={section}
+                seed={seed}
+                tenantSlug={tenantSlugForUpload}
                 onChange={(next) => updateSection(section.id, () => next)}
                 onMoveUp={() => moveSection(section.id, -1)}
                 onMoveDown={() => moveSection(section.id, 1)}
@@ -405,23 +424,82 @@ export function RestaurantHomeEditor({
             role="tabpanel"
             aria-labelledby="cms-tab-preview"
           >
+            <div className="cms-preview-accent" role="group" aria-label="Akzentfarbe für die Vorschau">
+              <span className="cms-preview-accent__label">Farbschema</span>
+              <div className="preview-fab__swatches">
+                {PREVIEW_ACCENT_IDS.map((id) => {
+                  const fill = resolvePreviewAccentHex(id, seed.styleKey) ?? '#888';
+                  const isActive = previewAccentId === id;
+                  return (
+                    <button
+                      key={id}
+                      type="button"
+                      className={`preview-fab__swatch${isActive ? ' is-active' : ''}`}
+                      aria-pressed={isActive}
+                      aria-label={`Akzentfarbe ${id}`}
+                      title={id}
+                      style={{ background: fill }}
+                      onClick={() => setPreviewAccentId((cur) => (cur === id ? null : id))}
+                    />
+                  );
+                })}
+              </div>
+            </div>
             <div className="cms-preview-frame cms-preview-frame--fullscreen">
               <SeedPageRenderer
                 seed={seed}
                 page={page}
                 styleKey={seed.styleKey}
                 previewBasePath={`/preview/${seed.industryKey}/${seed.styleKey}`}
+                accentHex={resolvePreviewAccentHex(previewAccentId, seed.styleKey)}
               />
             </div>
           </aside>
         )}
       </div>
+
+      {useFloatingDock ? (
+        <div className="cms-floating-dock" role="toolbar" aria-label="Speichern und veröffentlichen">
+          <a className="button secondary" href={previewHref(contentState, seed, page, previewAccentId)} target="_blank" rel="noreferrer">
+            Live ansehen
+          </a>
+          <button
+            className="button secondary"
+            onClick={() => void handleDiscard()}
+            type="button"
+            disabled={toolbarBusy(status)}
+          >
+            {status === 'discarding' ? 'Verwerfen…' : 'Entwurf verwerfen'}
+          </button>
+          <button className="button secondary" onClick={handleReset} type="button" disabled={toolbarBusy(status)}>
+            Demo zurücksetzen
+          </button>
+          <button
+            type="button"
+            className="button cms-floating-draft"
+            onClick={() => void handleSave()}
+            disabled={toolbarBusy(status)}
+          >
+            {status === 'saving' ? 'Speichert…' : 'Entwurf speichern'}
+          </button>
+          <button
+            type="button"
+            className="button cms-floating-publish"
+            onClick={() => void handlePublish()}
+            disabled={toolbarBusy(status)}
+          >
+            {status === 'publishing' ? 'Veröffentlicht…' : 'Veröffentlichen'}
+          </button>
+        </div>
+      ) : null}
     </main>
   );
 }
 
 function SectionEditor({
   section,
+  seed,
+  tenantSlug,
   onChange,
   onMoveUp,
   onMoveDown,
@@ -429,6 +507,8 @@ function SectionEditor({
   onRemove
 }: {
   section: SectionInstance;
+  seed: SiteSeed;
+  tenantSlug: string | null;
   onChange: (section: SectionInstance) => void;
   onMoveUp: () => void;
   onMoveDown: () => void;
@@ -480,6 +560,8 @@ function SectionEditor({
             path={[field.key]}
             value={section.data[field.key]}
             onChange={patchData}
+            seed={seed}
+            tenantSlug={tenantSlug}
           />
         ))}
       </div>
@@ -491,12 +573,16 @@ function FieldEditor({
   field,
   value,
   path,
-  onChange
+  onChange,
+  seed,
+  tenantSlug
 }: {
   field: FieldDefinition;
   value: unknown;
   path: readonly string[];
   onChange: (path: readonly string[], value: unknown) => void;
+  seed: SiteSeed;
+  tenantSlug: string | null;
 }) {
   if (field.type === 'number') {
     return (
@@ -515,7 +601,18 @@ function FieldEditor({
     return <TextArea label={field.label} value={text(value)} onChange={(next) => onChange(path, next)} />;
   }
 
-  if (field.type === 'image' || field.type === 'text' || field.type === 'url' || field.type === 'phone' || field.type === 'email') {
+  if (field.type === 'image') {
+    return (
+      <ImageFieldEditor
+        label={field.label}
+        value={value}
+        tenantSlug={tenantSlug}
+        onChange={(next) => onChange(path, next)}
+      />
+    );
+  }
+
+  if (field.type === 'text' || field.type === 'url' || field.type === 'phone' || field.type === 'email') {
     return <TextField label={field.label} value={text(value)} onChange={(next) => onChange(path, next)} />;
   }
 
@@ -538,12 +635,28 @@ function FieldEditor({
     );
   }
 
+  if (field.type === 'link') {
+    return (
+      <LinkTargetEditor
+        label={field.label}
+        linkValue={value}
+        seed={seed}
+        onLinkChange={(link) => onChange(path, link)}
+      />
+    );
+  }
+
   if (field.type === 'cta') {
     const current = cta(value);
     return (
       <>
         <TextField label={`${field.label} Text`} value={current.label} onChange={(next) => onChange([...path, 'label'], next)} />
-        <TextField label={`${field.label} Ziel`} value={current.href} onChange={(next) => onChange([...path, 'link', 'href'], next)} />
+        <LinkTargetEditor
+          label={`${field.label} Ziel`}
+          linkValue={isRecord(value) && isRecord(value.link) ? value.link : {}}
+          seed={seed}
+          onLinkChange={(link) => onChange([...path, 'link'], link)}
+        />
       </>
     );
   }
@@ -608,6 +721,8 @@ function FieldEditor({
                     cloned[index] = { ...cloned[index], [itemField.key]: val };
                     onChange(path, cloned);
                   }}
+                  seed={seed}
+                  tenantSlug={tenantSlug}
                 />
               );
             })}
@@ -676,11 +791,17 @@ function statusLabel(status: EditorStatus, draftExists: boolean, contentState: A
   return contentState.mode === 'api' ? `Live-Version für ${contentState.tenantSlug} geladen.` : 'Demo-Modus: Live-Version lokal geladen.';
 }
 
-function previewHref(contentState: AdminContentState, seed: SiteSeed, page: PageInstance): string {
+function previewHref(
+  contentState: AdminContentState,
+  seed: SiteSeed,
+  page: PageInstance,
+  accentId?: PreviewAccentId | null
+): string {
   const tenant = contentState.tenantSlug ? `&tenant=${encodeURIComponent(contentState.tenantSlug)}` : '';
+  const accent = accentId ? `&accent=${encodeURIComponent(accentId)}` : '';
   const base = `/preview/${seed.industryKey}/${seed.styleKey}`;
   const slugPath = page.slug === '/' ? '' : page.slug.startsWith('/') ? page.slug : `/${page.slug}`;
-  return `${base}${slugPath}?preview=1${tenant}`;
+  return `${base}${slugPath}?preview=1${tenant}${accent}`;
 }
 
 function normalizeSortOrder(sections: readonly SectionInstance[]): SectionInstance[] {
@@ -695,7 +816,7 @@ function defaultValueForField(field: FieldDefinition): unknown {
   if (field.type === 'boolean') return false;
   if (field.type === 'repeater' || field.type === 'gallery' || field.type === 'collectionReferenceList') return [];
   if (field.type === 'splitHeading') return { plain: '', accent: '' };
-  if (field.type === 'cta') return { label: '', link: { type: 'page', href: '/' } };
+  if (field.type === 'cta') return { label: '', link: { type: 'page', pageKey: 'home', href: '/' } };
   if (field.type === 'group') return createDefaultData(field.fields ?? []);
   if (field.type === 'number') return 0;
   return '';

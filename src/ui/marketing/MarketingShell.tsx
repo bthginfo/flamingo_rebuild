@@ -7,7 +7,7 @@ const navItems = [
   { href: '/preise', label: 'Preise' },
   { href: '/ueber-uns', label: 'Über uns' },
   { href: '/admin-demo/home', label: 'Admin-Demo' },
-  { href: `mailto:${agency.email}`, label: 'Kontakt' },
+  { href: '/kontakt', label: 'Kontakt' },
   { href: '/admin', label: 'Admin' }
 ];
 
@@ -27,19 +27,15 @@ export function MarketingShell({ children }: { children: React.ReactNode }) {
             <img src={agency.logo} alt={agency.name} />
           </Link>
           <nav className="main-nav" aria-label="Hauptnavigation">
-            {navItems.map((item) =>
-              item.href.startsWith('mailto:') ? (
-                <a key={item.href} href={item.href}>
-                  {item.label}
-                </a>
-              ) : (
+            {navItems.map((item) => (
                 <Link href={item.href} key={item.href}>
                   {item.label}
                 </Link>
-              )
-            )}
+              ))}
           </nav>
-          <Link href="/preise" className="nav-cta">Beratung →</Link>
+          <Link href="/kontakt" className="nav-cta">
+            Beratung →
+          </Link>
         </div>
       </header>
       {children}

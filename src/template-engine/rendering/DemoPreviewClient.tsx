@@ -1,13 +1,39 @@
 'use client';
 
 import { Suspense, useMemo, useEffect, useState } from 'react';
-import type { IndustryKey, StyleKey } from '../model';
+import { useSearchParams } from 'next/navigation';
+import type { IndustryKey, PageInstance, StyleKey } from '../model';
 import type { SiteSeed } from '../seeds/model';
 import { loadDemoContent } from '@/cms/demo-store';
 import { loadAdminDocument } from '@/cms/admin-content-api';
 import { SeedPageRenderer } from './SeedRenderer';
 import { resolvePreviewPage } from './preview-route';
 import { PreviewFab } from './PreviewFab';
+import { resolvePreviewAccentHex } from './preview-accent-palette';
+
+function DemoPreviewSeedBody({
+  seed,
+  page,
+  styleKey,
+  previewBasePath
+}: {
+  seed: SiteSeed;
+  page: PageInstance;
+  styleKey: StyleKey;
+  previewBasePath: string;
+}) {
+  const searchParams = useSearchParams();
+  const accentHex = resolvePreviewAccentHex(searchParams.get('accent'), styleKey);
+  return (
+    <SeedPageRenderer
+      seed={seed}
+      page={page}
+      styleKey={styleKey}
+      previewBasePath={previewBasePath}
+      accentHex={accentHex}
+    />
+  );
+}
 
 export function DemoPreviewClient({
   industryKey,
@@ -62,7 +88,24 @@ export function DemoPreviewClient({
       <Suspense fallback={null}>
         <PreviewFab industryKey={industryKey} styleKey={styleKey} pathSegments={pathSegments} />
       </Suspense>
-      <SeedPageRenderer seed={seed} page={page} styleKey={styleKey} previewBasePath={previewBasePath} />
+      <Suspense
+        fallback={
+          <SeedPageRenderer
+            seed={seed}
+            page={page}
+            styleKey={styleKey}
+            previewBasePath={previewBasePath}
+            accentHex={null}
+          />
+        }
+      >
+        <DemoPreviewSeedBody
+          seed={seed}
+          page={page}
+          styleKey={styleKey}
+          previewBasePath={previewBasePath}
+        />
+      </Suspense>
     </>
   );
 }

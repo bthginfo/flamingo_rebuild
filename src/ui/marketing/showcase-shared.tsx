@@ -150,9 +150,9 @@ export function CtaFooterSection() {
           Schreib uns – wir antworten innerhalb von 24 Stunden mit einer ehrlichen Einschätzung.
         </p>
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 28 }}>
-          <a className="button" href={`mailto:${agency.email}`}>
+          <Link className="button" href="/kontakt">
             Beratung anfragen →
-          </a>
+          </Link>
           <Link className="button secondary fm-btn-outline-light" href="/templates">
             Templates ansehen
           </Link>

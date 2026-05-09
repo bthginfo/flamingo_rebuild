@@ -1,7 +1,10 @@
 'use client';
 
+import type { CSSProperties } from 'react';
 import Link from 'next/link';
 import type { PageInstance, SectionInstance, StyleKey } from '../model';
+import { resolveCtaLinkHref } from '../link-resolution';
+import { sectionAnchorId } from '../section-anchor';
 import type { CollectionSeedItem, SiteSeed } from '../seeds/model';
 
 function SplitHeading({ plain, accent }: { plain: string; accent: string }) {
@@ -18,17 +21,22 @@ export function SeedPageRenderer({
   seed,
   page,
   styleKey,
-  previewBasePath
+  previewBasePath,
+  accentHex
 }: {
   seed: SiteSeed;
   page: PageInstance;
   styleKey: StyleKey;
   previewBasePath: string;
+  /** When set, overrides `globals.css` `--tenant-accent` for live preview / FAB. */
+  accentHex?: string | null;
 }) {
   const sortedSections = [...page.sections].filter((section) => section.visible).sort((a, b) => a.sortOrder - b.sortOrder);
+  const accentStyle: CSSProperties | undefined =
+    accentHex && accentHex.length > 0 ? ({ ['--tenant-accent']: accentHex } as CSSProperties) : undefined;
 
   return (
-    <main className={`tenant-preview tenant-preview--${styleKey}`}>
+    <main className={`tenant-preview tenant-preview--${styleKey}`} style={accentStyle}>
       <PreviewNav seed={seed} previewBasePath={previewBasePath} />
       {sortedSections.map((section) => (
         <SectionRenderer
@@ -37,6 +45,7 @@ export function SeedPageRenderer({
           section={section}
           styleKey={styleKey}
           previewBasePath={previewBasePath}
+          domSectionId={sectionAnchorId(section.id)}
         />
       ))}
     </main>
@@ -66,26 +75,40 @@ function SectionRenderer({
   seed,
   section,
   styleKey,
-  previewBasePath
+  previewBasePath,
+  domSectionId
 }: {
   seed: SiteSeed;
   section: SectionInstance;
   styleKey: StyleKey;
   previewBasePath: string;
+  domSectionId: string;
 }) {
   switch (section.sectionKey) {
     case 'global.hero':
-      return <HeroSection section={section} styleKey={styleKey} previewBasePath={previewBasePath} />;
+      return (
+        <HeroSection
+          section={section}
+          styleKey={styleKey}
+          previewBasePath={previewBasePath}
+          seed={seed}
+          domSectionId={domSectionId}
+        />
+      );
     case 'global.pageHeader':
-      return <PageHeaderSection section={section} styleKey={styleKey} />;
+      return <PageHeaderSection section={section} styleKey={styleKey} domSectionId={domSectionId} />;
     case 'global.textImage':
-      return <TextImageSection section={section} previewBasePath={previewBasePath} />;
+      return (
+        <TextImageSection section={section} previewBasePath={previewBasePath} seed={seed} domSectionId={domSectionId} />
+      );
     case 'global.mapContact':
-      return <MapContactSection section={section} seed={seed} />;
+      return <MapContactSection section={section} seed={seed} domSectionId={domSectionId} />;
     case 'global.galleryGrid':
-      return <GalleryGridSection section={section} />;
+      return <GalleryGridSection section={section} domSectionId={domSectionId} />;
     case 'global.actionBar':
-      return <ActionBar section={section} previewBasePath={previewBasePath} />;
+      return (
+        <ActionBar section={section} previewBasePath={previewBasePath} seed={seed} domSectionId={domSectionId} />
+      );
     case 'restaurant.menuHighlights':
     case 'restaurant.diningExperiences':
     case 'hotel.roomHighlights':
@@ -104,24 +127,35 @@ function SectionRenderer({
     case 'fitness.trainerTeam':
     case 'wedding.schedule':
     case 'wedding.accommodation':
-      return <CollectionGrid seed={seed} section={section} previewBasePath={previewBasePath} />;
+      return (
+        <CollectionGrid
+          seed={seed}
+          section={section}
+          previewBasePath={previewBasePath}
+          domSectionId={domSectionId}
+        />
+      );
     case 'global.testimonials':
-      return <Testimonials section={section} />;
+      return <Testimonials section={section} domSectionId={domSectionId} />;
     case 'global.faq':
-      return <FaqSection section={section} />;
+      return <FaqSection section={section} domSectionId={domSectionId} />;
     case 'wedding.rsvp':
-      return <RsvpSection section={section} previewBasePath={previewBasePath} />;
+      return (
+        <RsvpSection section={section} previewBasePath={previewBasePath} seed={seed} domSectionId={domSectionId} />
+      );
     case 'global.contactCta':
-      return <ContactCta section={section} previewBasePath={previewBasePath} />;
+      return (
+        <ContactCta section={section} previewBasePath={previewBasePath} seed={seed} domSectionId={domSectionId} />
+      );
     case 'global.statsBand':
-      return <StatsBandSection section={section} styleKey={styleKey} />;
+      return <StatsBandSection section={section} styleKey={styleKey} domSectionId={domSectionId} />;
     case 'global.trustLogos':
-      return <TrustLogosSection section={section} styleKey={styleKey} />;
+      return <TrustLogosSection section={section} styleKey={styleKey} domSectionId={domSectionId} />;
     case 'global.bentoHighlights':
-      return <BentoHighlightsSection section={section} styleKey={styleKey} />;
+      return <BentoHighlightsSection section={section} styleKey={styleKey} domSectionId={domSectionId} />;
     default:
       return (
-        <section className="tenant-section">
+        <section className="tenant-section" id={domSectionId}>
           <div className="shell card">
             <p className="eyebrow">{section.sectionKey}</p>
             <p>Für diese Section ist noch kein Renderer implementiert.</p>
@@ -131,13 +165,24 @@ function SectionRenderer({
   }
 }
 
-function PageHeaderSection({ section, styleKey }: { section: SectionInstance; styleKey: StyleKey }) {
+function PageHeaderSection({
+  section,
+  styleKey,
+  domSectionId
+}: {
+  section: SectionInstance;
+  styleKey: StyleKey;
+  domSectionId: string;
+}) {
   const headline = asSplit(section.data.headline);
   const image = asString(section.data.image);
 
   if (!image) {
     return (
-      <section className={`tenant-page-hero tenant-page-hero--text tenant-page-hero--${styleKey}`}>
+      <section
+        className={`tenant-page-hero tenant-page-hero--text tenant-page-hero--${styleKey}`}
+        id={domSectionId}
+      >
         <div className="shell tenant-page-hero__text-inner">
           <p className="eyebrow">{asString(section.data.eyebrow)}</p>
           <h1 className="tenant-page-hero__title">
@@ -150,7 +195,7 @@ function PageHeaderSection({ section, styleKey }: { section: SectionInstance; st
   }
 
   return (
-    <section className={`tenant-page-hero tenant-page-hero--${styleKey}`}>
+    <section className={`tenant-page-hero tenant-page-hero--${styleKey}`} id={domSectionId}>
       <div className="tenant-page-hero__media">
         <img src={image} alt="" />
         <div className="tenant-page-hero__shade" />
@@ -166,13 +211,23 @@ function PageHeaderSection({ section, styleKey }: { section: SectionInstance; st
   );
 }
 
-function TextImageSection({ section, previewBasePath }: { section: SectionInstance; previewBasePath: string }) {
+function TextImageSection({
+  section,
+  previewBasePath,
+  seed,
+  domSectionId
+}: {
+  section: SectionInstance;
+  previewBasePath: string;
+  seed: SiteSeed;
+  domSectionId: string;
+}) {
   const headline = asSplit(section.data.headline);
   const image = asString(section.data.image);
   const body = asString(section.data.body);
 
   return (
-    <section className="tenant-section">
+    <section className="tenant-section" id={domSectionId}>
       <div className="shell tenant-split">
         <div>
           <p className="eyebrow">{asString(section.data.eyebrow)}</p>
@@ -180,7 +235,7 @@ function TextImageSection({ section, previewBasePath }: { section: SectionInstan
             <SplitHeading plain={headline.plain} accent={headline.accent} />
           </h2>
           <div className="tenant-body-text">{body}</div>
-          <CtaButton value={section.data.cta} previewBasePath={previewBasePath} />
+          <CtaButton value={section.data.cta} previewBasePath={previewBasePath} seed={seed} />
         </div>
         {image ? (
           <div className="tenant-split__visual">
@@ -192,12 +247,12 @@ function TextImageSection({ section, previewBasePath }: { section: SectionInstan
   );
 }
 
-function GalleryGridSection({ section }: { section: SectionInstance }) {
+function GalleryGridSection({ section, domSectionId }: { section: SectionInstance; domSectionId: string }) {
   const headline = asSplit(section.data.headline);
   const images = parseGalleryImages(section.data.images);
 
   return (
-    <section className="tenant-section">
+    <section className="tenant-section" id={domSectionId}>
       <div className="shell">
         <p className="eyebrow">{asString(section.data.eyebrow)}</p>
         <h2 className="tenant-section-title">
@@ -230,7 +285,15 @@ function parseGalleryImages(value: unknown): { src: string; alt: string }[] {
     .filter((item) => Boolean(item.src));
 }
 
-function MapContactSection({ section, seed }: { section: SectionInstance; seed: SiteSeed }) {
+function MapContactSection({
+  section,
+  seed,
+  domSectionId
+}: {
+  section: SectionInstance;
+  seed: SiteSeed;
+  domSectionId: string;
+}) {
   const headline = asSplit(section.data.headline);
   const contact = seed.global.contact;
   const address = typeof contact.address === 'string' ? contact.address : '';
@@ -238,7 +301,7 @@ function MapContactSection({ section, seed }: { section: SectionInstance; seed: 
   const email = typeof contact.email === 'string' ? contact.email : '';
 
   return (
-    <section className="tenant-section tenant-soft">
+    <section className="tenant-section tenant-soft" id={domSectionId}>
       <div className="shell">
         <p className="eyebrow">{asString(section.data.eyebrow)}</p>
         <h2 className="tenant-section-title">
@@ -263,17 +326,21 @@ function MapContactSection({ section, seed }: { section: SectionInstance; seed: 
 function HeroSection({
   section,
   styleKey,
-  previewBasePath
+  previewBasePath,
+  seed,
+  domSectionId
 }: {
   section: SectionInstance;
   styleKey: StyleKey;
   previewBasePath: string;
+  seed: SiteSeed;
+  domSectionId: string;
 }) {
   const headline = asSplit(section.data.headline);
   const image = asString(section.data.image);
 
   return (
-    <section className={`tenant-hero tenant-hero--${styleKey}`}>
+    <section className={`tenant-hero tenant-hero--${styleKey}`} id={domSectionId}>
       {styleKey === 'bold' && image ? <img className="tenant-hero-bg" src={image} alt="" /> : null}
       <div className="shell tenant-hero-grid">
         <div>
@@ -284,8 +351,8 @@ function HeroSection({
           <p className="tenant-lead">{asString(section.data.subline)}</p>
           <p className="tenant-body">{asString(section.data.body)}</p>
           <div className="tenant-actions">
-            <CtaButton value={section.data.primaryCta} previewBasePath={previewBasePath} />
-            <CtaButton value={section.data.secondaryCta} previewBasePath={previewBasePath} secondary />
+            <CtaButton value={section.data.primaryCta} previewBasePath={previewBasePath} seed={seed} />
+            <CtaButton value={section.data.secondaryCta} previewBasePath={previewBasePath} seed={seed} secondary />
           </div>
         </div>
         {image && styleKey !== 'bold' ? (
@@ -298,17 +365,27 @@ function HeroSection({
   );
 }
 
-function ActionBar({ section, previewBasePath }: { section: SectionInstance; previewBasePath: string }) {
+function ActionBar({
+  section,
+  previewBasePath,
+  seed,
+  domSectionId
+}: {
+  section: SectionInstance;
+  previewBasePath: string;
+  seed: SiteSeed;
+  domSectionId: string;
+}) {
   return (
-    <section className="tenant-actionbar">
+    <section className="tenant-actionbar" id={domSectionId}>
       <div className="shell tenant-actionbar-inner">
         <span>
           <b />
           {asString(section.data.statusOverride)}
         </span>
         <div>
-          <CtaButton value={section.data.primaryCta} previewBasePath={previewBasePath} compact />
-          <CtaButton value={section.data.secondaryCta} previewBasePath={previewBasePath} compact secondary />
+          <CtaButton value={section.data.primaryCta} previewBasePath={previewBasePath} seed={seed} compact />
+          <CtaButton value={section.data.secondaryCta} previewBasePath={previewBasePath} seed={seed} compact secondary />
         </div>
       </div>
     </section>
@@ -342,11 +419,13 @@ function collectionDetailPrefix(sectionKey: string): string | null {
 function CollectionGrid({
   seed,
   section,
-  previewBasePath
+  previewBasePath,
+  domSectionId
 }: {
   seed: SiteSeed;
   section: SectionInstance;
   previewBasePath: string;
+  domSectionId: string;
 }) {
   const headline = asSplit(section.data.headline);
   const itemIds = Array.isArray(section.data.items) ? section.data.items.map(String) : [];
@@ -356,7 +435,7 @@ function CollectionGrid({
   const prefix = collectionDetailPrefix(section.sectionKey);
 
   return (
-    <section className="tenant-section">
+    <section className="tenant-section" id={domSectionId}>
       <div className="shell">
         <p className="eyebrow">{asString(section.data.eyebrow)}</p>
         <h2 className="tenant-section-title">
@@ -396,12 +475,12 @@ function CollectionGrid({
   );
 }
 
-function FaqSection({ section }: { section: SectionInstance }) {
+function FaqSection({ section, domSectionId }: { section: SectionInstance; domSectionId: string }) {
   const headline = asSplit(section.data.headline);
   const items = Array.isArray(section.data.items) ? section.data.items : [];
 
   return (
-    <section className="tenant-section tenant-soft">
+    <section className="tenant-section tenant-soft" id={domSectionId}>
       <div className="shell">
         <p className="eyebrow">{asString(section.data.eyebrow)}</p>
         <h2 className="tenant-section-title">
@@ -423,11 +502,21 @@ function FaqSection({ section }: { section: SectionInstance }) {
   );
 }
 
-function RsvpSection({ section, previewBasePath }: { section: SectionInstance; previewBasePath: string }) {
+function RsvpSection({
+  section,
+  previewBasePath,
+  seed,
+  domSectionId
+}: {
+  section: SectionInstance;
+  previewBasePath: string;
+  seed: SiteSeed;
+  domSectionId: string;
+}) {
   const headline = asSplit(section.data.headline);
 
   return (
-    <section className="tenant-section">
+    <section className="tenant-section" id={domSectionId}>
       <div className="shell">
         <p className="eyebrow">{asString(section.data.eyebrow)}</p>
         <h2 className="tenant-section-title">
@@ -440,19 +529,19 @@ function RsvpSection({ section, previewBasePath }: { section: SectionInstance; p
           </p>
         ) : null}
         <div style={{ marginTop: 20 }}>
-          <CtaButton value={section.data.cta} previewBasePath={previewBasePath} />
+          <CtaButton value={section.data.cta} previewBasePath={previewBasePath} seed={seed} />
         </div>
       </div>
     </section>
   );
 }
 
-function Testimonials({ section }: { section: SectionInstance }) {
+function Testimonials({ section, domSectionId }: { section: SectionInstance; domSectionId: string }) {
   const headline = asSplit(section.data.headline);
   const items = Array.isArray(section.data.items) ? section.data.items : [];
 
   return (
-    <section className="tenant-section tenant-soft">
+    <section className="tenant-section tenant-soft" id={domSectionId}>
       <div className="shell">
         <p className="eyebrow">{asString(section.data.eyebrow)}</p>
         <h2 className="tenant-section-title">
@@ -474,17 +563,27 @@ function Testimonials({ section }: { section: SectionInstance }) {
   );
 }
 
-function ContactCta({ section, previewBasePath }: { section: SectionInstance; previewBasePath: string }) {
+function ContactCta({
+  section,
+  previewBasePath,
+  seed,
+  domSectionId
+}: {
+  section: SectionInstance;
+  previewBasePath: string;
+  seed: SiteSeed;
+  domSectionId: string;
+}) {
   const headline = asSplit(section.data.headline);
   return (
-    <section className="tenant-section tenant-cta">
+    <section className="tenant-section tenant-cta" id={domSectionId}>
       <div className="shell">
         <p className="eyebrow">{asString(section.data.eyebrow)}</p>
         <h2 className="tenant-section-title">
           <SplitHeading plain={headline.plain} accent={headline.accent} />
         </h2>
         <p className="tenant-section-intro">{asString(section.data.subline)}</p>
-        <CtaButton value={section.data.cta} previewBasePath={previewBasePath} />
+        <CtaButton value={section.data.cta} previewBasePath={previewBasePath} seed={seed} />
       </div>
     </section>
   );
@@ -494,11 +593,19 @@ function arrayItems(value: unknown): Record<string, unknown>[] {
   return Array.isArray(value) ? value.filter(isRecord) : [];
 }
 
-function StatsBandSection({ section, styleKey }: { section: SectionInstance; styleKey: StyleKey }) {
+function StatsBandSection({
+  section,
+  styleKey,
+  domSectionId
+}: {
+  section: SectionInstance;
+  styleKey: StyleKey;
+  domSectionId: string;
+}) {
   const items = arrayItems(section.data.items);
   const headline = asSplit(section.data.headline);
   return (
-    <section className={`tenant-wow-stats tenant-wow-stats--${styleKey}`}>
+    <section className={`tenant-wow-stats tenant-wow-stats--${styleKey}`} id={domSectionId}>
       <div className="tenant-wow-stats__glow" aria-hidden />
       <div className="shell tenant-wow-stats__inner">
         <div className="tenant-wow-stats__intro">
@@ -521,11 +628,19 @@ function StatsBandSection({ section, styleKey }: { section: SectionInstance; sty
   );
 }
 
-function TrustLogosSection({ section, styleKey }: { section: SectionInstance; styleKey: StyleKey }) {
+function TrustLogosSection({
+  section,
+  styleKey,
+  domSectionId
+}: {
+  section: SectionInstance;
+  styleKey: StyleKey;
+  domSectionId: string;
+}) {
   const items = arrayItems(section.data.items);
   const headline = asSplit(section.data.headline);
   return (
-    <section className={`tenant-wow-trust tenant-wow-trust--${styleKey}`}>
+    <section className={`tenant-wow-trust tenant-wow-trust--${styleKey}`} id={domSectionId}>
       <div className="shell">
         <div className="tenant-wow-trust__head">
           <p className="eyebrow">{asString(section.data.eyebrow)}</p>
@@ -566,11 +681,19 @@ function TrustLogosSection({ section, styleKey }: { section: SectionInstance; st
   );
 }
 
-function BentoHighlightsSection({ section, styleKey }: { section: SectionInstance; styleKey: StyleKey }) {
+function BentoHighlightsSection({
+  section,
+  styleKey,
+  domSectionId
+}: {
+  section: SectionInstance;
+  styleKey: StyleKey;
+  domSectionId: string;
+}) {
   const items = arrayItems(section.data.items);
   const headline = asSplit(section.data.headline);
   return (
-    <section className={`tenant-wow-bento tenant-wow-bento--${styleKey}`}>
+    <section className={`tenant-wow-bento tenant-wow-bento--${styleKey}`} id={domSectionId}>
       <div className="shell">
         <div className="tenant-wow-bento__head">
           <p className="eyebrow">{asString(section.data.eyebrow)}</p>
@@ -608,18 +731,20 @@ function CtaButton({
   value,
   secondary,
   compact,
-  previewBasePath
+  previewBasePath,
+  seed
 }: {
   value: unknown;
   secondary?: boolean;
   compact?: boolean;
   previewBasePath: string;
+  seed: SiteSeed;
 }) {
   if (!isRecord(value)) return null;
   const label = asString(value.label);
   if (!label) return null;
-  const link = isRecord(value.link) ? asString(value.link.href) : '#';
-  const href = resolveTenantHref(link, previewBasePath);
+  const link = isRecord(value.link) ? value.link : {};
+  const href = resolveCtaLinkHref(link, seed, previewBasePath);
   const className = `tenant-button ${secondary ? 'secondary' : ''} ${compact ? 'compact' : ''}`.trim();
 
   if (href.startsWith('/') && !href.startsWith('//')) {
@@ -635,13 +760,6 @@ function CtaButton({
       {label}
     </a>
   );
-}
-
-function resolveTenantHref(href: string, previewBasePath: string): string {
-  if (!href || href === '#') return '#';
-  if (href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('http')) return href;
-  if (href.startsWith('/')) return `${previewBasePath}${href}`;
-  return href;
 }
 
 function asString(value: unknown): string {

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { agency, imageAssets, rotatingHeroWords } from '@/ui/marketing/data';
+import { agency, rotatingHeroWords } from '@/ui/marketing/data';
 import {
   CORE_TEMPLATE_META,
   EXTRA_TEMPLATE_META,
@@ -9,6 +9,13 @@ import {
   type ExtraTemplateKey
 } from '@/ui/marketing/template-showcase-data';
 import { RotatingWord } from '@/ui/marketing/RotatingWord';
+import {
+  HomeAddOnTeaserSection,
+  HomeAdminShowcaseSection,
+  HomeAblaufTeaserSection,
+  HomeDeviceStripAlignedSection,
+  HomeStatsSection
+} from '@/ui/marketing/home-marketing-sections';
 import {
   BranchMarqueeSection,
   CtaFooterSection,
@@ -121,8 +128,8 @@ export default function MarketingHomePage() {
               </h2>
             </div>
             <p className="hero-copy" style={{ margin: 0 }}>
-              Drei Kern-Branchen sind live klickbar, weitere zeigen, wie wir Stil und Bildsprache anpassen. Pro Branche
-              gibt es drei Stilwelten — Classic, Modern und Bold. Weitere Branchen gern auf Anfrage.
+              Drei Templates sind sofort live klickbar, drei weitere Branchen zeigen, wie sich der Studio-Stil anpassen
+              lässt. Mehr Branchen jederzeit auf Anfrage.
             </p>
           </div>
           <div className="fm-portrait-grid" data-stagger-grid>
@@ -173,45 +180,13 @@ export default function MarketingHomePage() {
         </div>
       </RevealOnScroll>
 
-      <RevealOnScroll as="section" className="section fm-device-strip">
-        <div className="shell">
-          <p className="eyebrow">In Aktion</p>
-          <h2 className="section-title">
-            So fühlt es sich an,
-            <br />
-            <em>wenn alles passt.</em>
-          </h2>
-          <p className="hero-copy" style={{ maxWidth: 720 }}>
-            Ein Restaurant im warmen Klassik-Stil, dieselbe Marke mutig in Bold — und dazwischen der ruhige Ort, an dem
-            Du Texte und Bilder selbst anfasst. Kein Theater, nur echte Oberflächen.
-          </p>
-          <div className="fm-device-grid" data-stagger-grid>
-            <Link href={previewHref('restaurant', 'classic')} className="fm-device-card">
-              <img src={CORE_TEMPLATE_META.restaurant.image} alt="" />
-              <div>
-                <h3>Restaurant · Klassisch</h3>
-                <p>Stimmung, Menü, Reservierung — im Browser durchklicken</p>
-              </div>
-            </Link>
-            <Link href="/admin/pages/home?style=classic" className="fm-device-card">
-              <img src={imageAssets.contentKit} alt="" />
-              <div>
-                <h3>Inhalte anfassen</h3>
-                <p>Abschnitte und Texte wie später im Alltag</p>
-              </div>
-            </Link>
-            <Link href={previewHref('restaurant', 'bold')} className="fm-device-card">
-              <img src={CORE_TEMPLATE_META.restaurant.image} alt="" />
-              <div>
-                <h3>Restaurant · Bold</h3>
-                <p>Typo und Kontrast, die auf dem Handy sitzen</p>
-              </div>
-            </Link>
-          </div>
-        </div>
-      </RevealOnScroll>
+      <HomeDeviceStripAlignedSection />
 
       <ManifestoSection />
+      <HomeAdminShowcaseSection />
+      <HomeAblaufTeaserSection />
+      <HomeAddOnTeaserSection />
+      <HomeStatsSection />
       <TestimonialsSection />
       <CtaFooterSection />
     </main>

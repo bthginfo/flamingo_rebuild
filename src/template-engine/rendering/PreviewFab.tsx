@@ -5,6 +5,12 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { INDUSTRY_KEYS, STYLE_KEYS, type IndustryKey, type StyleKey } from '@/template-engine/model';
 import { getIndustry } from '@/template-engine/registry';
+import {
+  PREVIEW_ACCENT_IDS,
+  isPreviewAccentId,
+  resolvePreviewAccentHex,
+  type PreviewAccentId
+} from '@/template-engine/rendering/preview-accent-palette';
 
 const STYLE_LABELS: Record<StyleKey, string> = {
   classic: 'Classic',
@@ -15,6 +21,14 @@ const STYLE_LABELS: Record<StyleKey, string> = {
 function pathSuffix(segments: readonly string[]): string {
   if (!segments.length) return '';
   return `/${segments.map((s) => encodeURIComponent(s)).join('/')}`;
+}
+
+function queryWithAccentUpdates(searchParams: URLSearchParams, accent: PreviewAccentId | null): string {
+  const next = new URLSearchParams(searchParams.toString());
+  if (accent === null) next.delete('accent');
+  else next.set('accent', accent);
+  const s = next.toString();
+  return s ? `?${s}` : '';
 }
 
 export function PreviewFab({
@@ -33,6 +47,8 @@ export function PreviewFab({
   const suffix = pathSuffix(pathSegments);
   const query = searchParams.toString();
   const queryPart = query ? `?${query}` : '';
+  const rawAccent = searchParams.get('accent');
+  const activeAccent: PreviewAccentId | null = isPreviewAccentId(rawAccent) ? rawAccent : null;
 
   useEffect(() => {
     setOpen(false);
@@ -83,6 +99,33 @@ export function PreviewFab({
             </Link>
           ))}
         </nav>
+      </div>
+      <div className="preview-fab__row">
+        <span className="preview-fab__label" style={{ width: '100%' }}>
+          Farbschema
+        </span>
+        <div className="preview-fab__swatches" role="group" aria-label="Farbschema">
+          {PREVIEW_ACCENT_IDS.map((id) => {
+            const fill = resolvePreviewAccentHex(id, styleKey) ?? '#888';
+            const isActive = activeAccent === id;
+            return (
+              <button
+                key={id}
+                type="button"
+                className={`preview-fab__swatch${isActive ? ' is-active' : ''}`}
+                aria-pressed={isActive}
+                aria-label={`Akzentfarbe ${id}`}
+                title={id}
+                style={{ background: fill }}
+                onClick={() => {
+                  const nextAccent: PreviewAccentId | null = isActive ? null : id;
+                  router.push(`${pathname ?? ''}${queryWithAccentUpdates(searchParams, nextAccent)}`);
+                  setOpen(false);
+                }}
+              />
+            );
+          })}
+        </div>
       </div>
     </div>
   );

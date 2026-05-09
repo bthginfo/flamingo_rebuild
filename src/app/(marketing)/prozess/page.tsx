@@ -1,19 +1,13 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { agency, imageAssets, processSteps } from '@/ui/marketing/data';
-import {
-  BranchMarqueeSection,
-  CtaFooterSection,
-  LandingHeroShowcase,
-  ManifestoSection,
-  TestimonialsSection
-} from '@/ui/marketing/showcase-shared';
+import { agency, processPhases } from '@/ui/marketing/data';
+import { BranchMarqueeSection, CtaFooterSection, LandingHeroShowcase, ManifestoSection, TestimonialsSection } from '@/ui/marketing/showcase-shared';
 import { RevealOnScroll } from '@/ui/marketing/RevealOnScroll';
 
 export const metadata: Metadata = {
   title: 'Ablauf',
   description:
-    'So begleiten wir Dich vom Erstgespräch bis live: ruhige Schritte, frühe Vorschau im Browser und Übergabe, damit Du weiterarbeiten kannst.'
+    'Klare Stationen, transparente Kosten, kein Agentur-Theater. Du weißt jederzeit, wo wir stehen — und was als nächstes kommt.'
 };
 
 export default function ProcessPage() {
@@ -21,66 +15,64 @@ export default function ProcessPage() {
     <main>
       <LandingHeroShowcase
         pulse={agency.tagline}
-        titleLine1="Vom ersten Gespräch"
-        titleEmphasis="bis live."
-        lead="Ein ruhiger Ablauf für Betriebe, die schnell eine starke Website brauchen — und danach selbst weitermachen wollen, ohne von einer Agentur abhängig zu sein."
+        titleLine1="Von der Idee bis live."
+        titleEmphasis="In sieben Schritten."
+        lead="Klare Stationen, transparente Kosten, kein Agentur-Theater. Du weißt jederzeit, wo wir stehen — und was als nächstes kommt."
         monoAside="/ Klar · persönlich"
-        primaryCta={{ href: '#ablauf', label: 'So arbeiten wir →' }}
-        secondaryCta={{ href: '/preise', label: 'Preise & Pakete' }}
+        primaryCta={{ href: '#schritte', label: 'Schritte ansehen →' }}
+        secondaryCta={{ href: '/preise', label: 'Preise ansehen' }}
         scrollTargetId="#mehr"
       />
 
       <BranchMarqueeSection />
 
-      <RevealOnScroll as="section" className="section surface" id="ablauf">
-        <div className="shell split-grid" data-stagger-grid>
-          <div className="image-panel">
-            <img src={imageAssets.process} alt="Team plant Website-Projekt" />
+      <RevealOnScroll as="section" className="section surface" id="schritte">
+        <div className="shell">
+          <div className="fm-process-rail" aria-hidden>
+            {processPhases.map((p) => (
+              <div className="fm-process-rail__cell" key={p.step}>
+                <span className="fm-mono-muted">{p.step}</span>
+                <span className="fm-process-rail__name">{p.rail}</span>
+                <span className="fm-process-rail__tag">{p.tag}</span>
+              </div>
+            ))}
           </div>
-          <div className="timeline" data-stagger-grid>
-            {processSteps.map((step) => (
-              <article className="card timeline-card" key={step.title}>
-                <h2>{step.title}</h2>
-                <p style={{ color: 'var(--muted)', lineHeight: 1.6 }}>{step.text}</p>
+          <div className="fm-process-list" data-stagger-grid>
+            {processPhases.map((phase) => (
+              <article className="card fm-process-card" key={phase.step}>
+                <p className="eyebrow">
+                  Schritt {phase.step} · {phase.tag}
+                </p>
+                <h3>{phase.title}</h3>
+                <p style={{ color: 'var(--muted)', lineHeight: 1.65 }}>{phase.lead}</p>
+                <ul className="fm-checklist">
+                  {phase.bullets.map((b) => (
+                    <li key={b}>✓ {b}</li>
+                  ))}
+                </ul>
               </article>
             ))}
           </div>
         </div>
       </RevealOnScroll>
 
-      <RevealOnScroll as="section" className="section fm-device-strip">
-        <div className="shell">
-          <p className="eyebrow">Nächster Schritt</p>
+      <RevealOnScroll as="section" className="section fm-cta-mid">
+        <div className="shell fm-cta-mid__inner">
+          <p className="eyebrow">Bereit?</p>
           <h2 className="section-title">
-            Lust auf einen
+            In 10 Tagen
             <br />
-            <em>echten Blick?</em>
+            <em>online.</em>
           </h2>
-          <p className="hero-copy" style={{ maxWidth: 720 }}>
-            Schreib uns mit ein paar Sätzen zu Deinem Betrieb — oder stöbert in Ruhe in den Templates und der
-            Live-Vorschau. Wir melden uns persönlich.
+          <p className="hero-copy" style={{ maxWidth: 640 }}>
+            Schreib uns kurz, was Du brauchst. Wir melden uns am selben Tag mit einer ehrlichen Einschätzung.
           </p>
-          <div className="fm-device-grid" data-stagger-grid>
-            <Link href="/templates#galerie" className="fm-device-card">
-              <img src={imageAssets.heroDevice} alt="" />
-              <div>
-                <h3>Templates</h3>
-                <p>Branchen &amp; Stile ansehen</p>
-              </div>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 24 }}>
+            <Link className="button" href="/kontakt">
+              Beratung anfragen →
             </Link>
-            <a className="fm-device-card" href={`mailto:${agency.email}`}>
-              <img src={imageAssets.contentKit} alt="" />
-              <div>
-                <h3>Kurz anfragen</h3>
-                <p>Wir melden uns persönlich</p>
-              </div>
-            </a>
-            <Link href="/preise#pakete" className="fm-device-card">
-              <img src={imageAssets.process} alt="" />
-              <div>
-                <h3>Preise</h3>
-                <p>Pakete &amp; Add-ons</p>
-              </div>
+            <Link className="button secondary" href="/preise">
+              Preise ansehen
             </Link>
           </div>
         </div>

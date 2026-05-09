@@ -42,7 +42,7 @@ export default async function CrmPage() {
   const styleOptions = styles.map((style) => ({ key: style.key, label: style.label }));
 
   return (
-    <main className="section">
+    <div className="admin-surface section">
       <div className="shell">
         <p className="eyebrow">CRM</p>
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', alignItems: 'baseline' }}>
@@ -92,6 +92,6 @@ export default async function CrmPage() {
           </>
         )}
       </div>
-    </main>
+    </div>
   );
 }

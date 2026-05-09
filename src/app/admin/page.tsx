@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { AdminLogoutButton } from '@/admin/AdminLogoutButton';
 
 const adminAreas = [
   ['Seiten', '/admin/pages', 'Abschnitte pflegen und Vorschau — Entwurf speichern oder live veröffentlichen.'],
@@ -12,12 +11,11 @@ const adminAreas = [
 
 export default function AdminHomePage() {
   return (
-    <main className="section">
+    <div className="admin-page admin-page--dashboard section">
       <div className="shell">
-        <p className="eyebrow">Admin</p>
+        <p className="eyebrow">Willkommen</p>
         <div className="admin-title-row">
           <h1 style={{ fontFamily: 'Georgia, serif', fontSize: 56 }}>Arbeitsbereich</h1>
-          <AdminLogoutButton />
         </div>
         <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))' }}>
           {adminAreas.map(([label, href, description]) => (
@@ -28,6 +26,6 @@ export default function AdminHomePage() {
           ))}
         </div>
       </div>
-    </main>
+    </div>
   );
 }

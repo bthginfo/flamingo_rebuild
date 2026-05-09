@@ -9,7 +9,7 @@ export default async function AdminCollectionsPage() {
 
   if (!isDatabaseConfigured()) {
     return (
-      <main className="section">
+      <div className="admin-surface section">
         <div className="shell">
           <p className="eyebrow">CMS</p>
           <h1 style={{ fontFamily: 'Georgia, serif', fontSize: 52 }}>Inhalte</h1>
@@ -17,27 +17,27 @@ export default async function AdminCollectionsPage() {
             Datenbank nicht konfiguriert. Siehe <Link href="/admin/pages">Seiten</Link> oder <Link href="/templates">Showcase</Link>.
           </p>
         </div>
-      </main>
+      </div>
     );
   }
 
   const profile = await getTenantCmsProfile(tenantSlug);
   if (!profile) {
     return (
-      <main className="section">
+      <div className="admin-surface section">
         <div className="shell">
           <p className="eyebrow">CMS</p>
           <h1 style={{ fontFamily: 'Georgia, serif', fontSize: 52 }}>Inhalte</h1>
           <p style={{ color: 'var(--muted)' }}>Tenant nicht gefunden.</p>
         </div>
-      </main>
+      </div>
     );
   }
 
   const industry = getIndustry(profile.industryKey);
 
   return (
-    <main className="section">
+    <div className="admin-surface section">
       <div className="shell">
         <p className="eyebrow">CMS</p>
         <h1 style={{ fontFamily: 'Georgia, serif', fontSize: 52 }}>Inhalte</h1>
@@ -61,6 +61,6 @@ export default async function AdminCollectionsPage() {
           ))}
         </div>
       </div>
-    </main>
+    </div>
   );
 }

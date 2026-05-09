@@ -10,7 +10,7 @@ export default async function AdminPagesPage() {
 
   if (!isDatabaseConfigured()) {
     return (
-      <main className="section">
+      <div className="admin-surface section">
         <div className="shell">
           <p className="eyebrow">CMS</p>
           <h1 style={{ fontFamily: 'Georgia, serif', fontSize: 52 }}>Seiten</h1>
@@ -20,20 +20,20 @@ export default async function AdminPagesPage() {
             <Link href="/templates">/templates</Link>.
           </p>
         </div>
-      </main>
+      </div>
     );
   }
 
   const profile = await getTenantCmsProfile(tenantSlug);
   if (!profile) {
     return (
-      <main className="section">
+      <div className="admin-surface section">
         <div className="shell">
           <p className="eyebrow">CMS</p>
           <h1 style={{ fontFamily: 'Georgia, serif', fontSize: 52 }}>Seiten</h1>
           <p style={{ color: 'var(--muted)' }}>Tenant nicht gefunden. Bitte erneut einloggen.</p>
         </div>
-      </main>
+      </div>
     );
   }
 
@@ -42,7 +42,7 @@ export default async function AdminPagesPage() {
   const home = initialSeed.pages.find((page) => page.key === 'home');
 
   return (
-    <main className="section">
+    <div className="admin-surface section">
       <div className="shell">
         <p className="eyebrow">CMS</p>
         <h1 style={{ fontFamily: 'Georgia, serif', fontSize: 52 }}>Seiten</h1>
@@ -89,6 +89,6 @@ export default async function AdminPagesPage() {
           </section>
         ) : null}
       </div>
-    </main>
+    </div>
   );
 }

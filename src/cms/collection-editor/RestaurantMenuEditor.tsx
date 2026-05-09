@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { cloneSeed, discardDraft, hasDraft, loadDemoContent, publishDraft, resetPublished, saveDraft } from '@/cms/demo-store';
 import {
   discardAdminDraft,
@@ -19,6 +20,7 @@ import {
   defaultNewCollectionItemData,
   removeCollectionItemFromAllSectionLists
 } from '@/cms/collection-editor/collection-wiring';
+
 
 const STYLE_LABELS: Record<StyleKey, string> = {
   classic: 'Klassisch',
@@ -46,6 +48,8 @@ export function RestaurantMenuEditor({
   collectionKey?: string;
   headingTitle?: string;
 }) {
+  const pathname = usePathname() ?? '';
+  const useFloatingDock = pathname.startsWith('/admin/collections');
   const [seed, setSeed] = useState<SiteSeed>(() => cloneSeed(initialSeed));
   const [status, setStatus] = useState<EditorStatus>('loading');
   const [draftExists, setDraftExists] = useState(false);
@@ -232,33 +236,35 @@ export function RestaurantMenuEditor({
             </nav>
           ) : null}
         </div>
-        <div className="cms-actions">
-          <a className="button secondary" href={previewHref(contentState, seed)} target="_blank" rel="noreferrer">
-            Vorschau
-          </a>
-          <button
-            className="button secondary"
-            onClick={() => void handleDiscard()}
-            type="button"
-            disabled={toolbarBusy(status)}
-          >
-            {status === 'discarding' ? 'Verwerfen…' : 'Entwurf verwerfen'}
-          </button>
-          <button className="button secondary" onClick={handleReset} type="button" disabled={toolbarBusy(status)}>
-            Demo zurücksetzen
-          </button>
-          <button
-            className="button secondary"
-            onClick={() => void handleSave()}
-            type="button"
-            disabled={toolbarBusy(status)}
-          >
-            {status === 'saving' ? 'Speichert…' : 'Entwurf speichern'}
-          </button>
-          <button className="button" onClick={() => void handlePublish()} type="button" disabled={toolbarBusy(status)}>
-            {status === 'publishing' ? 'Veröffentlicht…' : 'Speichern & veröffentlichen'}
-          </button>
-        </div>
+        {useFloatingDock ? null : (
+          <div className="cms-actions">
+            <a className="button secondary" href={previewHref(contentState, seed)} target="_blank" rel="noreferrer">
+              Vorschau
+            </a>
+            <button
+              className="button secondary"
+              onClick={() => void handleDiscard()}
+              type="button"
+              disabled={toolbarBusy(status)}
+            >
+              {status === 'discarding' ? 'Verwerfen…' : 'Entwurf verwerfen'}
+            </button>
+            <button className="button secondary" onClick={handleReset} type="button" disabled={toolbarBusy(status)}>
+              Demo zurücksetzen
+            </button>
+            <button
+              className="button secondary"
+              onClick={() => void handleSave()}
+              type="button"
+              disabled={toolbarBusy(status)}
+            >
+              {status === 'saving' ? 'Speichert…' : 'Entwurf speichern'}
+            </button>
+            <button className="button" onClick={() => void handlePublish()} type="button" disabled={toolbarBusy(status)}>
+              {status === 'publishing' ? 'Veröffentlicht…' : 'Speichern & veröffentlichen'}
+            </button>
+          </div>
+        )}
       </div>
 
       <section className="cms-editor-panel cms-editor-panel--wide">
@@ -293,6 +299,41 @@ export function RestaurantMenuEditor({
           </article>
         ))}
       </section>
+
+      {useFloatingDock ? (
+        <div className="cms-floating-dock" role="toolbar" aria-label="Speichern und veröffentlichen">
+          <a className="button secondary" href={previewHref(contentState, seed)} target="_blank" rel="noreferrer">
+            Live ansehen
+          </a>
+          <button
+            className="button secondary"
+            onClick={() => void handleDiscard()}
+            type="button"
+            disabled={toolbarBusy(status)}
+          >
+            {status === 'discarding' ? 'Verwerfen…' : 'Entwurf verwerfen'}
+          </button>
+          <button className="button secondary" onClick={handleReset} type="button" disabled={toolbarBusy(status)}>
+            Demo zurücksetzen
+          </button>
+          <button
+            type="button"
+            className="button cms-floating-draft"
+            onClick={() => void handleSave()}
+            disabled={toolbarBusy(status)}
+          >
+            {status === 'saving' ? 'Speichert…' : 'Entwurf speichern'}
+          </button>
+          <button
+            type="button"
+            className="button cms-floating-publish"
+            onClick={() => void handlePublish()}
+            disabled={toolbarBusy(status)}
+          >
+            {status === 'publishing' ? 'Veröffentlicht…' : 'Veröffentlichen'}
+          </button>
+        </div>
+      ) : null}
     </main>
   );
 }

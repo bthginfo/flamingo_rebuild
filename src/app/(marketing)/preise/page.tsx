@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { addOns, agency, pricingTiers } from '@/ui/marketing/data';
+import { addOns, agency, pricingFaqs, pricingTiers } from '@/ui/marketing/data';
 import {
   BranchMarqueeSection,
   CtaFooterSection,
@@ -13,7 +13,7 @@ import { RevealOnScroll } from '@/ui/marketing/RevealOnScroll';
 export const metadata: Metadata = {
   title: 'Preise & Pakete',
   description:
-    'Klare Pakete für Template-Websites, Content-Unterstützung und Custom-Auftritte — inklusive Add-ons wie Foto, Film und Mehrsprachigkeit.'
+    'Drei klare Pakete. Ein transparenter Festpreis, einmalig zahlbar. Hosting und Pflege auf Wunsch monatlich – kündbar jederzeit.'
 };
 
 export default function PricingPage() {
@@ -21,9 +21,9 @@ export default function PricingPage() {
     <main>
       <LandingHeroShowcase
         pulse={agency.tagline}
-        titleLine1="Preise,"
-        titleEmphasis="die passen."
-        lead="Klare Pakete für Template-Websites, Content-Unterstützung und individuelle Auftritte — ohne Kleingedrucktes und ohne Überraschungen auf der Rechnung."
+        titleLine1="Faire Preise."
+        titleEmphasis="Keine Überraschungen."
+        lead="Drei klare Pakete. Ein transparenter Festpreis, einmalig zahlbar. Hosting und Pflege auf Wunsch monatlich – kündbar jederzeit."
         monoAside="/ Fair · transparent"
         primaryCta={{ href: '#pakete', label: 'Pakete vergleichen →' }}
         secondaryCta={{ href: '/templates', label: 'Templates ansehen' }}
@@ -41,13 +41,19 @@ export default function PricingPage() {
                   {tier.badge}
                 </p>
               ) : null}
-              <h3>{tier.name}</h3>
+              <h3 className="fm-price-title">
+                <span className="fm-price-slash">/ </span>
+                {tier.name}
+              </h3>
               <p className="price-value">{tier.price}</p>
-              <p>{tier.subtitle}</p>
-              <p>{tier.monthly}</p>
+              <p className="fm-price-subtitle">{tier.subtitle}</p>
+              <p className="fm-price-monthly">{tier.monthly}</p>
               <ul>
                 {tier.features.map((feature) => (
-                  <li key={feature}>{feature}</li>
+                  <li key={feature}>
+                    <span aria-hidden>✓ </span>
+                    {feature}
+                  </li>
                 ))}
               </ul>
               <Link className={tier.featured ? 'button' : 'button secondary'} href="/prozess" style={{ marginTop: 'auto' }}>
@@ -63,9 +69,15 @@ export default function PricingPage() {
           <div className="split-grid" style={{ alignItems: 'end', marginBottom: 32 }} data-stagger-grid>
             <div>
               <p className="eyebrow">Add-ons</p>
-              <h2 className="section-title">Wer mehr braucht, bekommt mehr.</h2>
+              <h2 className="section-title">
+                Wer mehr braucht,
+                <br />
+                <em>bekommt mehr.</em>
+              </h2>
             </div>
-            <p className="hero-copy">Buchbar einzeln oder kombiniert. Später nachrüstbar — ohne dass wir bei Null anfangen.</p>
+            <p className="hero-copy">
+              Buchbar einzeln oder als Paket. Auf Wunsch zu jedem Zeitpunkt nachrüstbar.
+            </p>
           </div>
           <div className="feature-grid" data-stagger-grid>
             {addOns.map((addon) => (
@@ -73,6 +85,21 @@ export default function PricingPage() {
                 <h3>{addon.title}</h3>
                 <strong>{addon.price}</strong>
                 <p>{addon.text}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </RevealOnScroll>
+
+      <RevealOnScroll as="section" className="section surface" id="faq">
+        <div className="shell">
+          <p className="eyebrow">FAQ</p>
+          <h2 className="section-title">Häufige Fragen.</h2>
+          <div className="fm-faq-grid" data-stagger-grid>
+            {pricingFaqs.map((item) => (
+              <article className="card fm-faq-card" key={item.q}>
+                <h3>{item.q}</h3>
+                <p style={{ color: 'var(--muted)', lineHeight: 1.65 }}>{item.a}</p>
               </article>
             ))}
           </div>

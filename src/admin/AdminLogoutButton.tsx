@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-export function AdminLogoutButton() {
+export function AdminLogoutButton({ className }: { className?: string }) {
   const router = useRouter();
   const [pending, setPending] = useState(false);
 
@@ -15,7 +15,12 @@ export function AdminLogoutButton() {
   }
 
   return (
-    <button className="button secondary" disabled={pending} onClick={logout} type="button">
+    <button
+      className={className ?? 'button secondary'}
+      disabled={pending}
+      onClick={logout}
+      type="button"
+    >
       {pending ? 'Abmelden...' : 'Abmelden'}
     </button>
   );
