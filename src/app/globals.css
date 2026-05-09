@@ -3500,6 +3500,24 @@ a {
   margin-top: 6px;
 }
 
+.internal-crm-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.internal-crm-modal {
+  width: 100%;
+  max-width: 560px;
+  max-height: min(90vh, 900px);
+  overflow: auto;
+}
+
 /* ─── FlamingoMedia marketing (parity with flamingomedia.online) ─── */
 
 .fm-mono-label {

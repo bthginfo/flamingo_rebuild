@@ -1,3 +1,4 @@
+import { randomBytes } from 'crypto';
 import bcrypt from 'bcryptjs';
 import { loadSiteDocumentByTenantSlug, publishDraftForTenant, saveDraftSiteDocument } from '@/db/site-document-repository';
 import {
@@ -10,12 +11,21 @@ import { isValidTenantSlug } from '@/lib/tenant-slug';
 import { INDUSTRY_KEYS, STYLE_KEYS, type IndustryKey, type StyleKey } from '@/template-engine/model';
 import { validateSiteDocument } from '@/platform/publishing/validate-site-document';
 import { getDemoSeed } from '@/template-engine/seeds';
-import type { SiteSeed } from '@/template-engine/seeds/model';
+import type { CollectionSeedItem, SiteSeed } from '@/template-engine/seeds/model';
 
 export type ProvisionInput = {
   prospectId: string;
   tenantSlug: string;
-  adminPassword: string;
+  /** Leer oder zu kurz → zufälliges Passwort (wird in `generatedPassword` zurückgegeben). */
+  adminPassword?: string;
+  /** Anzeigename / Tenant-Name in der DB; Standard: Firmenname des Prospects. */
+  tenantDisplayName?: string;
+  /** Überschreibt die Branche aus dem Prospect. */
+  industryKey?: IndustryKey;
+  /** Überschreibt den Stil aus dem Prospect. */
+  styleKey?: StyleKey;
+  /** Optionales JSON (z. B. Perplexity-Export): wird mit dem Demo-Seed zusammengefuehrt und validiert. */
+  contentJson?: string;
 };
 
 export type ProvisionHealth = {
@@ -27,7 +37,14 @@ export type ProvisionHealth = {
 };
 
 export type ProvisionResult =
-  | { ok: true; tenantId: string; tenantSlug: string; health: ProvisionHealth }
+  | {
+      ok: true;
+      tenantId: string;
+      tenantSlug: string;
+      health: ProvisionHealth;
+      /** Nur gesetzt, wenn das Admin-Passwort automatisch erzeugt wurde. */
+      generatedPassword?: string;
+    }
   | { ok: false; status: number; error: string; issues?: string[] };
 
 function isIndustryKey(value: string): value is IndustryKey {
@@ -55,6 +72,69 @@ function personalizeSeed(seed: SiteSeed, tenantName: string): SiteSeed {
   };
 }
 
+function cloneSeed(seed: SiteSeed): SiteSeed {
+  return JSON.parse(JSON.stringify(seed)) as SiteSeed;
+}
+
+function mergeSiteSeedFromJson(
+  base: SiteSeed,
+  jsonText: string
+): { ok: true; seed: SiteSeed } | { ok: false; error: string } {
+  let patch: unknown;
+  try {
+    patch = JSON.parse(jsonText);
+  } catch {
+    return { ok: false, error: 'Content-JSON ist kein gültiges JSON.' };
+  }
+  if (!patch || typeof patch !== 'object' || Array.isArray(patch)) {
+    return { ok: false, error: 'Content-JSON muss ein Objekt sein.' };
+  }
+  const p = patch as Record<string, unknown>;
+  const seed = cloneSeed(base);
+  try {
+    if (typeof p.tenantName === 'string' && p.tenantName.trim()) {
+      seed.tenantName = p.tenantName.trim();
+    }
+    if (isIndustryKey(String(p.industryKey))) {
+      seed.industryKey = p.industryKey as IndustryKey;
+    }
+    if (isStyleKey(String(p.styleKey))) {
+      seed.styleKey = p.styleKey as StyleKey;
+    }
+    if (p.global && typeof p.global === 'object' && !Array.isArray(p.global)) {
+      const g = p.global as Record<string, unknown>;
+      const nextGlobal = { ...seed.global };
+      if (g.brand && typeof g.brand === 'object' && !Array.isArray(g.brand)) {
+        nextGlobal.brand = { ...seed.global.brand, ...(g.brand as Record<string, unknown>) } as SiteSeed['global']['brand'];
+      }
+      if (Array.isArray(g.navigation)) {
+        nextGlobal.navigation = g.navigation as SiteSeed['global']['navigation'];
+      }
+      if (g.contact && typeof g.contact === 'object' && !Array.isArray(g.contact)) {
+        nextGlobal.contact = { ...seed.global.contact, ...(g.contact as Record<string, unknown>) };
+      }
+      if (g.integrations !== undefined && g.integrations !== null) {
+        if (typeof g.integrations === 'object' && !Array.isArray(g.integrations)) {
+          nextGlobal.integrations = {
+            ...seed.global.integrations,
+            ...(g.integrations as Record<string, unknown>)
+          } as SiteSeed['global']['integrations'];
+        }
+      }
+      seed.global = nextGlobal;
+    }
+    if (Array.isArray(p.pages)) {
+      seed.pages = p.pages as SiteSeed['pages'];
+    }
+    if (Array.isArray(p.collections)) {
+      seed.collections = p.collections as readonly CollectionSeedItem[];
+    }
+    return { ok: true, seed };
+  } catch {
+    return { ok: false, error: 'Content-JSON konnte nicht zusammengeführt werden.' };
+  }
+}
+
 export async function provisionTenantFromProspect(input: ProvisionInput): Promise<ProvisionResult> {
   const prospect = await getProspectById(input.prospectId);
   if (!prospect) return { ok: false, status: 404, error: 'Prospect nicht gefunden.' };
@@ -76,8 +156,10 @@ export async function provisionTenantFromProspect(input: ProvisionInput): Promis
     return { ok: false, status: 409, error: 'Dieser Tenant-Slug ist bereits vergeben.' };
   }
 
-  const industryCandidate = prospect.preferredIndustry ?? 'restaurant';
-  const styleCandidate = prospect.preferredStyle ?? 'classic';
+  const displayName = (input.tenantDisplayName ?? prospect.company).trim() || prospect.company;
+
+  const industryCandidate = input.industryKey ?? prospect.preferredIndustry ?? 'restaurant';
+  const styleCandidate = input.styleKey ?? prospect.preferredStyle ?? 'classic';
   if (!isIndustryKey(industryCandidate)) {
     return { ok: false, status: 400, error: `Unbekannte Branche: ${industryCandidate}` };
   }
@@ -97,20 +179,34 @@ export async function provisionTenantFromProspect(input: ProvisionInput): Promis
     };
   }
 
-  const personalized = personalizeSeed(seed, prospect.company);
+  let personalized = personalizeSeed(seed, displayName);
+  const jsonRaw = input.contentJson?.trim();
+  if (jsonRaw) {
+    const merged = mergeSiteSeedFromJson(personalized, jsonRaw);
+    if (!merged.ok) {
+      return { ok: false, status: 400, error: merged.error };
+    }
+    personalized = merged.seed;
+  }
+
+  personalized = { ...personalized, industryKey, styleKey };
+
   const issues = validateSiteDocument(personalized);
   if (issues.length > 0) {
     return { ok: false, status: 422, error: 'Seed besteht die Registry-Validierung nicht.', issues };
   }
 
-  if (input.adminPassword.length < 8) {
-    return { ok: false, status: 400, error: 'Admin-Passwort muss mindestens 8 Zeichen haben.' };
+  let adminPassword = input.adminPassword?.trim() ?? '';
+  let generatedPassword: string | undefined;
+  if (adminPassword.length < 8) {
+    generatedPassword = randomBytes(12).toString('base64url');
+    adminPassword = generatedPassword;
   }
 
-  const passwordHash = await bcrypt.hash(input.adminPassword, 10);
+  const passwordHash = await bcrypt.hash(adminPassword, 10);
   const tenantId = await insertTenantRecord({
     slug: tenantSlug,
-    name: prospect.company,
+    name: displayName,
     industryKey,
     styleKey,
     passwordHash
@@ -135,5 +231,11 @@ export async function provisionTenantFromProspect(input: ProvisionInput): Promis
     collectionsSeeded: published.collections.length > 0
   };
 
-  return { ok: true, tenantId, tenantSlug, health };
+  return {
+    ok: true,
+    tenantId,
+    tenantSlug,
+    health,
+    ...(generatedPassword ? { generatedPassword } : {})
+  };
 }

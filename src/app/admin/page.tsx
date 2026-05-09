@@ -6,8 +6,7 @@ const adminAreas = [
   ['Navigation & Footer', '/admin/navigation', 'Menüs, Footer und globale Hinweisleisten.'],
   ['Integrationen', '/admin/integrations', 'SMTP, Tracking-Skripte (mit Cookie-Freigabe) und Cookie-Banner.'],
   ['Medien', '/admin/media', 'Blob-Upload (mit Login) oder Bild-URL; Live nach Veröffentlichen.'],
-  ['SEO & Sichtbarkeit', '/admin/seo', 'Seitentitel, Beschreibungen und Indexierung.'],
-  ['CRM', '/admin/crm', 'Prospects anlegen und neue Tenants provisionieren.']
+  ['SEO & Sichtbarkeit', '/admin/seo', 'Seitentitel, Beschreibungen und Indexierung.']
 ] as const;
 
 export default function AdminHomePage() {

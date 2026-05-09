@@ -15,7 +15,7 @@ export default function AdminLoginPage() {
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [tenant, setTenant] = useState('');
+  const [tenant, setTenant] = useState(() => searchParams.get('tenant') ?? '');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [pending, setPending] = useState(false);

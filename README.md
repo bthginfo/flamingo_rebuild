@@ -81,19 +81,24 @@ Content and auth APIs return `503` with a clear message until `FLAMINGO_REBUILD_
 
 When both `FLAMINGO_REBUILD_DB=1` and `POSTGRES_URL` are present in the build environment, `npm run build` runs **`drizzle-kit migrate` first** (see `scripts/migrate-if-configured.mjs`), then `next build`. CI and local builds **without** those variables skip migration and only run `next build`. After changing the Drizzle schema, commit new files under `./drizzle` from `npm run db:generate` so deploys apply them.
 
-## CRM & Provisioning
+## Internes CRM & Provisioning
 
-`/admin/crm` is reachable **without** tenant login (middleware exception) so internal staff can manage prospects on a fresh machine. Tenant-facing admin (`/admin`, `/admin/pages`, …) still requires `/admin/login`.
+Das **interne CRM** liegt unter **`/internal/crm`** und ist **nirgends verlinkt**. Zugang nur mit einem **eigenen Passwort** (bcrypt-Hash in `FLAMINGO_INTERNAL_CRM_PASSWORD_HASH`), **getrennt** vom Kunden-Admin (`/admin/login` pro Tenant).
 
-With the database enabled, you can create prospects, update status, delete rows, and **provision** a tenant: inserts `flamingo_rebuild.tenants` with a bcrypt password hash, writes a **published** site version from the industry/style demo seed (all **nine** registry industries are seeded for classic/modern/bold), then clones that snapshot into a new **draft** for editing. Collection IDs from seeds are normalized to UUIDs on write so section references stay valid.
+- **`/internal/crm/login`** — Anmeldung für Betriebsteam  
+- **`/internal/crm/prospects`** — Prospects, Status, Provisionieren (Dialog: Slug, Name, optionales Passwort, Template/Stil, Content-JSON)  
+- **`/internal/crm/tenants`** — Übersicht angelegter Tenants mit Links zur Website und zum Admin-Login  
 
-Showcase marketing page: [http://localhost:3000/templates](http://localhost:3000/templates) when `npm run dev` is running.
+Der **Kunden-Admin** (`/admin`, `/admin/pages`, …) erfordert wie bisher eine gültige **Tenant-Session**; es gibt **keinen** CRM-Eintrag mehr in der Seitenleiste.
 
-### Admin: who can log in where?
+Mit aktivierter Datenbank werden Prospects verwaltet und Tenants provisioniert: Insert in `flamingo_rebuild.tenants` mit bcrypt-Hash, **veröffentlichte** Site-Version aus Demo-Seed (alle **neun** Branchen × drei Stile), optional Merge mit **Content-JSON**, danach Draft-Klon für die Bearbeitung. Leeres Admin-Passwort im Dialog erzeugt ein **automatisches Passwort** (wird nach dem Speichern in der Erfolgsmeldung angezeigt — bitte sicher notieren).
 
-- **`/admin-demo/...`** is a **public** playground (no login — middleware skips the admin cookie check for this prefix). Content is stored in the browser under `localStorage` keys `flamingo-rebuild.demo.<industry>.<style>`. If subpages all look like the homepage, click **„Demo zurücksetzen“** in the toolbar or clear those keys — an old truncated snapshot used to load instead of the full seed.
-- **`/admin/login`** talks to the API and checks **`flamingo_rebuild.tenants`** (bcrypt). There is **no fixed demo password in this repository**: use the **tenant slug** and the password chosen when that tenant was **provisioned from CRM** (or stored in your team’s password manager).
-- **`/admin/crm`** stays reachable without tenant login (middleware exception) for internal prospecting.
+Showcase: [http://localhost:3000/templates](http://localhost:3000/templates) bei `npm run dev`.
+
+### Admin: wer loggt sich wo ein?
+
+- **`/admin-demo/...`** ist ein **öffentlicher** Playground (ohne Login — Middleware überspringt die Admin-Cookie-Prüfung für dieses Präfix). Inhalte liegen im Browser unter `localStorage`-Keys `flamingo-rebuild.demo.<industry>.<style>`.
+- **`/admin/login`** prüft **`flamingo_rebuild.tenants`** (bcrypt). Es gibt **kein fixes Demo-Passwort** im Repo: Tenant-Slug und Passwort aus dem Provisionieren bzw. aus eurem Passwort-Manager.
 
 ## Tenant site (optional dev routing)
 

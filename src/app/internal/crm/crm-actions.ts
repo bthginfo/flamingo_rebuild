@@ -8,7 +8,9 @@ import {
   updateProspect,
   type ProspectStatus
 } from '@/db/crm-repository';
+import { assertInternalCrmSession } from '@/lib/internal-crm-server';
 import { provisionTenantFromProspect } from '@/platform/crm/provision-tenant-from-prospect';
+import { INDUSTRY_KEYS, STYLE_KEYS, type IndustryKey, type StyleKey } from '@/template-engine/model';
 
 export type CrmFormState = {
   message?: string;
@@ -23,7 +25,20 @@ function parseStatus(raw: string | null): ProspectStatus | undefined {
   return undefined;
 }
 
+function parseIndustryOverride(raw: string | null): IndustryKey | undefined {
+  const v = String(raw ?? '').trim();
+  return (INDUSTRY_KEYS as readonly string[]).includes(v) ? (v as IndustryKey) : undefined;
+}
+
+function parseStyleOverride(raw: string | null): StyleKey | undefined {
+  const v = String(raw ?? '').trim();
+  return (STYLE_KEYS as readonly string[]).includes(v) ? (v as StyleKey) : undefined;
+}
+
 export async function createProspectAction(_state: CrmFormState, formData: FormData): Promise<CrmFormState> {
+  const auth = await assertInternalCrmSession();
+  if (!auth.ok) return { error: auth.error };
+
   if (!isDatabaseConfigured()) {
     return { error: 'Datenbank nicht konfiguriert. Setze FLAMINGO_REBUILD_DB=1 und POSTGRES_URL, führe Migrationen aus.' };
   }
@@ -43,11 +58,14 @@ export async function createProspectAction(_state: CrmFormState, formData: FormD
     preferredStyle: String(formData.get('preferredStyle') ?? '').trim() || null
   });
 
-  revalidatePath('/admin/crm');
+  revalidatePath('/internal/crm/prospects');
   return { message: 'Prospect gespeichert.' };
 }
 
 export async function updateProspectStatusAction(_state: CrmFormState, formData: FormData): Promise<CrmFormState> {
+  const auth = await assertInternalCrmSession();
+  if (!auth.ok) return { error: auth.error };
+
   if (!isDatabaseConfigured()) {
     return { error: 'Datenbank nicht konfiguriert.' };
   }
@@ -59,11 +77,14 @@ export async function updateProspectStatusAction(_state: CrmFormState, formData:
   const updated = await updateProspect(id, { status });
   if (!updated) return { error: 'Prospect nicht gefunden.' };
 
-  revalidatePath('/admin/crm');
+  revalidatePath('/internal/crm/prospects');
   return { message: 'Status aktualisiert.' };
 }
 
 export async function deleteProspectAction(_state: CrmFormState, formData: FormData): Promise<CrmFormState> {
+  const auth = await assertInternalCrmSession();
+  if (!auth.ok) return { error: auth.error };
+
   if (!isDatabaseConfigured()) {
     return { error: 'Datenbank nicht konfiguriert.' };
   }
@@ -74,31 +95,51 @@ export async function deleteProspectAction(_state: CrmFormState, formData: FormD
   const removed = await deleteProspect(id);
   if (!removed) return { error: 'Prospect nicht gefunden.' };
 
-  revalidatePath('/admin/crm');
+  revalidatePath('/internal/crm/prospects');
   return { message: 'Prospect gelöscht.' };
 }
 
 export async function provisionProspectAction(_state: CrmFormState, formData: FormData): Promise<CrmFormState> {
+  const auth = await assertInternalCrmSession();
+  if (!auth.ok) return { error: auth.error };
+
   if (!isDatabaseConfigured()) {
     return { error: 'Datenbank nicht konfiguriert.' };
   }
 
   const prospectId = String(formData.get('prospectId') ?? '').trim();
   const tenantSlug = String(formData.get('tenantSlug') ?? '').trim().toLowerCase();
+  const tenantDisplayName = String(formData.get('tenantDisplayName') ?? '').trim();
   const adminPassword = String(formData.get('adminPassword') ?? '');
+  const contentJson = String(formData.get('contentJson') ?? '');
+  const industryOverride = parseIndustryOverride(String(formData.get('industryKey') ?? ''));
+  const styleOverride = parseStyleOverride(String(formData.get('styleKey') ?? ''));
 
-  if (!prospectId || !tenantSlug || !adminPassword) {
-    return { error: 'Prospect, Tenant-Slug und Admin-Passwort sind Pflicht.' };
+  if (!prospectId || !tenantSlug) {
+    return { error: 'Prospect und Tenant-Slug sind Pflicht.' };
   }
 
-  const result = await provisionTenantFromProspect({ prospectId, tenantSlug, adminPassword });
+  const result = await provisionTenantFromProspect({
+    prospectId,
+    tenantSlug,
+    adminPassword: adminPassword.trim().length >= 8 ? adminPassword.trim() : undefined,
+    tenantDisplayName: tenantDisplayName || undefined,
+    industryKey: industryOverride,
+    styleKey: styleOverride,
+    contentJson: contentJson.trim() || undefined
+  });
   if (!result.ok) {
     const detail = result.issues?.length ? ` ${result.issues.join(' · ')}` : '';
     return { error: `${result.error}${detail}` };
   }
 
-  revalidatePath('/admin/crm');
-  return {
-    message: `Tenant „${result.tenantSlug}“ erstellt. Admin-Login unter /admin/login · Health: Seiten ${result.health.defaultPagesCreated ? 'OK' : 'leer'}, Collections ${result.health.collectionsSeeded ? 'OK' : 'leer'}.`
-  };
+  revalidatePath('/internal/crm/prospects');
+  revalidatePath('/internal/crm/tenants');
+
+  let message = `Tenant „${result.tenantSlug}“ erstellt. Admin-Login: /admin/login (Benutzername = Slug). Health: Seiten ${result.health.defaultPagesCreated ? 'OK' : 'leer'}, Collections ${result.health.collectionsSeeded ? 'OK' : 'leer'}.`;
+  if (result.generatedPassword) {
+    message += ` Automatisch generiertes Admin-Passwort (bitte sicher notieren): ${result.generatedPassword}`;
+  }
+
+  return { message };
 }

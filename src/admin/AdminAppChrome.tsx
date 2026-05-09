@@ -9,8 +9,7 @@ import {
   LayoutDashboard,
   Link2,
   PanelLeft,
-  Search,
-  Users
+  Search
 } from 'lucide-react';
 import { AdminLogoutButton } from '@/admin/AdminLogoutButton';
 import type { IndustryKey, StyleKey } from '@/template-engine/model';
@@ -21,8 +20,7 @@ const GLOBAL_NAV = [
   { href: '/admin/seo', label: 'SEO & Sichtbarkeit', icon: Search },
   { href: '/admin/integrations', label: 'SMTP & Skripte', icon: Code2 },
   { href: '/admin/media', label: 'Medien', icon: ImageIcon },
-  { href: '/admin/collections', label: 'Inhalte', icon: Boxes },
-  { href: '/admin/crm', label: 'CRM', icon: Users }
+  { href: '/admin/collections', label: 'Inhalte', icon: Boxes }
 ] as const;
 
 function navLinkActive(pathname: string, href: string): boolean {

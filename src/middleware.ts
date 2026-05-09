@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const ADMIN_SESSION_COOKIE = 'flamingo_rebuild_admin';
+const INTERNAL_CRM_COOKIE = 'flamingo_internal_crm';
 
 function tenantSlugFromHost(hostname: string): string | null {
   if (process.env.FLAMINGO_TENANT_HOST_ROUTING !== '1') {
@@ -27,6 +28,7 @@ export function middleware(request: NextRequest) {
     tenantSlug &&
     !pathname.startsWith('/site/') &&
     !pathname.startsWith('/admin') &&
+    !pathname.startsWith('/internal') &&
     !pathname.startsWith('/api') &&
     !pathname.startsWith('/_next')
   ) {
@@ -36,10 +38,23 @@ export function middleware(request: NextRequest) {
     return NextResponse.rewrite(url);
   }
 
+  if (pathname.startsWith('/internal/crm') && !pathname.startsWith('/internal/crm/login')) {
+    if (!request.cookies.get(INTERNAL_CRM_COOKIE)?.value) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/internal/crm/login';
+      url.searchParams.set('next', pathname);
+      return NextResponse.redirect(url);
+    }
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set('x-flamingo-internal-path', pathname);
+    return NextResponse.next({
+      request: { headers: requestHeaders }
+    });
+  }
+
   if (
     !pathname.startsWith('/admin') ||
     pathname === '/admin/login' ||
-    pathname.startsWith('/admin/crm') ||
     pathname.startsWith('/admin-demo')
   ) {
     return NextResponse.next();

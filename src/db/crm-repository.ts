@@ -1,6 +1,6 @@
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, max } from 'drizzle-orm';
 import { getDb } from './client';
-import { crmProspects, tenants } from './schema';
+import { crmProspects, siteVersions, tenants } from './schema';
 
 export type ProspectStatus = 'new' | 'contacted' | 'won' | 'lost' | 'provisioned';
 
@@ -136,6 +136,42 @@ export async function tenantSlugExists(slug: string): Promise<boolean> {
   const db = getDb();
   const [row] = await db.select({ id: tenants.id }).from(tenants).where(eq(tenants.slug, slug)).limit(1);
   return Boolean(row);
+}
+
+export type InternalTenantListRow = {
+  id: string;
+  slug: string;
+  name: string;
+  industryKey: string;
+  styleKey: string;
+  createdAt: Date;
+  updatedAt: Date;
+  lastPublishedAt: Date | null;
+};
+
+/** Für internes CRM: alle Tenants mit Zeitpunkt der letzten Veröffentlichung (falls vorhanden). */
+export async function listTenantsForInternalCrm(): Promise<InternalTenantListRow[]> {
+  const db = getDb();
+  const tenantRows = await db.select().from(tenants).orderBy(desc(tenants.createdAt));
+  const pubs = await db
+    .select({
+      tenantId: siteVersions.tenantId,
+      lastPublishedAt: max(siteVersions.publishedAt)
+    })
+    .from(siteVersions)
+    .where(eq(siteVersions.status, 'published'))
+    .groupBy(siteVersions.tenantId);
+  const pubMap = new Map(pubs.map((p) => [p.tenantId, p.lastPublishedAt]));
+  return tenantRows.map((t) => ({
+    id: t.id,
+    slug: t.slug,
+    name: t.name,
+    industryKey: t.industryKey,
+    styleKey: t.styleKey,
+    createdAt: t.createdAt,
+    updatedAt: t.updatedAt,
+    lastPublishedAt: pubMap.get(t.id) ?? null
+  }));
 }
 
 export async function insertTenantRecord(params: {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useRef, useState } from 'react';
 import {
   createProspectAction,
   deleteProspectAction,
@@ -111,7 +111,11 @@ export function CreateProspectForm(props: { industries: readonly IndustryOption[
   );
 }
 
-export function ProspectsBoard(props: { prospects: readonly SerializableProspect[] }) {
+export function ProspectsBoard(props: {
+  prospects: readonly SerializableProspect[];
+  industries: readonly IndustryOption[];
+  styles: readonly StyleOption[];
+}) {
   return (
     <div className="crm-board">
       {props.prospects.length === 0 ? (
@@ -130,7 +134,12 @@ export function ProspectsBoard(props: { prospects: readonly SerializableProspect
             </thead>
             <tbody>
               {props.prospects.map((prospect) => (
-                <ProspectRow key={prospect.id} prospect={prospect} />
+                <ProspectRow
+                  key={prospect.id}
+                  prospect={prospect}
+                  industries={props.industries}
+                  styles={props.styles}
+                />
               ))}
             </tbody>
           </table>
@@ -140,7 +149,12 @@ export function ProspectsBoard(props: { prospects: readonly SerializableProspect
   );
 }
 
-function ProspectRow({ prospect }: { prospect: SerializableProspect }) {
+function ProspectRow(props: {
+  prospect: SerializableProspect;
+  industries: readonly IndustryOption[];
+  styles: readonly StyleOption[];
+}) {
+  const { prospect, industries, styles } = props;
   return (
     <tr>
       <td>
@@ -159,7 +173,15 @@ function ProspectRow({ prospect }: { prospect: SerializableProspect }) {
       <td>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {!prospect.provisionedTenantId ? (
-            <ProvisionProspectForm prospectId={prospect.id} defaultSlug={slugifyTenantSlug(prospect.company)} />
+            <ProvisionTenantDialog
+              prospectId={prospect.id}
+              defaultSlug={slugifyTenantSlug(prospect.company)}
+              companyName={prospect.company}
+              industries={industries}
+              styles={styles}
+              defaultIndustry={prospect.preferredIndustry ?? 'restaurant'}
+              defaultStyle={prospect.preferredStyle ?? 'classic'}
+            />
           ) : (
             <span style={{ color: 'var(--muted)', fontSize: 13 }}>Tenant provisioniert</span>
           )}
@@ -192,26 +214,124 @@ function StatusForm(props: { prospectId: string; status: string; disabled: boole
   );
 }
 
-function ProvisionProspectForm(props: { prospectId: string; defaultSlug: string }) {
+function ProvisionTenantDialog(props: {
+  prospectId: string;
+  defaultSlug: string;
+  companyName: string;
+  industries: readonly IndustryOption[];
+  styles: readonly StyleOption[];
+  defaultIndustry: string;
+  defaultStyle: string;
+}) {
+  const [open, setOpen] = useState(false);
   const [state, action, pending] = useActionState(provisionProspectAction, emptyState);
+  const jsonRef = useRef<HTMLTextAreaElement>(null);
 
   return (
-    <form action={action} className="crm-provision">
-      <input type="hidden" name="prospectId" value={props.prospectId} />
-      <label>
-        Tenant-Slug
-        <input name="tenantSlug" required minLength={2} maxLength={50} defaultValue={props.defaultSlug} disabled={pending} />
-      </label>
-      <label>
-        Admin-Passwort
-        <input name="adminPassword" type="password" minLength={8} required placeholder="min. 8 Zeichen" disabled={pending} />
-      </label>
-      <button className="button" type="submit" disabled={pending}>
-        {pending ? 'Provisioniere …' : 'Tenant erstellen'}
+    <>
+      <button type="button" className="button secondary" onClick={() => setOpen(true)}>
+        Tenant anlegen …
       </button>
-      {state.error ? <p className="crm-banner crm-banner--error">{state.error}</p> : null}
-      {state.message ? <p className="crm-banner crm-banner--ok">{state.message}</p> : null}
-    </form>
+      {open ? (
+        <div
+          className="internal-crm-modal-backdrop"
+          role="presentation"
+          onClick={() => {
+            if (!pending) setOpen(false);
+          }}
+        >
+          <div
+            className="internal-crm-modal card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="internal-crm-provision-title"
+            onClick={(e) => e.stopPropagation()}
+            style={{ margin: 0 }}
+          >
+            <h2 id="internal-crm-provision-title" style={{ fontFamily: 'Georgia, serif', marginTop: 0 }}>
+              Tenant für {props.companyName} anlegen
+            </h2>
+            <form action={action} className="crm-form" style={{ marginTop: 12 }}>
+              <input type="hidden" name="prospectId" value={props.prospectId} />
+              <label>
+                Slug
+                <input
+                  name="tenantSlug"
+                  required
+                  minLength={2}
+                  maxLength={50}
+                  defaultValue={props.defaultSlug}
+                  disabled={pending}
+                  autoComplete="off"
+                />
+              </label>
+              <label>
+                Name (Anzeige / DB)
+                <input name="tenantDisplayName" defaultValue={props.companyName} disabled={pending} />
+              </label>
+              <label>
+                Passwort (min. 8 Zeichen, leer = automatisch)
+                <input
+                  name="adminPassword"
+                  type="password"
+                  minLength={8}
+                  autoComplete="new-password"
+                  placeholder="Leer = wird automatisch generiert"
+                  disabled={pending}
+                />
+              </label>
+              <label>
+                Content-JSON (optional, Perplexity-Export)
+                <input
+                  type="file"
+                  accept="application/json,.json"
+                  disabled={pending}
+                  style={{ marginBottom: 8 }}
+                  onChange={async (event) => {
+                    const file = event.target.files?.[0];
+                    if (!file || !jsonRef.current) return;
+                    jsonRef.current.value = await file.text();
+                  }}
+                />
+                <textarea ref={jsonRef} name="contentJson" rows={5} placeholder="{ … }" disabled={pending} />
+              </label>
+              <div className="crm-grid">
+                <label>
+                  Template (Branche)
+                  <select name="industryKey" defaultValue={props.defaultIndustry} disabled={pending}>
+                    {props.industries.map((industry) => (
+                      <option key={industry.key} value={industry.key}>
+                        {industry.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  Stil
+                  <select name="styleKey" defaultValue={props.defaultStyle} disabled={pending}>
+                    {props.styles.map((style) => (
+                      <option key={style.key} value={style.key}>
+                        {style.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+              {state.error ? <p className="crm-banner crm-banner--error">{state.error}</p> : null}
+              {state.message ? <p className="crm-banner crm-banner--ok">{state.message}</p> : null}
+              <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 16 }}>
+                <button type="button" className="button secondary" disabled={pending} onClick={() => setOpen(false)}>
+                  Schließen
+                </button>
+                <button className="button" type="submit" disabled={pending}>
+                  {pending ? 'Provisioniere …' : 'Tenant anlegen'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      ) : null}
+    </>
   );
 }
 
