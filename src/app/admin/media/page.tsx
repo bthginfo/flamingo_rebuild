@@ -7,8 +7,12 @@ export default function AdminMediaPage() {
         <p className="eyebrow">Admin</p>
         <h1 style={{ fontFamily: 'Georgia, serif', fontSize: 44 }}>Medienbibliothek</h1>
         <p style={{ color: 'var(--muted)', maxWidth: 640, lineHeight: 1.55 }}>
-          Uploads über Vercel Blob und Zuordnung zu Hero-, Galerie- und Team-Feldern sind als Nächstes vorgesehen.
-          Aktuell kannst Du Bilder als URLs in den Seiten- und Sammlungs-Editoren eintragen.
+          Bilder trägst du vorerst als URLs in den Seiten- und Collection-Editoren ein (Hero, Galerie, Karten). Uploads
+          über{' '}
+          <a href="https://vercel.com/docs/storage/vercel-blob" rel="noreferrer" target="_blank">
+            Vercel Blob
+          </a>{' '}
+          und Auswahl aus der Bibliothek sind als nächster Schritt vorgesehen.
         </p>
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 28 }}>
           <Link className="button" href="/admin/pages">
