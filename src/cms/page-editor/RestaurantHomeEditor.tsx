@@ -33,6 +33,8 @@ type EditorStatus =
   | 'published'
   | 'error';
 
+type WorkspaceTab = 'edit' | 'preview';
+
 export function RestaurantHomeEditor({
   initialSeed,
   pageKey,
@@ -54,6 +56,7 @@ export function RestaurantHomeEditor({
   const [draftExists, setDraftExists] = useState(false);
   const [contentState, setContentState] = useState<AdminContentState>({ mode: 'demo' });
   const [message, setMessage] = useState('');
+  const [workspaceTab, setWorkspaceTab] = useState<WorkspaceTab>('edit');
 
   useEffect(() => {
     let active = true;
@@ -100,6 +103,10 @@ export function RestaurantHomeEditor({
       active = false;
     };
   }, [initialSeed, forceDemo]);
+
+  useEffect(() => {
+    setWorkspaceTab('edit');
+  }, [pageKey]);
 
   const qs = editorPersistQuery ? `&${editorPersistQuery}` : '';
 
@@ -303,10 +310,32 @@ export function RestaurantHomeEditor({
               </Link>
             ))}
           </nav>
+          <nav className="cms-workspace-tabs" role="tablist" aria-label="Arbeitsbereich">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={workspaceTab === 'edit'}
+              id="cms-tab-edit"
+              className={workspaceTab === 'edit' ? 'is-active' : undefined}
+              onClick={() => setWorkspaceTab('edit')}
+            >
+              Bearbeiten
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={workspaceTab === 'preview'}
+              id="cms-tab-preview"
+              className={workspaceTab === 'preview' ? 'is-active' : undefined}
+              onClick={() => setWorkspaceTab('preview')}
+            >
+              Vorschau
+            </button>
+          </nav>
         </div>
         <div className="cms-actions">
           <a className="button secondary" href={previewHref(contentState, seed, page)} target="_blank" rel="noreferrer">
-            Vorschau
+            Im Browser öffnen
           </a>
           <button
             className="button secondary"
@@ -333,45 +362,59 @@ export function RestaurantHomeEditor({
         </div>
       </div>
 
-      <div className="cms-split">
-        <section className="cms-editor-panel">
-          <div className="cms-add-section">
-            <label className="cms-field">
-              <span>Abschnitt hinzufügen</span>
-              <select defaultValue="" onChange={(event) => {
-                if (!event.target.value) return;
-                addSection(event.target.value);
-                event.target.value = '';
-              }}>
-                <option value="" disabled>Abschnitt auswählen</option>
-                {addableSectionKeys.map((sectionKey) => (
-                  <option value={sectionKey} key={sectionKey}>{getSection(sectionKey).label}</option>
-                ))}
-              </select>
-            </label>
-          </div>
-          {sortedSections.map((section) => (
-            <SectionEditor
-              key={section.id}
-              section={section}
-              onChange={(next) => updateSection(section.id, () => next)}
-              onMoveUp={() => moveSection(section.id, -1)}
-              onMoveDown={() => moveSection(section.id, 1)}
-              onDuplicate={() => duplicateSection(section.id)}
-              onRemove={() => removeSection(section.id)}
-            />
-          ))}
-        </section>
-        <aside className="cms-preview-panel">
-          <div className="cms-preview-frame">
-            <SeedPageRenderer
-              seed={seed}
-              page={page}
-              styleKey={seed.styleKey}
-              previewBasePath={`/preview/${seed.industryKey}/${seed.styleKey}`}
-            />
-          </div>
-        </aside>
+      <div className={`cms-workspace-body cms-workspace-body--${workspaceTab}`}>
+        {workspaceTab === 'edit' ? (
+          <section className="cms-editor-panel cms-editor-panel--standalone" role="tabpanel" aria-labelledby="cms-tab-edit">
+            <div className="cms-add-section">
+              <label className="cms-field">
+                <span>Abschnitt hinzufügen</span>
+                <select
+                  defaultValue=""
+                  onChange={(event) => {
+                    if (!event.target.value) return;
+                    addSection(event.target.value);
+                    event.target.value = '';
+                  }}
+                >
+                  <option value="" disabled>
+                    Abschnitt auswählen
+                  </option>
+                  {addableSectionKeys.map((sectionKey) => (
+                    <option value={sectionKey} key={sectionKey}>
+                      {getSection(sectionKey).label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            {sortedSections.map((section) => (
+              <SectionEditor
+                key={section.id}
+                section={section}
+                onChange={(next) => updateSection(section.id, () => next)}
+                onMoveUp={() => moveSection(section.id, -1)}
+                onMoveDown={() => moveSection(section.id, 1)}
+                onDuplicate={() => duplicateSection(section.id)}
+                onRemove={() => removeSection(section.id)}
+              />
+            ))}
+          </section>
+        ) : (
+          <aside
+            className="cms-preview-panel cms-preview-panel--fullscreen"
+            role="tabpanel"
+            aria-labelledby="cms-tab-preview"
+          >
+            <div className="cms-preview-frame cms-preview-frame--fullscreen">
+              <SeedPageRenderer
+                seed={seed}
+                page={page}
+                styleKey={seed.styleKey}
+                previewBasePath={`/preview/${seed.industryKey}/${seed.styleKey}`}
+              />
+            </div>
+          </aside>
+        )}
       </div>
     </main>
   );
