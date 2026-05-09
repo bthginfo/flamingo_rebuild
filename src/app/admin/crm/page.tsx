@@ -5,9 +5,33 @@ import { industries } from '@/template-engine/industries';
 import { styles } from '@/template-engine/styles';
 import { CreateProspectForm, ProspectsBoard, type SerializableProspect } from './crm-forms';
 
+/** CRM is reachable without tenant cookie; must not query Postgres during `next build` before migrations exist. */
+export const dynamic = 'force-dynamic';
+
+function isMissingRelationError(error: unknown): boolean {
+  if (!(error instanceof Error)) return false;
+  const msg = error.message.toLowerCase();
+  const code = 'code' in error && typeof (error as { code?: string }).code === 'string' ? (error as { code: string }).code : '';
+  return code === '42P01' || msg.includes('does not exist') || msg.includes('relation');
+}
+
 export default async function CrmPage() {
   const dbReady = isDatabaseConfigured();
-  const prospects = dbReady ? await listProspects() : [];
+  let prospects: Awaited<ReturnType<typeof listProspects>> = [];
+  let schemaMissing = false;
+
+  if (dbReady) {
+    try {
+      prospects = await listProspects();
+    } catch (error) {
+      if (isMissingRelationError(error)) {
+        schemaMissing = true;
+      } else {
+        throw error;
+      }
+    }
+  }
+
   const serializable: SerializableProspect[] = prospects.map((entry) => ({
     ...entry,
     createdAt: entry.createdAt.toISOString(),
@@ -35,6 +59,16 @@ export default async function CrmPage() {
               CRM und Provisioning brauchen eine eigene Rebuild-Datenbank. Setze in <code>.env.local</code>{' '}
               <code>FLAMINGO_REBUILD_DB=1</code> und <code>POSTGRES_URL</code>, führe <code>npm run db:migrate</code> aus,
               starte den Dev-Server neu.
+            </p>
+          </div>
+        ) : schemaMissing ? (
+          <div className="card" style={{ marginTop: 24 }}>
+            <h2>Datenbank-Schema fehlt</h2>
+            <p style={{ color: 'var(--muted)' }}>
+              Die Verbindung zu Neon steht, aber die Tabellen (z.&nbsp;B. <code>crm_prospects</code>) sind noch nicht
+              angelegt. Einmalig im Rebuild-Repo mit derselben <code>POSTGRES_URL</code> wie in Vercel ausführen:{' '}
+              <code>npm run db:migrate</code>
+              — danach diese Seite neu laden oder ein neues Deployment auslösen.
             </p>
           </div>
         ) : (
