@@ -620,9 +620,18 @@ function CtaButton({
   if (!label) return null;
   const link = isRecord(value.link) ? asString(value.link.href) : '#';
   const href = resolveTenantHref(link, previewBasePath);
+  const className = `tenant-button ${secondary ? 'secondary' : ''} ${compact ? 'compact' : ''}`.trim();
+
+  if (href.startsWith('/') && !href.startsWith('//')) {
+    return (
+      <Link href={href} className={className}>
+        {label}
+      </Link>
+    );
+  }
 
   return (
-    <a className={`tenant-button ${secondary ? 'secondary' : ''} ${compact ? 'compact' : ''}`} href={href}>
+    <a className={className} href={href}>
       {label}
     </a>
   );

@@ -31,7 +31,7 @@ export function weddingSeed(styleKey: StyleKey): SiteSeed {
       contact: {
         phone: '+49 171 000 77 88',
         email: 'wedding@lena-jonas.test',
-        address: 'Weingut Flamingo, Rheinstrasse 2, 55411 Bingen am Rhein'
+        address: 'Weingut Flamingo, Rheinstraße 2, 55411 Bingen am Rhein'
       }
     },
     collections: [

@@ -78,7 +78,7 @@ function LoginShell({
           </label>
           {error ? <p className="admin-login-error">{error}</p> : null}
           <button className="button" disabled={pending} type="submit">
-            {pending ? 'Pruefe...' : 'Einloggen'}
+            {pending ? 'Prüfe...' : 'Einloggen'}
           </button>
         </form>
       </section>

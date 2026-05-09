@@ -89,6 +89,12 @@ With the database enabled, you can create prospects, update status, delete rows,
 
 Showcase marketing page: [http://localhost:3000/templates](http://localhost:3000/templates) when `npm run dev` is running.
 
+### Admin: who can log in where?
+
+- **`/admin-demo/...`** is a **public** playground (no login). Content is stored in the browser under `localStorage` keys `flamingo-rebuild.demo.<industry>.<style>`. If subpages all look like the homepage, click **„Demo zurücksetzen“** in the toolbar or clear those keys — an old truncated snapshot used to load instead of the full seed.
+- **`/admin/login`** talks to the API and checks **`flamingo_rebuild.tenants`** (bcrypt). There is **no fixed demo password in this repository**: use the **tenant slug** and the password chosen when that tenant was **provisioned from CRM** (or stored in your team’s password manager).
+- **`/admin/crm`** stays reachable without tenant login (middleware exception) for internal prospecting.
+
 ## Tenant site (optional dev routing)
 
 With `FLAMINGO_TENANT_HOST_ROUTING=1` and `FLAMINGO_TENANT_HOST_SUFFIX` (default `.localhost`), a host like `mytenant.localhost:3000` is **rewritten** internally to `/site/mytenant/...`, which renders the **published** site document for slug `mytenant`. Marketing routes stay on plain `localhost` without that subdomain. See `.env.example`.

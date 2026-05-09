@@ -44,17 +44,46 @@ function withWowAfterPageHeader(
   return renumberSections(merged);
 }
 
+/** Collapses slashes, trims trailing slash (except root), ensures leading slash. */
+export function normalizeTenantPath(path: string): string {
+  let p = path.trim().replace(/\/+/g, '/');
+  if (!p || p === '/') return '/';
+  if (p.endsWith('/')) p = p.slice(0, -1) || '/';
+  return p.startsWith('/') ? p : `/${p}`;
+}
+
 export function previewPathFromSegments(segments: string[] | undefined): string {
-  if (!segments?.length) return '/';
-  return `/${segments.map((s) => decodeURIComponent(s)).join('/')}`;
+  const parts = (segments ?? [])
+    .map((s) => {
+      try {
+        return decodeURIComponent(s);
+      } catch {
+        return s;
+      }
+    })
+    .filter((part) => part.length > 0);
+  if (!parts.length) return '/';
+  return normalizeTenantPath(`/${parts.join('/')}`);
 }
 
 export function resolvePreviewPage(seed: SiteSeed, segments: string[] | undefined): PageInstance {
   const path = previewPathFromSegments(segments);
-  const match = seed.pages.find((page) => page.slug === path);
+  const norm = normalizeTenantPath(path);
+  const match =
+    seed.pages.find((page) => normalizeTenantPath(page.slug) === norm) ?? seed.pages.find((page) => page.slug === path);
   if (match) return match;
 
-  const parts = segments?.length ? segments.map((s) => decodeURIComponent(s)) : [];
+  const parts = segments?.length
+    ? segments
+        .map((s) => {
+          try {
+            return decodeURIComponent(s);
+          } catch {
+            return s;
+          }
+        })
+        .filter((part) => part.length > 0)
+    : [];
 
   if (seed.industryKey === 'restaurant' && parts.length === 2 && parts[0] === 'speisekarte') {
     const item = seed.collections.find((c) => c.collectionKey === 'menuItem' && c.slug === parts[1]);

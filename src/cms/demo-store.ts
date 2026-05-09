@@ -12,13 +12,29 @@ export function cloneSeed(seed: SiteSeed): SiteSeed {
   return structuredClone(seed);
 }
 
+/** Reject truncated localStorage snapshots (would make every route fall back to home). */
+function isCompleteDemoSeed(stored: SiteSeed, canonical: SiteSeed): boolean {
+  if (!stored?.pages?.length) return false;
+  if (stored.industryKey !== canonical.industryKey || stored.styleKey !== canonical.styleKey) return false;
+  const required = new Set(canonical.pages.map((p) => p.key));
+  for (const p of stored.pages) {
+    required.delete(p.key);
+  }
+  return required.size === 0;
+}
+
 export function loadDemoContent(seed: SiteSeed, mode: DemoContentMode): SiteSeed {
   if (typeof window === 'undefined') return seed;
   const baseKey = storageBase(seed);
   const draft = readSeed(`${baseKey}.draft`);
   const published = readSeed(`${baseKey}.published`);
-  if (mode === 'draft') return draft ?? published ?? seed;
-  return published ?? seed;
+  if (mode === 'draft') {
+    if (draft && isCompleteDemoSeed(draft, seed)) return draft;
+    if (published && isCompleteDemoSeed(published, seed)) return published;
+    return seed;
+  }
+  if (published && isCompleteDemoSeed(published, seed)) return published;
+  return seed;
 }
 
 export function saveDraft(seed: SiteSeed) {

@@ -798,86 +798,185 @@ a {
     #faf7fb;
 }
 
-/* Live template previews — depth, hover, motion */
-.preview-root .tenant-nav {
+/* Template sites (published + /preview): micro-interactions inside .tenant-preview */
+.tenant-preview .tenant-nav {
   transition:
     box-shadow 0.35s ease,
     border-color 0.3s ease;
 }
 
-.preview-root .tenant-nav:hover {
+.tenant-preview .tenant-nav:hover {
   box-shadow: 0 10px 36px rgba(20, 17, 26, 0.07);
 }
 
-.preview-root .tenant-nav nav a {
+.tenant-preview .tenant-nav nav a {
+  position: relative;
   transition:
     color 0.2s ease,
     transform 0.2s ease;
 }
 
-.preview-root .tenant-nav nav a:hover {
+.tenant-preview .tenant-nav nav a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--tenant-accent, #f24171), rgba(124, 58, 237, 0.65));
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.tenant-preview .tenant-nav nav a:hover,
+.tenant-preview .tenant-nav nav a:focus-visible {
   color: var(--tenant-accent);
   transform: translateY(-1px);
 }
 
-.preview-root .tenant-card,
-.preview-root .tenant-quote {
+.tenant-preview .tenant-nav nav a:hover::after,
+.tenant-preview .tenant-nav nav a:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.tenant-preview .tenant-card,
+.tenant-preview .tenant-quote {
   transition:
     transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
     box-shadow 0.4s ease,
     border-color 0.3s ease;
 }
 
-.preview-root .tenant-card:hover,
-.preview-root .tenant-quote:hover {
+.tenant-preview .tenant-card:hover,
+.tenant-preview .tenant-quote:hover {
   transform: translateY(-4px);
   box-shadow: 0 22px 50px rgba(20, 17, 26, 0.1);
 }
 
-.preview-root .tenant-button {
+.tenant-preview .tenant-card--link:hover img {
+  transform: scale(1.05);
+}
+
+.tenant-preview .tenant-card img {
+  transition: transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.tenant-preview .tenant-button {
   transition:
     transform 0.25s ease,
     box-shadow 0.25s ease,
     filter 0.25s ease;
 }
 
-.preview-root .tenant-button:hover {
+.tenant-preview .tenant-button:hover {
   transform: translateY(-2px);
   filter: brightness(1.06);
 }
 
-.preview-root .tenant-hero-bg {
+.tenant-preview .tenant-hero-bg {
   transition:
     transform 10s ease-out,
     opacity 0.45s ease;
 }
 
-.preview-root .tenant-hero--bold:hover .tenant-hero-bg {
+.tenant-preview .tenant-hero--bold:hover .tenant-hero-bg {
   transform: scale(1.05);
   opacity: 0.62;
 }
 
-.preview-root .tenant-gallery-cell {
+.tenant-preview .tenant-hero-image img {
+  transition: transform 0.65s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.tenant-preview .tenant-hero:hover .tenant-hero-image img {
+  transform: scale(1.03);
+}
+
+.tenant-preview .tenant-page-hero__media img {
+  transition: transform 0.65s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.tenant-preview .tenant-page-hero:hover .tenant-page-hero__media img {
+  transform: scale(1.04);
+}
+
+.tenant-preview .tenant-split__visual img {
+  transition: transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.tenant-preview .tenant-split:hover .tenant-split__visual img {
+  transform: scale(1.03);
+}
+
+.tenant-preview .tenant-gallery-cell {
   transition:
     transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1),
     box-shadow 0.4s ease;
 }
 
-.preview-root .tenant-gallery-cell:hover {
+.tenant-preview .tenant-gallery-cell:hover {
   transform: translateY(-3px) scale(1.01);
   box-shadow: 0 18px 40px rgba(20, 17, 26, 0.12);
 }
 
+.tenant-preview .tenant-wow-stats__card {
+  transition:
+    transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.3s ease,
+    border-color 0.25s ease;
+}
+
+.tenant-preview .tenant-wow-stats__card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 42px rgba(20, 17, 26, 0.1);
+}
+
+.tenant-preview .tenant-wow-bento__tile {
+  transition:
+    transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.35s ease,
+    border-color 0.25s ease;
+}
+
+.tenant-preview .tenant-wow-bento__tile:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 48px rgba(20, 17, 26, 0.12);
+}
+
+.tenant-preview .tenant-wow-bento__visual img {
+  transition: transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.tenant-preview .tenant-wow-bento__tile:hover .tenant-wow-bento__visual img {
+  transform: scale(1.04);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .preview-root .tenant-card:hover,
-  .preview-root .tenant-quote:hover,
-  .preview-root .tenant-button:hover,
-  .preview-root .tenant-nav nav a:hover,
-  .preview-root .tenant-gallery-cell:hover {
+  .tenant-preview .tenant-card:hover,
+  .tenant-preview .tenant-quote:hover,
+  .tenant-preview .tenant-button:hover,
+  .tenant-preview .tenant-nav nav a:hover,
+  .tenant-preview .tenant-gallery-cell:hover,
+  .tenant-preview .tenant-wow-stats__card:hover,
+  .tenant-preview .tenant-wow-bento__tile:hover {
     transform: none;
   }
 
-  .preview-root .tenant-hero--bold:hover .tenant-hero-bg {
+  .tenant-preview .tenant-nav nav a::after {
+    display: none;
+  }
+
+  .tenant-preview .tenant-card--link:hover img,
+  .tenant-preview .tenant-hero:hover .tenant-hero-image img,
+  .tenant-preview .tenant-page-hero:hover .tenant-page-hero__media img,
+  .tenant-preview .tenant-split:hover .tenant-split__visual img,
+  .tenant-preview .tenant-wow-bento__tile:hover .tenant-wow-bento__visual img {
+    transform: none;
+  }
+
+  .tenant-preview .tenant-hero--bold:hover .tenant-hero-bg {
     transform: none;
   }
 }

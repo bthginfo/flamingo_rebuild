@@ -5,6 +5,7 @@ import { getDemoSeed } from '../seeds';
 import { Suspense } from 'react';
 import { DemoPreviewClient } from './DemoPreviewClient';
 import { PreviewFab } from './PreviewFab';
+import { previewPathFromSegments } from './preview-route';
 
 export function TemplatePreview({
   industryKey,
@@ -22,8 +23,10 @@ export function TemplatePreview({
   const previewBasePath = `/preview/${industryKey}/${styleKey}`;
 
   if (seed) {
+    const previewPathKey = `${industryKey}-${styleKey}-${previewPathFromSegments(pathSegments)}`;
     return (
       <DemoPreviewClient
+        key={previewPathKey}
         industryKey={industryKey}
         initialSeed={seed}
         styleKey={styleKey}
