@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { getIndustry, getStyle } from '../registry';
 import type { IndustryKey, StyleKey } from '../model';
 import { getDemoSeed } from '../seeds';
@@ -49,9 +50,12 @@ export function TemplatePreview({
               <a className="button" href="#sections">
                 Abschnitte ansehen
               </a>
-              <a className="button secondary" href="/admin-demo/home?industry=restaurant&style=classic">
+              <Link
+                className="button secondary"
+                href={`/admin-demo/home?industry=${encodeURIComponent(industryKey)}&style=${encodeURIComponent(styleKey)}`}
+              >
                 Admin-Demo
-              </a>
+              </Link>
             </div>
           </div>
         </section>
