@@ -162,6 +162,9 @@ export const industries: readonly IndustryDefinition[] = [
         slugPrefix: '/kurse',
         fields: [
           field.text('title', 'Kurs', { required: true }),
+          field.text('slug', 'Slug', { required: true }),
+          field.textarea('summary', 'Kurzbeschreibung', { required: true }),
+          field.image('image', 'Bild'),
           field.text('weekday', 'Wochentag', { required: true }),
           field.text('time', 'Uhrzeit', { required: true }),
           field.text('level', 'Level'),

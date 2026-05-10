@@ -8,6 +8,7 @@
     "build": "node ./scripts/migrate-if-configured.mjs && next build",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
+    "audit:cms-surface": "tsx scripts/audit-cms-surface.ts",
     "validate:registry": "tsx scripts/validate-registry.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
