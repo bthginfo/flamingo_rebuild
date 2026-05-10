@@ -210,7 +210,7 @@ function buildStandardCollectionDetailPage(
     kind: 'collectionDetail',
     title: item.title,
     slug: `/${config.urlSegment}/${item.slug}`,
-    seo: { title: `${item.title}` },
+    seo: collectionSeo(item, `${item.title}`, summary),
     sections: withWowAfterPageHeader(industryKey, styleKey, `detail-${item.collectionKey}-${item.id}`, item.title, sections)
   };
 }
@@ -265,7 +265,7 @@ function buildHotelRoomDetailPage(item: CollectionSeedItem, industryKey: Industr
     kind: 'collectionDetail',
     title: item.title,
     slug: `/zimmer/${item.slug}`,
-    seo: { title: `${item.title} · Zimmer` },
+    seo: collectionSeo(item, `${item.title} · Zimmer`, summary),
     sections: withWowAfterPageHeader(industryKey, styleKey, `detail-room-${item.id}`, item.title, sections)
   };
 }
@@ -322,7 +322,7 @@ function buildTourDetailPage(item: CollectionSeedItem, industryKey: IndustryKey,
     kind: 'collectionDetail',
     title: item.title,
     slug: `/touren/${item.slug}`,
-    seo: { title: `${item.title} · Touren` },
+    seo: collectionSeo(item, `${item.title} · Touren`, summary),
     sections: withWowAfterPageHeader(industryKey, styleKey, `detail-tour-${item.id}`, item.title, sections)
   };
 }
@@ -364,7 +364,7 @@ function buildHotelOfferDetailPage(item: CollectionSeedItem, industryKey: Indust
     kind: 'collectionDetail',
     title: item.title,
     slug: `/angebote/${item.slug}`,
-    seo: { title: `${item.title} · Angebot` },
+    seo: collectionSeo(item, `${item.title} · Angebot`, summary),
     sections: withWowAfterPageHeader(industryKey, styleKey, `detail-offer-${item.id}`, item.title, sections)
   };
 }
@@ -420,7 +420,7 @@ function buildMenuItemDetailPage(item: CollectionSeedItem, industryKey: Industry
     kind: 'collectionDetail',
     title: item.title,
     slug: `/speisekarte/${item.slug}`,
-    seo: { title: `${item.title} · Speisekarte` },
+    seo: collectionSeo(item, `${item.title} · Speisekarte`, summary),
     sections: withWowAfterPageHeader(industryKey, styleKey, `detail-menuItem-${item.id}`, item.title, sections)
   };
 }
@@ -466,7 +466,7 @@ function buildDiningExperienceDetailPage(
     kind: 'collectionDetail',
     title: item.title,
     slug: `/erlebnisse/${item.slug}`,
-    seo: { title: `${item.title} · Erlebnisse` },
+    seo: collectionSeo(item, `${item.title} · Erlebnisse`, summary),
     sections: withWowAfterPageHeader(
       industryKey,
       styleKey,
@@ -474,5 +474,14 @@ function buildDiningExperienceDetailPage(
       item.title,
       sections
     )
+  };
+}
+
+function collectionSeo(item: CollectionSeedItem, fallbackTitle: string, fallbackDescription = ''): Record<string, unknown> {
+  const seo = item.seo ?? {};
+  return {
+    title: typeof seo.title === 'string' && seo.title.trim() ? seo.title : fallbackTitle,
+    description:
+      typeof seo.description === 'string' && seo.description.trim() ? seo.description : fallbackDescription
   };
 }

@@ -81,7 +81,8 @@ export async function loadSiteDocumentByTenantSlug(tenantSlug: string, status: E
       collectionKey: item.collectionKey,
       title: item.title,
       slug: item.slug,
-      data: item.data
+      data: item.data,
+      seo: item.seo
     }))
   };
 }
@@ -176,7 +177,7 @@ export async function saveDraftSiteDocument(tenantSlug: string, inputDocument: S
       slug: item.slug,
       status: 'draft',
       data: item.data,
-      seo: {}
+      seo: item.seo ?? {}
     });
   }
 }
@@ -361,7 +362,8 @@ function normalizeCollectionIdsForPersist(document: SiteSeed): SiteSeed {
 
   const collections = document.collections.map((item) => ({
     ...item,
-    id: idMap.get(item.id) ?? item.id
+    id: idMap.get(item.id) ?? item.id,
+    seo: item.seo ?? {}
   }));
 
   const pages = document.pages.map((page) => ({

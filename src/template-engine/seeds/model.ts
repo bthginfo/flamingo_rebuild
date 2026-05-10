@@ -6,6 +6,7 @@ export type CollectionSeedItem = {
   title: string;
   slug: string;
   data: Record<string, unknown>;
+  seo?: Record<string, unknown>;
 };
 
 /** Tenant SMTP (optional). Password is never returned to the browser from the API. */

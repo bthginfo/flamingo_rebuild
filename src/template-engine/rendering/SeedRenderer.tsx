@@ -398,9 +398,11 @@ function MapContactSection({
 }) {
   const headline = asSplit(section.data.headline);
   const contact = seed.global.contact;
-  const address = typeof contact.address === 'string' ? contact.address : '';
-  const phone = typeof contact.phone === 'string' ? contact.phone : '';
-  const email = typeof contact.email === 'string' ? contact.email : '';
+  const address = asString(section.data.address) || asString(contact.address);
+  const phone = asString(section.data.phone) || asString(contact.phone);
+  const email = asString(section.data.email) || asString(contact.email);
+  const openingHours = asString(section.data.openingHours) || asString(contact.openingHours);
+  const mapQuery = encodeURIComponent(address || seed.global.brand.name);
 
   return (
     <section className="tenant-section tenant-soft" id={domSectionId}>
@@ -415,10 +417,18 @@ function MapContactSection({
             <p>{address || 'Adresse folgt.'}</p>
             {phone ? <p>Tel. {phone}</p> : null}
             {email ? <p>{email}</p> : null}
+            {openingHours ? <p className="tenant-map-card__hours">{openingHours}</p> : null}
           </div>
-          <div className="tenant-map-placeholder" aria-hidden>
-            Karte (Demo)
-          </div>
+          <a
+            className="tenant-map-placeholder tenant-map-placeholder--link"
+            href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`}
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Adresse in Google Maps öffnen"
+          >
+            <span>Karte öffnen</span>
+            <small>{address || seed.global.brand.name}</small>
+          </a>
         </div>
       </div>
     </section>

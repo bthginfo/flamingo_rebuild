@@ -605,7 +605,13 @@ function FieldEditor({
     );
   }
 
-  if (field.type === 'textarea' || field.type === 'richText') {
+  if (
+    field.type === 'textarea' ||
+    field.type === 'richText' ||
+    field.type === 'address' ||
+    field.type === 'openingHours' ||
+    field.type === 'socialLinks'
+  ) {
     return <TextArea label={field.label} value={text(value)} onChange={(next) => onChange(path, next)} />;
   }
 
@@ -630,8 +636,62 @@ function FieldEditor({
     );
   }
 
-  if (field.type === 'text' || field.type === 'url' || field.type === 'phone' || field.type === 'email') {
+  if (
+    field.type === 'text' ||
+    field.type === 'url' ||
+    field.type === 'phone' ||
+    field.type === 'email' ||
+    field.type === 'date' ||
+    field.type === 'time'
+  ) {
     return <TextField label={field.label} value={text(value)} onChange={(next) => onChange(path, next)} />;
+  }
+
+  if (field.type === 'select') {
+    return (
+      <label className="cms-field">
+        <span>{field.label}</span>
+        <select value={text(value)} onChange={(event) => onChange(path, event.target.value)}>
+          <option value="">Bitte wählen</option>
+          {(field.options ?? []).map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      </label>
+    );
+  }
+
+  if (field.type === 'multiSelect') {
+    const selected = new Set(arrayText(value));
+    return (
+      <div className="cms-field is-wide">
+        <span>{field.label}</span>
+        <div className="cms-reference-list">
+          {(field.options ?? []).map((option) => (
+            <label className="cms-reference-list__item" key={option}>
+              <input
+                type="checkbox"
+                checked={selected.has(option)}
+                onChange={(event) => {
+                  const current = arrayText(value);
+                  onChange(
+                    path,
+                    event.target.checked
+                      ? [...current, option].filter((v, i, arr) => arr.indexOf(v) === i)
+                      : current.filter((item) => item !== option)
+                  );
+                }}
+              />
+              <span>
+                <strong>{option}</strong>
+              </span>
+            </label>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   if (field.type === 'boolean') {
@@ -690,6 +750,46 @@ function FieldEditor({
         options={options}
         onChange={(next) => onChange(path, next)}
       />
+    );
+  }
+
+  if (field.type === 'collectionReference') {
+    const collectionKey = field.collectionKey ?? '';
+    const options = seed.collections.filter((item) => item.collectionKey === collectionKey);
+    return (
+      <label className="cms-field">
+        <span>{field.label}</span>
+        <select value={text(value)} onChange={(event) => onChange(path, event.target.value)}>
+          <option value="">Kein Eintrag</option>
+          {options.map((item) => (
+            <option key={item.id} value={item.id}>
+              {item.title}
+            </option>
+          ))}
+        </select>
+      </label>
+    );
+  }
+
+  if (field.type === 'group') {
+    const current = isRecord(value) ? value : {};
+    return (
+      <div className="cms-list is-wide">
+        <span>{field.label}</span>
+        <div className="cms-field-grid">
+          {(field.fields ?? []).map((child) => (
+            <FieldEditor
+              key={child.key}
+              field={child}
+              path={[...path, child.key]}
+              value={current[child.key]}
+              onChange={onChange}
+              seed={seed}
+              tenantSlug={tenantSlug}
+            />
+          ))}
+        </div>
+      </div>
     );
   }
 

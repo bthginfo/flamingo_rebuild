@@ -127,7 +127,8 @@ export function RestaurantMenuEditor({
             collectionKey,
             title: collectionKey === 'menuItem' ? 'Neues Gericht' : 'Neuer Eintrag',
             slug: id,
-            data: defaultNewCollectionItemData(collectionKey)
+            data: defaultNewCollectionItemData(collectionKey),
+            seo: { title: '', description: '' }
           }
         ]
       };
@@ -149,6 +150,10 @@ export function RestaurantMenuEditor({
 
   function updateItemData(itemId: string, key: string, value: unknown) {
     updateItem(itemId, (current) => ({ ...current, data: { ...current.data, [key]: value } }));
+  }
+
+  function updateItemSeo(itemId: string, key: 'title' | 'description', value: string) {
+    updateItem(itemId, (current) => ({ ...current, seo: { ...(current.seo ?? {}), [key]: value } }));
   }
 
   async function handleSave() {
@@ -295,6 +300,16 @@ export function RestaurantMenuEditor({
             <div className="cms-field-grid">
               <TextField label="Titel" value={item.title} onChange={(value) => updateItem(item.id, (current) => ({ ...current, title: value }))} />
               <TextField label="Slug" value={item.slug} onChange={(value) => updateItem(item.id, (current) => ({ ...current, slug: value }))} />
+              <TextField
+                label="SEO Titel"
+                value={text(item.seo?.title)}
+                onChange={(value) => updateItemSeo(item.id, 'title', value)}
+              />
+              <TextArea
+                label="SEO Beschreibung"
+                value={text(item.seo?.description)}
+                onChange={(value) => updateItemSeo(item.id, 'description', value)}
+              />
               {editableFields.map((field) => (
                 <CollectionFieldEditor
                   key={field.key}
@@ -379,7 +394,13 @@ function CollectionFieldEditor({
   tenantSlug: string | null;
   onChange: (value: unknown) => void;
 }) {
-  if (field.type === 'textarea' || field.type === 'richText') {
+  if (
+    field.type === 'textarea' ||
+    field.type === 'richText' ||
+    field.type === 'address' ||
+    field.type === 'openingHours' ||
+    field.type === 'socialLinks'
+  ) {
     return <TextArea label={field.label} value={text(value)} onChange={onChange} />;
   }
 
@@ -428,19 +449,49 @@ function CollectionFieldEditor({
     );
   }
 
-  if (field.type === 'select' && field.options?.length) {
+  if (field.type === 'select') {
     return (
       <label className="cms-field">
         <span>{field.label}</span>
         <select value={text(value)} onChange={(event) => onChange(event.target.value)}>
           <option value="">Bitte wÃ¤hlen</option>
-          {field.options.map((option) => (
+          {(field.options ?? []).map((option) => (
             <option key={option} value={option}>
               {option}
             </option>
           ))}
         </select>
       </label>
+    );
+  }
+
+  if (field.type === 'multiSelect') {
+    const selected = new Set(Array.isArray(value) ? value.map(String) : []);
+    return (
+      <div className="cms-field is-wide">
+        <span>{field.label}</span>
+        <div className="cms-reference-list">
+          {(field.options ?? []).map((option) => (
+            <label className="cms-reference-list__item" key={option}>
+              <input
+                type="checkbox"
+                checked={selected.has(option)}
+                onChange={(event) => {
+                  const current = Array.isArray(value) ? value.map(String) : [];
+                  onChange(
+                    event.target.checked
+                      ? [...current, option].filter((v, i, arr) => arr.indexOf(v) === i)
+                      : current.filter((item) => item !== option)
+                  );
+                }}
+              />
+              <span>
+                <strong>{option}</strong>
+              </span>
+            </label>
+          ))}
+        </div>
+      </div>
     );
   }
 
