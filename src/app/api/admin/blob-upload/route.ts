@@ -2,7 +2,7 @@ import { handleUpload, type HandleUploadBody } from '@vercel/blob/client';
 import { NextResponse, type NextRequest } from 'next/server';
 import { isSessionFresh, readAdminSession } from '@/platform/auth/admin-session';
 
-const MAX_BYTES = Math.floor(1.5 * 1024 * 1024);
+const MAX_BYTES = 1024 * 1024;
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'] as const;
 
 export const runtime = 'nodejs';

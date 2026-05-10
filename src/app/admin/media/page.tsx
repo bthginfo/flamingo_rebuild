@@ -6,14 +6,14 @@ export default function AdminMediaPage() {
       <div className="shell">
         <p className="eyebrow">Admin</p>
         <h1 style={{ fontFamily: 'Georgia, serif', fontSize: 44 }}>Medienbibliothek</h1>
-        <p style={{ color: 'var(--muted)', maxWidth: 640, lineHeight: 1.55 }}>
-          Mit gültigem Admin-Login kannst du Bilder direkt nach{' '}
+        <p style={{ color: 'var(--muted)', maxWidth: 680, lineHeight: 1.55 }}>
+          Mit gueltigem Admin-Login kannst du Bilder direkt nach{' '}
           <a href="https://vercel.com/docs/storage/vercel-blob" rel="noreferrer" target="_blank">
             Vercel Blob
           </a>{' '}
-          laden (siehe Upload unten). Alternativ trägst du weiterhin eine Bild-URL in den Seiten- und Collection-Editoren
-          ein. Nach &quot;Speichern &amp; veröffentlichen&quot; erscheinen die Medien auf der Live-Site. Eine
-          durchsuchbare Bibliothek im Admin ist später vorgesehen.
+          laden. Uploads sind auf 1&nbsp;MB pro Bild begrenzt. Alternativ traegst du weiterhin eine Bild-URL in den
+          Seiten- und Collection-Editoren ein. Ungenutzte Blob-Bilder, die seit 14 Tagen in keiner Draft- oder
+          Live-Version referenziert werden, kannst du unten bereinigen.
         </p>
         <MediaUploadPanel />
       </div>

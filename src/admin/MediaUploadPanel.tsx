@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { upload } from '@vercel/blob/client';
 
+const MAX_IMAGE_BYTES = 1024 * 1024;
+
 type SessionOk = { ok: true; tenantSlug: string };
 type SessionState = { ok: false; reason: 'unauthenticated' | 'error' } | SessionOk | null;
 
@@ -11,6 +13,8 @@ export function MediaUploadPanel() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   const [lastUrl, setLastUrl] = useState('');
+  const [cleanupBusy, setCleanupBusy] = useState(false);
+  const [cleanupMessage, setCleanupMessage] = useState('');
 
   useEffect(() => {
     let cancelled = false;
@@ -39,6 +43,10 @@ export function MediaUploadPanel() {
       setBusy(true);
       setMessage('');
       try {
+        if (file.size > MAX_IMAGE_BYTES) {
+          setMessage('Upload abgebrochen: Bilder duerfen maximal 1 MB gross sein.');
+          return;
+        }
         const safe = file.name.replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 120) || 'upload';
         const pathname = `${session.tenantSlug}/media/${Date.now()}-${safe}`;
         const result = await upload(pathname, file, {
@@ -68,6 +76,32 @@ export function MediaUploadPanel() {
     }
   }
 
+  async function cleanupUnusedMedia() {
+    if (!session?.ok) return;
+    setCleanupBusy(true);
+    setCleanupMessage('');
+    try {
+      const res = await fetch('/api/admin/media-cleanup', { method: 'POST' });
+      const data = (await res.json().catch(() => ({}))) as {
+        deleted?: number;
+        retainedActive?: number;
+        retainedFresh?: number;
+        error?: string;
+      };
+      if (!res.ok) {
+        setCleanupMessage(data.error ?? 'Bereinigung fehlgeschlagen.');
+        return;
+      }
+      setCleanupMessage(
+        `Bereinigung fertig: ${data.deleted ?? 0} geloescht, ${data.retainedActive ?? 0} aktiv genutzt, ${data.retainedFresh ?? 0} juenger als 14 Tage.`
+      );
+    } catch {
+      setCleanupMessage('Netzwerkfehler bei der Bereinigung.');
+    } finally {
+      setCleanupBusy(false);
+    }
+  }
+
   if (session === null) {
     return (
       <p style={{ color: 'var(--muted)', marginTop: 24 }} role="status">
@@ -93,7 +127,7 @@ export function MediaUploadPanel() {
     <section style={{ marginTop: 28, padding: 20, border: '1px solid rgba(0,0,0,0.08)', borderRadius: 8, maxWidth: 720 }}>
       <p className="eyebrow">Upload (Vercel Blob)</p>
       <p style={{ color: 'var(--muted)', lineHeight: 1.55, marginBottom: 16 }}>
-        JPEG, PNG, WebP, GIF oder SVG, maximal 1,5&nbsp;MB. Dateien liegen unter <code>{session.tenantSlug}/media/…</code> in deinem Blob-Store.
+        JPEG, PNG, WebP, GIF oder SVG, maximal 1&nbsp;MB. Dateien liegen unter <code>{session.tenantSlug}/media/…</code> in deinem Blob-Store.
       </p>
       <label className="cms-field" style={{ display: 'block', marginBottom: 12 }}>
         <span>Bild wählen</span>
@@ -125,6 +159,21 @@ export function MediaUploadPanel() {
           </button>
         </div>
       ) : null}
+      <div className="admin-media-policy">
+        <p className="eyebrow">Speicherplatz-Regel</p>
+        <p>
+          Ungenutzte Blob-Bilder, die in keiner Draft- oder Live-Version referenziert sind und aelter als 14 Tage sind,
+          koennen hier sicher entfernt werden. Aktive Frontend-Bilder bleiben erhalten.
+        </p>
+        <button className="button secondary" type="button" disabled={cleanupBusy} onClick={() => void cleanupUnusedMedia()}>
+          {cleanupBusy ? 'Bereinigt ...' : 'Ungenutzte Bilder bereinigen'}
+        </button>
+        {cleanupMessage ? (
+          <p role="status" style={{ marginTop: 10, color: 'var(--muted)' }}>
+            {cleanupMessage}
+          </p>
+        ) : null}
+      </div>
     </section>
   );
 }

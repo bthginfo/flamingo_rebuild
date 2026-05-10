@@ -10,6 +10,8 @@ import {
 } from '@/template-engine/link-resolution';
 import type { SiteSeed } from '@/template-engine/seeds/model';
 
+const MAX_IMAGE_BYTES = 1024 * 1024;
+
 type SessionOk = { ok: true; tenantSlug: string };
 type SessionState = { ok: false; reason: 'unauthenticated' | 'error' } | SessionOk | null;
 
@@ -81,6 +83,10 @@ export function ImageFieldEditor({
       setBusy(true);
       setHint('');
       try {
+        if (file.size > MAX_IMAGE_BYTES) {
+          setHint('Upload abgebrochen: Bilder duerfen maximal 1 MB gross sein.');
+          return;
+        }
         const safe = file.name.replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 120) || 'upload';
         const pathname = `${session.tenantSlug}/media/${Date.now()}-${safe}`;
         const result = await upload(pathname, file, {
@@ -151,7 +157,7 @@ export function ImageFieldEditor({
       {uploadReady ? (
         <div className="cms-image-upload-row">
           <label className="cms-field">
-            <span>Datei hochladen (max. 1,5&nbsp;MB, JPEG/PNG/WebP/GIF/SVG)</span>
+            <span>Datei hochladen (max. 1&nbsp;MB, JPEG/PNG/WebP/GIF/SVG)</span>
             <input
               type="file"
               accept="image/jpeg,image/png,image/webp,image/gif,image/svg+xml"
