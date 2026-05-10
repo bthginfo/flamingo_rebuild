@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useMemo } from 'react';
+import { AdminOnboarding, AdminTourButton } from '@/admin/AdminOnboarding';
 import { INDUSTRY_KEYS, STYLE_KEYS, type IndustryKey, type StyleKey } from '@/template-engine/model';
 import { getIndustry } from '@/template-engine/registry';
 
@@ -83,7 +84,9 @@ export function AdminDemoShell({ children }: { children: ReactNode }) {
             </Link>
           </nav>
         </div>
-        <div className="admin-app__header-right" />
+        <div className="admin-app__header-right">
+          <AdminTourButton enabled />
+        </div>
       </header>
 
       <div className="admin-app__body">
@@ -167,6 +170,7 @@ export function AdminDemoShell({ children }: { children: ReactNode }) {
 
         <main className="admin-app__main admin-app__main--demo">{children}</main>
       </div>
+      <AdminOnboarding enabled />
     </div>
   );
 }

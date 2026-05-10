@@ -150,7 +150,80 @@ export function resolvePreviewPage(seed: SiteSeed, segments: string[] | undefine
     }
   }
 
+  if (parts.length === 1 && parts[0] === 'news') {
+    return buildNewsIndexPage(seed);
+  }
+
+  if (parts.length === 2 && parts[0] === 'news') {
+    const item = seed.collections.find((c) => c.collectionKey === 'newsArticle' && c.slug === parts[1]);
+    if (item) {
+      return buildStandardCollectionDetailPage(
+        item,
+        {
+          eyebrow: asString(item.data.category) || 'News',
+          urlSegment: 'news',
+          listHref: '/',
+          listLabel: 'Zur Startseite',
+          ctaHref: '/kontakt'
+        },
+        seed.industryKey,
+        seed.styleKey
+      );
+    }
+  }
+
   return seed.pages.find((page) => page.key === 'home') ?? seed.pages[0];
+}
+
+function asString(value: unknown): string {
+  return typeof value === 'string' ? value : '';
+}
+
+function buildNewsIndexPage(seed: SiteSeed): PageInstance {
+  const items = seed.collections
+    .filter((item) => item.collectionKey === 'newsArticle')
+    .sort((a, b) => asString(b.data.publishedAt).localeCompare(asString(a.data.publishedAt)))
+    .map((item) => item.id);
+  const sections: SectionInstance[] = [
+    {
+      id: 'news-index-head',
+      sectionKey: 'global.pageHeader',
+      visible: true,
+      sortOrder: 1,
+      data: {
+        eyebrow: 'Journal',
+        headline: { plain: 'News, Updates', accent: 'und Einblicke.' },
+        subline: 'Aktuelles aus dem Team, hilfreiche Ratgeber und saisonale Hinweise.',
+        image: ''
+      }
+    },
+    {
+      id: 'news-index-grid',
+      sectionKey: 'global.newsTeaser',
+      visible: true,
+      sortOrder: 2,
+      data: {
+        eyebrow: 'Alle Artikel',
+        headline: { plain: 'Alles auf', accent: 'einen Blick.' },
+        intro: 'Die neuesten Beitraege erscheinen zuerst und koennen im CMS als Collection Items gepflegt werden.',
+        limit: items.length,
+        items,
+        cta: { label: 'Kontakt aufnehmen', link: { type: 'page', href: '/kontakt' } }
+      }
+    }
+  ];
+  return {
+    id: 'news-index',
+    key: 'news',
+    kind: 'custom',
+    title: 'News',
+    slug: '/news',
+    seo: {
+      title: 'News',
+      description: 'Aktuelle Artikel, Updates und Einblicke.'
+    },
+    sections: withWowAfterPageHeader(seed.industryKey, seed.styleKey, 'news-index', 'News', sections)
+  };
 }
 
 function buildStandardCollectionDetailPage(

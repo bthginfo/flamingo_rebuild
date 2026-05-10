@@ -79,7 +79,8 @@ const TITLE_BANK: Record<string, readonly string[]> = {
   trainer: ['Mara Stein', 'Noah Kraft', 'Lina Core', 'Ben Mobility', 'Elif Run', 'Tom Recovery'],
   fitnessInsight: ['Probetraining ohne Druck', 'Trainingsziel in 30 Tagen', 'Peak-Zeiten clever nutzen', 'Community statt Anonymität', 'Regeneration zählt', 'Startplan für Wiedereinsteiger'],
   accommodation: ['Hotel Rheinblick', 'Pension Marktgasse', 'Boutique Loft', 'Winzerhof Gästehaus', 'Apartment Hafen', 'Shuttle Treffpunkt'],
-  weddingInsight: ['Plan B bei Wetter', 'Dresscode ohne Rätsel', 'Kinder & Ruhezone', 'Geschenke & Beiträge', 'Shuttle nach Mitternacht', 'Fotos ohne Zeitdruck']
+  weddingInsight: ['Plan B bei Wetter', 'Dresscode ohne Rätsel', 'Kinder & Ruhezone', 'Geschenke & Beiträge', 'Shuttle nach Mitternacht', 'Fotos ohne Zeitdruck'],
+  newsArticle: ['Neu im Fruehjahr', 'Blick hinter die Kulissen', 'Terminfenster mit Mehrwert', 'Das fragen Kund:innen gerade', 'Saison-Update aus dem Team', 'Vor Ort besser geplant']
 };
 
 const DEEP_SECTION_BY_INDUSTRY: Record<IndustryKey, string> = {
@@ -135,6 +136,7 @@ export function deepenDemoSeed(seed: SiteSeed): SiteSeed {
       const deepCollection = DEEP_COLLECTION_BY_INDUSTRY[seed.industryKey];
       const deepSection = DEEP_SECTION_BY_INDUSTRY[seed.industryKey];
       const deepIds = idsByCollection.get(deepCollection) ?? [];
+      const newsIds = latestNewsIds(collections);
       const sections = page.sections.map((section) => {
         const collectionKey = SECTION_COLLECTION.get(section.sectionKey);
         const ids = collectionKey ? idsByCollection.get(collectionKey) : undefined;
@@ -162,9 +164,26 @@ export function deepenDemoSeed(seed: SiteSeed): SiteSeed {
                 items: deepIds
               }
             });
+      const withNews =
+        page.key !== 'home' || withDeepDive.some((section) => section.sectionKey === 'global.newsTeaser') || newsIds.length === 0
+          ? withDeepDive
+          : insertBeforeContact(withDeepDive, {
+              id: 'home-news-teaser',
+              sectionKey: 'global.newsTeaser',
+              visible: true,
+              sortOrder: 0,
+              data: {
+                eyebrow: newsEyebrow(seed.industryKey),
+                headline: newsHeadline(seed.industryKey),
+                intro: newsIntro(seed.industryKey),
+                limit: 4,
+                items: newsIds,
+                cta: { label: 'Alle News lesen', link: { type: 'page', href: '/news' } }
+              }
+            });
       return {
         ...page,
-        sections: renumber(withDeepDive)
+        sections: renumber(withNews)
       };
     })
   };
@@ -174,6 +193,19 @@ function insertAfterHeader(sections: readonly SiteSeed['pages'][number]['section
   const idx = sections.findIndex((section) => section.sectionKey === 'global.pageHeader');
   const at = idx >= 0 ? idx + 1 : Math.min(1, sections.length);
   return [...sections.slice(0, at), insert, ...sections.slice(at)];
+}
+
+function insertBeforeContact(sections: readonly SiteSeed['pages'][number]['sections'][number][], insert: SiteSeed['pages'][number]['sections'][number]) {
+  const idx = sections.findIndex((section) => section.sectionKey === 'global.contactCta');
+  const at = idx >= 0 ? idx : sections.length;
+  return [...sections.slice(0, at), insert, ...sections.slice(at)];
+}
+
+function latestNewsIds(collections: readonly CollectionSeedItem[]): string[] {
+  return collections
+    .filter((item) => item.collectionKey === 'newsArticle')
+    .sort((a, b) => String(b.data.publishedAt ?? '').localeCompare(String(a.data.publishedAt ?? '')))
+    .map((item) => item.id);
 }
 
 function renumber<T extends { sortOrder: number }>(sections: readonly T[]): T[] {
@@ -224,6 +256,10 @@ function valueForField(
   if (field.key === 'kicker') return ['Insider', 'Gut zu wissen', 'Ablauf', 'Empfehlung', 'Detail', 'Service'][index % 6];
   if (field.key === 'metric') return ['3 Min.', 'Premium', 'Planbar', 'Vor Ort', 'Sicher', 'Direkt'][index % 6];
   if (field.key === 'detail') return `${title} macht die Entscheidung leichter, weil Erwartung, Timing und naechster Schritt klar sind.`;
+  if (field.key === 'category') return ['Update', 'Einblick', 'Ratgeber', 'Saison'][index % 4];
+  if (field.key === 'publishedAt') return `2026-0${(index % 6) + 1}-15`;
+  if (field.key === 'author') return 'Flamingo Redaktion';
+  if (field.key === 'readTime') return `${3 + (index % 4)} Min.`;
   if (field.key === 'weekday') return ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'][index % 6];
   if (field.key === 'time') return ['08:00', '10:30', '13:00', '16:30', '18:00', '20:00'][index % 6];
   if (field.key === 'level') return ['Einsteiger', 'Alle Level', 'Fortgeschritten', 'Performance'][index % 4];
@@ -236,6 +272,51 @@ function valueForField(
 
 function deepEyebrow(industry: IndustryKey, pageTitle: string): string {
   return `${pageTitle} · Deep Dive`;
+}
+
+function newsEyebrow(industry: IndustryKey): string {
+  const map: Record<IndustryKey, string> = {
+    restaurant: 'Aus Kueche & Gastraum',
+    hotel: 'Journal',
+    tourism: 'Guide-Updates',
+    salon: 'Studio Notes',
+    tradesman: 'Werkstatt-News',
+    consulting: 'Insights',
+    medical: 'Praxiswissen',
+    fitness: 'Studio Journal',
+    wedding: 'Updates fuer Gaeste'
+  };
+  return map[industry];
+}
+
+function newsHeadline(industry: IndustryKey): { plain: string; accent: string } {
+  const map: Record<IndustryKey, { plain: string; accent: string }> = {
+    restaurant: { plain: 'Aktuelles, das', accent: 'Appetit macht.' },
+    hotel: { plain: 'Neuigkeiten fuer', accent: 'bessere Aufenthalte.' },
+    tourism: { plain: 'Frisch geplant,', accent: 'besser unterwegs.' },
+    salon: { plain: 'Trends, Pflege', accent: 'und Termine.' },
+    tradesman: { plain: 'Updates vom', accent: 'Profi-Team.' },
+    consulting: { plain: 'Gedanken, die', accent: 'Entscheidungen schaerfen.' },
+    medical: { plain: 'Wissen fuer', accent: 'sichere Termine.' },
+    fitness: { plain: 'Neu im Studio,', accent: 'stark im Alltag.' },
+    wedding: { plain: 'Alles Neue fuer', accent: 'euren Tag.' }
+  };
+  return map[industry];
+}
+
+function newsIntro(industry: IndustryKey): string {
+  const map: Record<IndustryKey, string> = {
+    restaurant: 'Saisonkarte, Produzenten, Events und kleine Geschichten, die den naechsten Besuch greifbar machen.',
+    hotel: 'Arrangements, Hausgeschichten und praktische Hinweise fuer Gaeste, die genauer planen wollen.',
+    tourism: 'Wetter, Routen, Ausruestung und neue Erlebnisse kompakt aus Sicht des Guide-Teams.',
+    salon: 'Farbtrends, Pflegewissen und Terminfenster, die Kund:innen vor dem Besuch wirklich helfen.',
+    tradesman: 'Material, Wartung, Ablauf und regionale Projekte mit konkretem Nutzen fuer Anfragen.',
+    consulting: 'Perspektiven aus Strategie, Wachstum und Umsetzung, die direkt in bessere Entscheidungen fuehren.',
+    medical: 'Patientenfreundliche Updates zu Ablauf, Vorsorge, Diagnostik und Organisation.',
+    fitness: 'Programme, Community-Momente und Trainingsimpulse fuer Menschen, die dranbleiben wollen.',
+    wedding: 'Planungsupdates, Gaesteinfos und kleine Details, die vor dem Fest Ruhe schaffen.'
+  };
+  return map[industry];
 }
 
 function deepHeadline(industry: IndustryKey): { plain: string; accent: string } {

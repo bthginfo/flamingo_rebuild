@@ -1,6 +1,6 @@
 import type { IndustryDefinition } from '../model';
 import { field } from '../fields';
-import { page, premiumContentCollection, standardServiceCollection } from './helpers';
+import { newsArticleCollection, page, premiumContentCollection, standardServiceCollection } from './helpers';
 
 const globalAllowed = [
   'global.hero',
@@ -28,6 +28,7 @@ const globalAllowed = [
   'global.pullQuote',
   'global.stepsStrip',
   'global.featureCompare',
+  'global.newsTeaser',
   'restaurant.deepDives',
   'hotel.deepDives',
   'tourism.deepDives',
@@ -55,7 +56,8 @@ export const industries: readonly IndustryDefinition[] = [
     collections: [
       standardServiceCollection('restaurant', 'menuItem', 'Gerichte', '/speisekarte'),
       standardServiceCollection('restaurant', 'diningExperience', 'Erlebnisse', '/erlebnisse'),
-      premiumContentCollection('restaurant', 'restaurantInsight', 'Storys & Pairings', '/insights')
+      premiumContentCollection('restaurant', 'restaurantInsight', 'Storys & Pairings', '/insights'),
+      newsArticleCollection('restaurant')
     ]
   },
   {
@@ -72,7 +74,8 @@ export const industries: readonly IndustryDefinition[] = [
     collections: [
       standardServiceCollection('hotel', 'room', 'Zimmer', '/zimmer'),
       standardServiceCollection('hotel', 'hotelOffer', 'Angebote', '/angebote'),
-      premiumContentCollection('hotel', 'hotelInsight', 'Haus & Service-Details', '/insights')
+      premiumContentCollection('hotel', 'hotelInsight', 'Haus & Service-Details', '/insights'),
+      newsArticleCollection('hotel')
     ]
   },
   {
@@ -88,7 +91,8 @@ export const industries: readonly IndustryDefinition[] = [
     ],
     collections: [
       standardServiceCollection('tourism', 'tour', 'Touren', '/touren'),
-      premiumContentCollection('tourism', 'tourismInsight', 'Guide-Wissen', '/insights')
+      premiumContentCollection('tourism', 'tourismInsight', 'Guide-Wissen', '/insights'),
+      newsArticleCollection('tourism')
     ]
   },
   {
@@ -105,7 +109,8 @@ export const industries: readonly IndustryDefinition[] = [
     collections: [
       standardServiceCollection('salon', 'treatment', 'Leistungen', '/leistungen'),
       standardServiceCollection('salon', 'look', 'Looks', '/looks'),
-      premiumContentCollection('salon', 'salonInsight', 'Beratung & Pflege', '/insights')
+      premiumContentCollection('salon', 'salonInsight', 'Beratung & Pflege', '/insights'),
+      newsArticleCollection('salon')
     ]
   },
   {
@@ -122,7 +127,8 @@ export const industries: readonly IndustryDefinition[] = [
     collections: [
       standardServiceCollection('tradesman', 'tradeService', 'Leistungen', '/leistungen'),
       standardServiceCollection('tradesman', 'referenceProject', 'Referenzen', '/referenzen'),
-      premiumContentCollection('tradesman', 'tradesmanInsight', 'Qualität & Ablauf', '/insights')
+      premiumContentCollection('tradesman', 'tradesmanInsight', 'Qualität & Ablauf', '/insights'),
+      newsArticleCollection('tradesman')
     ]
   },
   {
@@ -139,7 +145,8 @@ export const industries: readonly IndustryDefinition[] = [
     collections: [
       standardServiceCollection('consulting', 'consultingService', 'Angebote', '/leistungen'),
       standardServiceCollection('consulting', 'caseStudy', 'Cases', '/cases'),
-      premiumContentCollection('consulting', 'consultingInsight', 'Methoden & Playbooks', '/insights')
+      premiumContentCollection('consulting', 'consultingInsight', 'Methoden & Playbooks', '/insights'),
+      newsArticleCollection('consulting')
     ]
   },
   {
@@ -156,7 +163,8 @@ export const industries: readonly IndustryDefinition[] = [
     collections: [
       standardServiceCollection('medical', 'treatment', 'Behandlungen', '/leistungen'),
       standardServiceCollection('medical', 'doctor', 'Ärzteteam', '/team'),
-      premiumContentCollection('medical', 'medicalInsight', 'Patienteninfos', '/insights')
+      premiumContentCollection('medical', 'medicalInsight', 'Patienteninfos', '/insights'),
+      newsArticleCollection('medical')
     ]
   },
   {
@@ -174,6 +182,7 @@ export const industries: readonly IndustryDefinition[] = [
       standardServiceCollection('fitness', 'fitnessClass', 'Kurse', '/kurse'),
       standardServiceCollection('fitness', 'trainer', 'Trainer:innen', '/trainer'),
       premiumContentCollection('fitness', 'fitnessInsight', 'Training & Community', '/insights'),
+      newsArticleCollection('fitness'),
       {
         key: 'scheduleItem',
         label: 'Trainingsplan',
@@ -218,7 +227,8 @@ export const industries: readonly IndustryDefinition[] = [
     collections: [
       standardServiceCollection('wedding', 'scheduleItem', 'Ablauf', '/ablauf'),
       standardServiceCollection('wedding', 'accommodation', 'Unterkünfte', '/unterkunft'),
-      premiumContentCollection('wedding', 'weddingInsight', 'Gästeinfos & Details', '/insights')
+      premiumContentCollection('wedding', 'weddingInsight', 'Gästeinfos & Details', '/insights'),
+      newsArticleCollection('wedding')
     ]
   }
 ];

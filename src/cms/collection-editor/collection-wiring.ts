@@ -70,5 +70,16 @@ export function defaultNewCollectionItemData(collectionKey: string): Record<stri
   if (collectionKey === 'menuItem') {
     return { summary: '', price: '', image: '' };
   }
+  if (collectionKey === 'newsArticle') {
+    return {
+      summary: '',
+      description: '',
+      image: '',
+      category: 'Update',
+      publishedAt: new Date().toISOString().slice(0, 10),
+      author: '',
+      readTime: '3 Min.'
+    };
+  }
   return { summary: '', image: '' };
 }

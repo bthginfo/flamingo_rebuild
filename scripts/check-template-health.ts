@@ -21,7 +21,8 @@ const premiumSections = new Set([
   'global.videoEmbed',
   'global.pullQuote',
   'global.stepsStrip',
-  'global.featureCompare'
+  'global.featureCompare',
+  'global.newsTeaser'
 ]);
 
 const deepDiveSectionByIndustry: Record<string, string> = {
@@ -65,6 +66,9 @@ for (const industry of INDUSTRY_KEYS) {
       }
       if (page.key === 'home' && premiumCount < 2) {
         issues.push({ scope: pageScope, message: 'Home page has fewer than two premium interaction sections.' });
+      }
+      if (page.key === 'home' && !visible.some((section) => section.sectionKey === 'global.newsTeaser')) {
+        issues.push({ scope: pageScope, message: 'Home page is missing the CMS-driven news teaser.' });
       }
 
       for (const section of visible) {

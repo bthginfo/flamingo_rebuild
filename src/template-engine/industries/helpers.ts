@@ -104,3 +104,44 @@ export function premiumContentCollection(
     }
   };
 }
+
+export function newsArticleCollection(industry: IndustryKey): CollectionDefinition {
+  return {
+    key: 'newsArticle',
+    label: 'News & Blog',
+    industry,
+    slugPrefix: '/news',
+    fields: [
+      field.text('title', 'Titel', { required: true }),
+      field.text('slug', 'Slug', { required: true }),
+      field.textarea('summary', 'Kurzbeschreibung', { required: true }),
+      field.richText('description', 'Artikeltext'),
+      field.image('image', 'Titelbild'),
+      field.text('category', 'Kategorie'),
+      { key: 'publishedAt', label: 'Datum', type: 'date' },
+      field.text('author', 'Autor:in'),
+      field.text('readTime', 'Lesezeit'),
+      field.cta('cta', 'Button'),
+      field.seo()
+    ],
+    detailPage: {
+      pathPattern: '/news/[slug]',
+      allowedSections: [
+        'global.pageHeader',
+        'global.textImage',
+        'global.galleryGrid',
+        'global.faq',
+        'global.contactCta',
+        'global.statsBand',
+        'global.bentoHighlights',
+        'global.iconHighlights',
+        'global.storyTimeline',
+        'global.mediaSpotlight',
+        'global.quoteMarquee',
+        'global.keyFactsGrid',
+        'global.pullQuote'
+      ],
+      defaultSections: ['global.pageHeader', 'global.textImage', 'global.contactCta']
+    }
+  };
+}

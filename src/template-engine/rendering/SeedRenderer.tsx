@@ -190,6 +190,7 @@ function SectionRenderer({
     case 'medical.deepDives':
     case 'fitness.deepDives':
     case 'wedding.deepDives':
+    case 'global.newsTeaser':
       return (
         <CollectionGrid
           seed={seed}
@@ -657,7 +658,8 @@ function collectionDetailPrefix(sectionKey: string): string | null {
     'fitness.deepDives': '/insights',
     'wedding.schedule': '/ablauf',
     'wedding.accommodation': '/unterkunft',
-    'wedding.deepDives': '/insights'
+    'wedding.deepDives': '/insights',
+    'global.newsTeaser': '/news'
   };
   return map[sectionKey] ?? null;
 }
@@ -675,14 +677,20 @@ function CollectionGrid({
 }) {
   const headline = asSplit(section.data.headline);
   const itemIds = Array.isArray(section.data.items) ? section.data.items.map(String) : [];
+  const limit = Math.max(1, Number(section.data.limit) || itemIds.length || 4);
   const items = itemIds
     .map((id) => seed.collections.find((item) => item.id === id))
-    .filter((item): item is CollectionSeedItem => Boolean(item));
+    .filter((item): item is CollectionSeedItem => Boolean(item))
+    .slice(0, limit);
   const prefix = collectionDetailPrefix(section.sectionKey);
   const isDeepDive = section.sectionKey.endsWith('.deepDives');
+  const isNews = section.sectionKey === 'global.newsTeaser';
 
   return (
-    <section className={isDeepDive ? 'tenant-section tenant-deep-dive-section' : 'tenant-section'} id={domSectionId}>
+    <section
+      className={isDeepDive ? 'tenant-section tenant-deep-dive-section' : isNews ? 'tenant-section tenant-news-section' : 'tenant-section'}
+      id={domSectionId}
+    >
       <div className="shell">
         <p className="eyebrow">{asString(section.data.eyebrow)}</p>
         <h2 className="tenant-section-title">
@@ -743,6 +751,11 @@ function CollectionGrid({
             );
           })}
         </div>
+        {isNews ? (
+          <div className="tenant-section-actions">
+            <CtaButton value={section.data.cta} previewBasePath={previewBasePath} seed={seed} secondary />
+          </div>
+        ) : null}
       </div>
     </section>
   );
@@ -751,7 +764,10 @@ function CollectionGrid({
 function collectionMetaItems(item: CollectionSeedItem): string[] {
   return [
     asString(item.data.kicker),
+    asString(item.data.category),
+    formatDate(asString(item.data.publishedAt)),
     asString(item.data.metric),
+    asString(item.data.readTime),
     asString(item.data.price),
     asString(item.data.time),
     asString(item.data.weekday),
@@ -1573,6 +1589,13 @@ function CtaButton({
 
 function asString(value: unknown): string {
   return typeof value === 'string' ? value : '';
+}
+
+function formatDate(value: string): string {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat('de-DE', { day: '2-digit', month: 'short', year: 'numeric' }).format(date);
 }
 
 function arrayRecords(value: unknown): Record<string, unknown>[] {

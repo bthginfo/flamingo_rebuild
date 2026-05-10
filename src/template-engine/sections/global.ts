@@ -76,6 +76,22 @@ export const globalSections: readonly SectionDefinition[] = [
     ]
   },
   {
+    key: 'global.newsTeaser',
+    label: 'News & Blog Teaser',
+    industries: 'all',
+    styles: 'all',
+    allowedPageKinds: ['core', 'custom'],
+    repeatable: true,
+    fields: [
+      field.text('eyebrow', 'Eyebrow'),
+      field.splitHeading('headline', 'Ueberschrift'),
+      field.textarea('intro', 'Einleitung'),
+      { key: 'limit', label: 'Anzahl sichtbarer Artikel', type: 'number' },
+      field.collectionList('items', 'Artikel', 'newsArticle', { required: true }),
+      field.cta('cta', 'Button')
+    ]
+  },
+  {
     key: 'global.faq',
     label: 'FAQ',
     industries: 'all',

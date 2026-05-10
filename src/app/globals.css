@@ -2178,7 +2178,7 @@ a {
 }
 
 .admin-app__sidebar {
-  width: 288px;
+  width: 320px;
   flex-shrink: 0;
   padding: 20px 14px 28px 18px;
   display: flex;
@@ -6944,19 +6944,23 @@ a {
 .admin-demo-sidebar-pills {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
   padding: 0 6px 4px;
 }
 
 .admin-demo-sidebar-pills a {
-  font-size: 0.68rem;
-  letter-spacing: 0.04em;
-  padding: 5px 10px;
+  max-width: 100%;
+  font-size: 0.74rem;
+  letter-spacing: 0;
+  padding: 6px 10px;
   border-radius: 999px;
   border: 1px solid rgba(15, 23, 42, 0.1);
   color: #64748b;
   text-decoration: none;
   font-weight: 700;
+  line-height: 1.15;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .admin-demo-sidebar-pills a:hover {
@@ -7986,6 +7990,30 @@ a {
   aspect-ratio: 16 / 9;
 }
 
+.tenant-news-section {
+  background:
+    linear-gradient(135deg, color-mix(in oklab, var(--tenant-accent), transparent 92%), transparent 48%),
+    var(--tenant-bg);
+}
+
+.tenant-news-section .tenant-card-grid {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.tenant-news-section .tenant-card {
+  border-radius: 18px;
+}
+
+.tenant-news-section .tenant-card__media {
+  aspect-ratio: 4 / 3;
+}
+
+.tenant-section-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: clamp(24px, 4vw, 42px);
+}
+
 .tenant-nav {
   box-shadow: 0 1px 0 rgba(15, 23, 42, 0.03);
 }
@@ -8375,7 +8403,7 @@ a {
 
 .admin-app__sidebar-card {
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .admin-app__sidebar-card::before {

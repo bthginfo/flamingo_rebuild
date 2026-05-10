@@ -17,6 +17,7 @@ const rendererSectionFields: Record<string, readonly string[]> = {
   'global.galleryGrid': ['eyebrow', 'headline', 'images'],
   'global.actionBar': ['statusOverride', 'primaryCta', 'secondaryCta'],
   'global.testimonials': ['eyebrow', 'headline', 'items'],
+  'global.newsTeaser': ['eyebrow', 'headline', 'intro', 'limit', 'items', 'cta'],
   'global.faq': ['eyebrow', 'headline', 'items'],
   'global.contactCta': ['eyebrow', 'headline', 'subline', 'cta'],
   'global.statsBand': ['eyebrow', 'headline', 'items'],
