@@ -76,13 +76,17 @@ export function AdminAppChrome({
             <span className="admin-app__tenant-name">{displayTitle}</span>
           </div>
           {tenantSlug ? <span className="admin-app__tenant-badge">{badge}</span> : null}
+          {tenantSlug ? (
+            <nav className="admin-app__quicknav" aria-label="Admin-Quicklinks">
+              <a className="admin-app__header-link" href={websiteHref} target="_blank" rel="noreferrer">
+                Website ansehen
+              </a>
+            </nav>
+          ) : null}
         </div>
         <div className="admin-app__header-right">
           {tenantSlug ? (
             <>
-              <a className="admin-app__header-link" href={websiteHref} target="_blank" rel="noreferrer">
-                Website ansehen
-              </a>
               <AdminLogoutButton className="admin-app__logout" />
             </>
           ) : (

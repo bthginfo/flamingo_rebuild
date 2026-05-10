@@ -13,13 +13,14 @@ import {
   type AdminContentState
 } from '@/cms/admin-content-api';
 import type { CollectionSeedItem, SiteSeed } from '@/template-engine/seeds/model';
-import { STYLE_KEYS, type StyleKey } from '@/template-engine/model';
+import { STYLE_KEYS, type FieldDefinition, type StyleKey } from '@/template-engine/model';
 import { getIndustry } from '@/template-engine/registry';
 import {
   appendCollectionItemToReferencingSections,
   defaultNewCollectionItemData,
   removeCollectionItemFromAllSectionLists
 } from '@/cms/collection-editor/collection-wiring';
+import { ImageFieldEditor, LinkTargetEditor } from '@/cms/page-editor/field-editors';
 
 
 const STYLE_LABELS: Record<StyleKey, string> = {
@@ -91,11 +92,15 @@ export function RestaurantMenuEditor({
     };
   }, [initialSeed]);
 
-  const collectionLabel = useMemo(() => {
-    if (headingTitle) return headingTitle;
-    const def = getIndustry(seed.industryKey).collections.find((c) => c.key === collectionKey);
-    return def?.label ?? collectionKey;
-  }, [collectionKey, headingTitle, seed.industryKey]);
+  const collectionDefinition = useMemo(
+    () => getIndustry(seed.industryKey).collections.find((c) => c.key === collectionKey),
+    [collectionKey, seed.industryKey]
+  );
+  const collectionLabel = headingTitle ?? collectionDefinition?.label ?? collectionKey;
+  const editableFields = useMemo(() => {
+    const fields = collectionDefinition?.fields ?? [];
+    return fields.filter((field) => field.key !== 'title' && field.key !== 'slug' && field.type !== 'seo');
+  }, [collectionDefinition]);
 
   const dishes = useMemo(
     () => seed.collections.filter((item) => item.collectionKey === collectionKey),
@@ -140,6 +145,10 @@ export function RestaurantMenuEditor({
       return removeCollectionItemFromAllSectionLists(stripped, itemId);
     });
     setStatus('dirty');
+  }
+
+  function updateItemData(itemId: string, key: string, value: unknown) {
+    updateItem(itemId, (current) => ({ ...current, data: { ...current.data, [key]: value } }));
   }
 
   async function handleSave() {
@@ -286,15 +295,16 @@ export function RestaurantMenuEditor({
             <div className="cms-field-grid">
               <TextField label="Titel" value={item.title} onChange={(value) => updateItem(item.id, (current) => ({ ...current, title: value }))} />
               <TextField label="Slug" value={item.slug} onChange={(value) => updateItem(item.id, (current) => ({ ...current, slug: value }))} />
-              {collectionKey === 'menuItem' ? (
-                <TextField
-                  label="Preis"
-                  value={text(item.data.price)}
-                  onChange={(value) => updateItem(item.id, (current) => ({ ...current, data: { ...current.data, price: value } }))}
+              {editableFields.map((field) => (
+                <CollectionFieldEditor
+                  key={field.key}
+                  field={field}
+                  value={item.data[field.key]}
+                  seed={seed}
+                  tenantSlug={contentState.mode === 'api' ? contentState.tenantSlug ?? null : null}
+                  onChange={(value) => updateItemData(item.id, field.key, value)}
                 />
-              ) : null}
-              <TextField label="Bild-URL" value={text(item.data.image)} onChange={(value) => updateItem(item.id, (current) => ({ ...current, data: { ...current.data, image: value } }))} />
-              <TextArea label="Beschreibung" value={text(item.data.summary)} onChange={(value) => updateItem(item.id, (current) => ({ ...current, data: { ...current.data, summary: value } }))} />
+              ))}
             </div>
           </article>
         ))}
@@ -356,6 +366,87 @@ function TextArea({ label, value, onChange }: { label: string; value: string; on
   );
 }
 
+function CollectionFieldEditor({
+  field,
+  value,
+  seed,
+  tenantSlug,
+  onChange
+}: {
+  field: FieldDefinition;
+  value: unknown;
+  seed: SiteSeed;
+  tenantSlug: string | null;
+  onChange: (value: unknown) => void;
+}) {
+  if (field.type === 'textarea' || field.type === 'richText') {
+    return <TextArea label={field.label} value={text(value)} onChange={onChange} />;
+  }
+
+  if (field.type === 'image') {
+    return <ImageFieldEditor label={field.label} value={value} tenantSlug={tenantSlug} onChange={onChange} />;
+  }
+
+  if (field.type === 'cta') {
+    const current = isRecord(value) ? value : {};
+    return (
+      <div className="cms-field-split-heading cms-field-split-heading--stack">
+        <TextField
+          label={`${field.label} Text`}
+          value={text(current.label)}
+          onChange={(label) => onChange({ ...current, label })}
+        />
+        <LinkTargetEditor
+          label={`${field.label} Ziel`}
+          linkValue={isRecord(current.link) ? current.link : {}}
+          seed={seed}
+          onLinkChange={(link) => onChange({ ...current, link })}
+        />
+      </div>
+    );
+  }
+
+  if (field.type === 'boolean') {
+    return (
+      <label className="cms-toggle cms-field">
+        <span>{field.label}</span>
+        <input checked={value === true} onChange={(event) => onChange(event.target.checked)} type="checkbox" />
+      </label>
+    );
+  }
+
+  if (field.type === 'number') {
+    return (
+      <TextField
+        label={field.label}
+        value={typeof value === 'number' && Number.isFinite(value) ? String(value) : text(value)}
+        onChange={(next) => {
+          const parsed = Number(next);
+          onChange(Number.isFinite(parsed) ? parsed : 0);
+        }}
+      />
+    );
+  }
+
+  if (field.type === 'select' && field.options?.length) {
+    return (
+      <label className="cms-field">
+        <span>{field.label}</span>
+        <select value={text(value)} onChange={(event) => onChange(event.target.value)}>
+          <option value="">Bitte wÃ¤hlen</option>
+          {field.options.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      </label>
+    );
+  }
+
+  return <TextField label={field.label} value={text(value)} onChange={onChange} />;
+}
+
 function toolbarBusy(status: EditorStatus): boolean {
   return status === 'loading' || status === 'saving' || status === 'publishing' || status === 'discarding';
 }
@@ -380,4 +471,8 @@ function previewHref(contentState: AdminContentState, seed: SiteSeed): string {
 
 function text(value: unknown): string {
   return typeof value === 'string' ? value : '';
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }

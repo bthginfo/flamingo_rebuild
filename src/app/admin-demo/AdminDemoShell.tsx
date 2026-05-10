@@ -74,15 +74,16 @@ export function AdminDemoShell({ children }: { children: ReactNode }) {
             <span className="admin-app__tenant-name">Demo · {getIndustry(industry).label}</span>
           </div>
           <span className="admin-app__tenant-badge">DEMO</span>
+          <nav className="admin-app__quicknav" aria-label="Demo-Quicklinks">
+            <a className="admin-app__header-link" href={previewHref} target="_blank" rel="noreferrer">
+              Live-Vorschau
+            </a>
+            <Link className="admin-app__header-link" href="/admin/login">
+              Echter Admin
+            </Link>
+          </nav>
         </div>
-        <div className="admin-app__header-right">
-          <a className="admin-app__header-link" href={previewHref} target="_blank" rel="noreferrer">
-            Live-Vorschau
-          </a>
-          <Link className="admin-app__header-link" href="/admin/login">
-            Echter Admin
-          </Link>
-        </div>
+        <div className="admin-app__header-right" />
       </header>
 
       <div className="admin-app__body">

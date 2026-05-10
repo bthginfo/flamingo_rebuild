@@ -287,7 +287,7 @@ export function RestaurantHomeEditor({
   const tenantSlugForUpload =
     !forceDemo && contentState.mode === 'api' && contentState.tenantSlug ? contentState.tenantSlug : null;
 
-  const useShellPageNav = !forceDemo && editorPathBase === '/admin/pages';
+  const useShellPageNav = (!forceDemo && editorPathBase === '/admin/pages') || forceDemo;
   const useFloatingDock = useShellPageNav;
   const hideDemoDuplicateNav = forceDemo;
 
@@ -620,6 +620,16 @@ function FieldEditor({
     );
   }
 
+  if (field.type === 'gallery') {
+    return (
+      <GalleryFieldEditor
+        label={field.label}
+        value={value}
+        onChange={(next) => onChange(path, next)}
+      />
+    );
+  }
+
   if (field.type === 'text' || field.type === 'url' || field.type === 'phone' || field.type === 'email') {
     return <TextField label={field.label} value={text(value)} onChange={(next) => onChange(path, next)} />;
   }
@@ -670,7 +680,17 @@ function FieldEditor({
   }
 
   if (field.type === 'collectionReferenceList') {
-    return <ReadOnlyList label={field.label} values={arrayText(value)} />;
+    const selectedIds = arrayText(value);
+    const collectionKey = field.collectionKey ?? '';
+    const options = seed.collections.filter((item) => item.collectionKey === collectionKey);
+    return (
+      <CollectionReferenceEditor
+        label={field.label}
+        selectedIds={selectedIds}
+        options={options}
+        onChange={(next) => onChange(path, next)}
+      />
+    );
   }
 
   if (field.type === 'repeater') {
@@ -782,6 +802,93 @@ function ReadOnlyList({ label, values }: { label: string; values: readonly strin
   );
 }
 
+function CollectionReferenceEditor({
+  label,
+  selectedIds,
+  options,
+  onChange
+}: {
+  label: string;
+  selectedIds: readonly string[];
+  options: readonly { id: string; title: string; slug: string }[];
+  onChange: (next: string[]) => void;
+}) {
+  const selected = new Set(selectedIds);
+
+  function toggle(id: string, checked: boolean) {
+    if (checked) {
+      onChange([...selectedIds, id].filter((v, i, arr) => arr.indexOf(v) === i));
+      return;
+    }
+    onChange(selectedIds.filter((itemId) => itemId !== id));
+  }
+
+  return (
+    <div className="cms-field is-wide">
+      <span>{label}</span>
+      {options.length === 0 ? (
+        <p className="cms-field-hint">Noch keine passenden Inhalte angelegt.</p>
+      ) : (
+        <div className="cms-reference-list">
+          {options.map((item) => (
+            <label className="cms-reference-list__item" key={item.id}>
+              <input
+                type="checkbox"
+                checked={selected.has(item.id)}
+                onChange={(event) => toggle(item.id, event.target.checked)}
+              />
+              <span>
+                <strong>{item.title}</strong>
+                <small>/{item.slug}</small>
+              </span>
+            </label>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function GalleryFieldEditor({
+  label,
+  value,
+  onChange
+}: {
+  label: string;
+  value: unknown;
+  onChange: (next: { url: string; alt: string }[]) => void;
+}) {
+  const items = galleryItems(value);
+
+  function update(index: number, patch: Partial<{ url: string; alt: string }>) {
+    onChange(items.map((item, i) => (i === index ? { ...item, ...patch } : item)));
+  }
+
+  return (
+    <div className="cms-list is-wide">
+      <span>{label}</span>
+      {items.map((item, index) => (
+        <div className="cms-repeat-item" key={index}>
+          <div className="cms-repeat-toolbar">
+            <button
+              type="button"
+              className="button secondary"
+              onClick={() => onChange(items.filter((_, i) => i !== index))}
+            >
+              Bild entfernen
+            </button>
+          </div>
+          <TextField label={`Bild ${index + 1} URL`} value={item.url} onChange={(next) => update(index, { url: next })} />
+          <TextField label={`Bild ${index + 1} Alt-Text`} value={item.alt} onChange={(next) => update(index, { alt: next })} />
+        </div>
+      ))}
+      <button type="button" className="button secondary" onClick={() => onChange([...items, { url: '', alt: '' }])}>
+        Bild hinzufÃ¼gen
+      </button>
+    </div>
+  );
+}
+
 function toolbarBusy(status: EditorStatus): boolean {
   return status === 'loading' || status === 'saving' || status === 'publishing' || status === 'discarding';
 }
@@ -851,6 +958,20 @@ function arrayText(value: unknown): string[] {
 
 function arrayRecords(value: unknown): Record<string, unknown>[] {
   return Array.isArray(value) ? value.filter(isRecord) : [];
+}
+
+function galleryItems(value: unknown): { url: string; alt: string }[] {
+  if (!Array.isArray(value)) return [];
+  return value.map((entry) => {
+    if (typeof entry === 'string') return { url: entry, alt: '' };
+    if (isRecord(entry)) {
+      return {
+        url: text(entry.url) || text(entry.src) || text(entry.image),
+        alt: text(entry.alt) || text(entry.caption)
+      };
+    }
+    return { url: '', alt: '' };
+  });
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
