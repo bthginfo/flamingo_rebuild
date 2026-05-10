@@ -558,6 +558,7 @@ function CollectionGrid({
         <p className="tenant-section-intro">{asString(section.data.intro)}</p>
         <div className="tenant-card-grid tenant-card-grid--motion" data-stagger-grid>
           {items.map((item) => {
+            const meta = collectionMetaItems(item);
             const inner = (
               <>
                 {asString(item.data.image) ? (
@@ -574,9 +575,18 @@ function CollectionGrid({
                   </div>
                 ) : null}
                 <div>
+                  {meta.length > 0 ? (
+                    <p className="tenant-card__meta" aria-label="Details">
+                      {meta.map((entry) => (
+                        <span key={entry}>{entry}</span>
+                      ))}
+                    </p>
+                  ) : null}
                   <h3>{item.title}</h3>
                   <p>{asString(item.data.summary)}</p>
-                  {asString(item.data.price) ? <strong>{asString(item.data.price)}</strong> : null}
+                  <span className="tenant-card__more" aria-hidden>
+                    Details ansehen
+                  </span>
                 </div>
               </>
             );
@@ -603,6 +613,16 @@ function CollectionGrid({
       </div>
     </section>
   );
+}
+
+function collectionMetaItems(item: CollectionSeedItem): string[] {
+  return [
+    asString(item.data.price),
+    asString(item.data.time),
+    asString(item.data.weekday),
+    asString(item.data.level),
+    asString(item.data.trainer)
+  ].filter(Boolean).slice(0, 3);
 }
 
 function FaqSection({ section, domSectionId }: { section: SectionInstance; domSectionId: string }) {
