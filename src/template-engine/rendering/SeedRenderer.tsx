@@ -50,7 +50,7 @@ export function SeedPageRenderer({
           ['--tenant-button-fg']: theme.accentFg ?? theme.primaryFg
         }
       : {}),
-    ...(effectiveAccentHex.length > 0 ? { ['--tenant-accent']: effectiveAccentHex } : {})
+    ...(effectiveAccentHex.length > 0 ? previewColorVars(effectiveAccentHex, styleKey) : {})
   } as CSSProperties;
 
   return (
@@ -422,7 +422,11 @@ function MapContactSection({
   const mapQuery = encodeURIComponent(address || seed.global.brand.name);
   const primaryLabel = asString(section.data.primaryActionLabel);
   const secondaryLabel = asString(section.data.secondaryActionLabel);
-  const locations = arrayRecords(section.data.locations);
+  const locations = arrayRecords(section.data.locations).filter((location) =>
+    [location.name, location.address, location.city, location.phone, location.email, location.mapsUrl].some((value) =>
+      Boolean(asString(value))
+    )
+  );
   const arrival = arrayRecords(section.data.arrival);
 
   return (
@@ -453,28 +457,31 @@ function MapContactSection({
               </div>
             </article>
           </TiltHoverCard>
-          <div className="tenant-contact-map">
-            <a
-              className="tenant-contact-map__inner"
-              href={mapsUrl || `https://www.google.com/maps/search/?api=1&query=${mapQuery}`}
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Adresse in Google Maps öffnen"
-            >
-              <span>Karte öffnen</span>
-              <small>{address || seed.global.brand.name}</small>
-            </a>
-          </div>
+          <ContactMapVisual
+            href={mapsUrl || `https://www.google.com/maps/search/?api=1&query=${mapQuery}`}
+            label="Karte öffnen"
+            detail={address || seed.global.brand.name}
+          />
         </div>
         {locations.length > 0 ? (
           <div className="tenant-contact-locations" data-stagger-grid>
-            {locations.map((location, index) => (
-              <article className="tenant-contact-mini" key={index}>
-                <strong>{asString(location.name) || `Standort ${index + 1}`}</strong>
-                <span>{[asString(location.address), asString(location.city)].filter(Boolean).join(' · ')}</span>
-                {asString(location.phone) ? <a href={`tel:${asString(location.phone)}`}>{asString(location.phone)}</a> : null}
-              </article>
-            ))}
+            {locations.map((location, index) => {
+              const locationAddress = [asString(location.address), asString(location.city)].filter(Boolean).join(' · ');
+              const locationMap =
+                asString(location.mapsUrl) ||
+                `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locationAddress || asString(location.name) || seed.global.brand.name)}`;
+              return (
+                <article className="tenant-contact-mini" key={index}>
+                  <div className="tenant-contact-mini__body">
+                    <strong>{asString(location.name) || `Standort ${index + 1}`}</strong>
+                    {locationAddress ? <span>{locationAddress}</span> : null}
+                    {asString(location.phone) ? <a href={`tel:${asString(location.phone)}`}>{asString(location.phone)}</a> : null}
+                    {asString(location.email) ? <a href={`mailto:${asString(location.email)}`}>{asString(location.email)}</a> : null}
+                  </div>
+                  <ContactMapVisual href={locationMap} label="Route" detail={locationAddress || asString(location.name)} compact />
+                </article>
+              );
+            })}
           </div>
         ) : null}
         {arrival.length > 0 ? (
@@ -489,6 +496,46 @@ function MapContactSection({
         ) : null}
       </div>
     </section>
+  );
+}
+
+function ContactMapVisual({
+  href,
+  label,
+  detail,
+  compact = false
+}: {
+  href: string;
+  label: string;
+  detail: string;
+  compact?: boolean;
+}) {
+  const embedUrl = toGoogleMapsEmbedUrl(href);
+  if (embedUrl) {
+    return (
+      <div className={compact ? 'tenant-contact-map tenant-contact-map--mini' : 'tenant-contact-map'}>
+        <iframe src={embedUrl} loading="lazy" referrerPolicy="no-referrer-when-downgrade" title={detail || label} />
+        <a className="tenant-contact-map__overlay" href={href} target="_blank" rel="noreferrer">
+          <span>{label}</span>
+          {detail ? <small>{detail}</small> : null}
+        </a>
+      </div>
+    );
+  }
+
+  return (
+    <div className={compact ? 'tenant-contact-map tenant-contact-map--mini' : 'tenant-contact-map'}>
+      <a
+        className="tenant-contact-map__inner"
+        href={href}
+        target="_blank"
+        rel="noreferrer"
+        aria-label={`${label} in Google Maps öffnen`}
+      >
+        <span>{label}</span>
+        {detail ? <small>{detail}</small> : null}
+      </a>
+    </div>
   );
 }
 
@@ -1514,6 +1561,44 @@ function readableMuted(bg: string): string {
   return isDarkHex(bg) ? 'rgba(255,255,255,0.72)' : '#6b6b76';
 }
 
+function previewColorVars(accent: string, styleKey: StyleKey): Record<string, string> {
+  const darkAccent = isDarkHex(accent);
+  if (styleKey === 'bold') {
+    return {
+      ['--tenant-accent']: accent,
+      ['--tenant-primary']: accent,
+      ['--tenant-bg']: `color-mix(in oklab, ${accent}, #050507 88%)`,
+      ['--tenant-fg']: '#ffffff',
+      ['--tenant-muted']: 'rgba(255,255,255,0.72)',
+      ['--tenant-line']: 'rgba(255,255,255,0.18)',
+      ['--tenant-soft']: `color-mix(in oklab, ${accent}, #050507 76%)`,
+      ['--tenant-button-fg']: darkAccent ? '#ffffff' : '#14111a'
+    };
+  }
+  if (styleKey === 'modern') {
+    return {
+      ['--tenant-accent']: accent,
+      ['--tenant-primary']: accent,
+      ['--tenant-bg']: `color-mix(in oklab, ${accent}, #f8fafc 93%)`,
+      ['--tenant-fg']: '#101418',
+      ['--tenant-muted']: '#5f6872',
+      ['--tenant-line']: `color-mix(in oklab, ${accent}, #d7dde4 72%)`,
+      ['--tenant-soft']: `color-mix(in oklab, ${accent}, #ffffff 90%)`,
+      ['--tenant-button-fg']: darkAccent ? '#ffffff' : '#101418'
+    };
+  }
+  return {
+    ['--tenant-accent']: accent,
+    ['--tenant-primary']: accent,
+    ['--tenant-bg']: `color-mix(in oklab, ${accent}, #fff8f0 94%)`,
+    ['--tenant-fg']: '#221510',
+    ['--tenant-muted']: '#75665c',
+    ['--tenant-line']: `color-mix(in oklab, ${accent}, #eadfd6 68%)`,
+    ['--tenant-soft']: `color-mix(in oklab, ${accent}, #fffaf4 88%)`,
+    ['--tenant-button-fg']: darkAccent ? '#ffffff' : '#221510'
+  };
+}
+
 function readableLine(bg: string): string {
   return isDarkHex(bg) ? 'rgba(255,255,255,0.18)' : 'rgba(11,11,16,0.11)';
 }
@@ -1533,6 +1618,11 @@ function asSplit(value: unknown): { plain: string; accent: string } {
     plain: asString(value.plain),
     accent: asString(value.accent)
   };
+}
+
+function toGoogleMapsEmbedUrl(url: string): string {
+  if (!url || !/^https:\/\/www\.google\.[^/]+\/maps\/embed/i.test(url)) return '';
+  return url;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

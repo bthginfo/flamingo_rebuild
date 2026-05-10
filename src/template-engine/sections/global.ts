@@ -133,14 +133,14 @@ export const globalSections: readonly SectionDefinition[] = [
       { key: 'address', label: 'Adresse', type: 'address', required: true },
       { key: 'phone', label: 'Telefon', type: 'phone' },
       { key: 'email', label: 'E-Mail', type: 'email' },
-      field.url('mapsUrl', 'Google-Maps-Link'),
-      field.repeater('locations', 'Weitere Standorte', [
+      field.url('mapsUrl', 'Google-Maps-Link / Embed-Link'),
+      field.repeater('locations', 'Weitere Standorte mit eigener Karte', [
         field.text('name', 'Name'),
         { key: 'address', label: 'Adresse', type: 'address' },
         field.text('city', 'Ort'),
         { key: 'phone', label: 'Telefon', type: 'phone' },
         { key: 'email', label: 'E-Mail', type: 'email' },
-        field.url('mapsUrl', 'Maps-Link')
+        field.url('mapsUrl', 'Maps-Link / Embed-Link')
       ]),
       field.repeater('arrival', 'Anreise / Ablauf', [
         field.text('title', 'Titel'),

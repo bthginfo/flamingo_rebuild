@@ -8514,6 +8514,97 @@ a {
   background: var(--tenant-bg);
 }
 
+/* Stronger style separation: Classic is editorial/warm, Modern is sharp/product-like. */
+.tenant-preview--classic {
+  background:
+    linear-gradient(90deg, color-mix(in oklab, var(--tenant-line), transparent 78%) 1px, transparent 1px),
+    linear-gradient(180deg, color-mix(in oklab, var(--tenant-line), transparent 82%) 1px, transparent 1px),
+    linear-gradient(180deg, color-mix(in oklab, var(--tenant-bg), #fff 18%), var(--tenant-bg));
+  background-size: 44px 44px, 44px 44px, auto;
+}
+
+.tenant-preview--classic .tenant-nav {
+  border-bottom: 1px solid color-mix(in oklab, var(--tenant-accent), var(--tenant-line) 68%);
+  background: color-mix(in oklab, var(--tenant-bg), #fff 72%);
+}
+
+.tenant-preview--classic .tenant-hero-grid,
+.tenant-preview--classic .tenant-contact-pro__grid {
+  align-items: center;
+}
+
+.tenant-preview--classic .tenant-hero h1,
+.tenant-preview--classic .tenant-page-hero__title,
+.tenant-preview--classic .tenant-section-title {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.tenant-preview--classic .tenant-hero-image,
+.tenant-preview--classic .tenant-page-hero__media,
+.tenant-preview--classic .tenant-card,
+.tenant-preview--classic .tenant-contact-card,
+.tenant-preview--classic .tenant-contact-map {
+  border-radius: 28px 28px 8px 28px;
+  border-color: color-mix(in oklab, var(--tenant-accent), var(--tenant-line) 64%);
+}
+
+.tenant-preview--classic .tenant-card::before,
+.tenant-preview--classic .tenant-contact-card::before {
+  content: '';
+  display: block;
+  width: 42px;
+  height: 3px;
+  margin-bottom: 16px;
+  border-radius: 999px;
+  background: var(--tenant-accent);
+}
+
+.tenant-preview--modern {
+  background:
+    radial-gradient(circle at 16% 10%, color-mix(in oklab, var(--tenant-accent), transparent 86%), transparent 28%),
+    linear-gradient(135deg, color-mix(in oklab, var(--tenant-bg), #fff 34%), var(--tenant-bg));
+}
+
+.tenant-preview--modern .tenant-nav {
+  border-bottom: 1px solid color-mix(in oklab, var(--tenant-accent), transparent 80%);
+  background: color-mix(in oklab, var(--tenant-bg), transparent 8%);
+  backdrop-filter: blur(20px);
+}
+
+.tenant-preview--modern .tenant-nav strong,
+.tenant-preview--modern .eyebrow,
+.tenant-preview--modern .tenant-card__meta {
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.tenant-preview--modern .tenant-hero h1,
+.tenant-preview--modern .tenant-page-hero__title,
+.tenant-preview--modern .tenant-section-title {
+  letter-spacing: -0.01em;
+}
+
+.tenant-preview--modern .tenant-hero-image,
+.tenant-preview--modern .tenant-page-hero__media,
+.tenant-preview--modern .tenant-card,
+.tenant-preview--modern .tenant-contact-card,
+.tenant-preview--modern .tenant-contact-map {
+  border-radius: 12px;
+  border-color: color-mix(in oklab, var(--tenant-accent), transparent 76%);
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.09);
+}
+
+.tenant-preview--modern .tenant-card {
+  background:
+    linear-gradient(180deg, color-mix(in oklab, var(--tenant-accent), transparent 96%), transparent),
+    color-mix(in oklab, var(--tenant-bg), #fff 64%);
+}
+
+.tenant-preview--modern .tenant-button {
+  border-radius: 12px;
+}
+
 .tenant-preview,
 .tenant-section,
 .tenant-card-grid,
@@ -8750,24 +8841,75 @@ a {
   font-size: 1rem;
 }
 
+.tenant-contact-map iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  filter: saturate(0.9) contrast(0.98);
+}
+
+.tenant-contact-map__overlay {
+  position: absolute;
+  inset: auto 14px 14px 14px;
+  display: grid;
+  gap: 4px;
+  padding: 13px 14px;
+  border-radius: 14px;
+  color: #fff;
+  background: rgba(10, 10, 14, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(12px);
+}
+
+.tenant-contact-map__overlay span {
+  font-weight: 900;
+}
+
+.tenant-contact-map__overlay small {
+  color: rgba(255, 255, 255, 0.74);
+}
+
 .tenant-contact-locations {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 14px;
   margin-top: 18px;
 }
 
 .tenant-contact-mini {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
   border: 1px solid var(--tenant-line);
   border-radius: 18px;
   padding: 18px;
   background: color-mix(in oklab, var(--tenant-bg), #fff 44%);
 }
 
+.tenant-contact-mini:has(.tenant-contact-map--mini) {
+  grid-template-columns: minmax(0, 0.9fr) minmax(148px, 0.7fr);
+  align-items: stretch;
+}
+
 .tenant-contact-mini strong,
 .tenant-contact-mini span,
 .tenant-contact-mini a {
   display: block;
+}
+
+.tenant-contact-map--mini {
+  min-height: 148px;
+  border-radius: 16px;
+}
+
+.tenant-contact-map--mini .tenant-contact-map__inner {
+  padding: 16px;
+}
+
+.tenant-contact-map--mini .tenant-contact-map__inner span {
+  font-size: clamp(1.45rem, 3vw, 2.4rem);
 }
 
 .tenant-contact-mini span,
@@ -8802,6 +8944,10 @@ a {
   .tenant-contact-pro__grid,
   .tenant-contact-locations,
   .tenant-arrival-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .tenant-contact-mini:has(.tenant-contact-map--mini) {
     grid-template-columns: 1fr;
   }
 }
