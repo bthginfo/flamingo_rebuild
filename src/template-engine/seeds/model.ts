@@ -52,6 +52,7 @@ export type SiteSeed = {
     brand: {
       name: string;
       tagline: string;
+      accentHex?: string;
     };
     navigation: readonly { label: string; href: string }[];
     contact: Record<string, unknown>;

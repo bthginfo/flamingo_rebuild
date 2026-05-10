@@ -631,6 +631,7 @@ function FieldEditor({
       <GalleryFieldEditor
         label={field.label}
         value={value}
+        tenantSlug={tenantSlug}
         onChange={(next) => onChange(path, next)}
       />
     );
@@ -952,10 +953,12 @@ function CollectionReferenceEditor({
 function GalleryFieldEditor({
   label,
   value,
+  tenantSlug,
   onChange
 }: {
   label: string;
   value: unknown;
+  tenantSlug: string | null;
   onChange: (next: { url: string; alt: string }[]) => void;
 }) {
   const items = galleryItems(value);
@@ -978,7 +981,12 @@ function GalleryFieldEditor({
               Bild entfernen
             </button>
           </div>
-          <TextField label={`Bild ${index + 1} URL`} value={item.url} onChange={(next) => update(index, { url: next })} />
+          <ImageFieldEditor
+            label={`Bild ${index + 1}`}
+            value={item.url}
+            tenantSlug={tenantSlug}
+            onChange={(next) => update(index, { url: next })}
+          />
           <TextField label={`Bild ${index + 1} Alt-Text`} value={item.alt} onChange={(next) => update(index, { alt: next })} />
         </div>
       ))}

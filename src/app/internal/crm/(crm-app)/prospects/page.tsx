@@ -6,6 +6,7 @@ import { styles } from '@/template-engine/styles';
 import { CreateProspectForm, ProspectsBoard, type SerializableProspect } from '@/app/internal/crm/crm-forms';
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 function isMissingRelationError(error: unknown): boolean {
   if (!(error instanceof Error)) return false;

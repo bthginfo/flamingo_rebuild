@@ -12,14 +12,14 @@ import {
 import type { SiteSeed } from '@/template-engine/seeds/model';
 
 type NavItem = { label: string; href: string };
-type BrandFields = { name: string; tagline: string };
+type BrandFields = { name: string; tagline: string; accentHex: string };
 type ContactFields = { address: string; phone: string; email: string; openingHours: string };
 
 export function TenantNavigationEditor() {
   const [contentState, setContentState] = useState<AdminContentState>({ mode: 'demo' });
   const [seed, setSeed] = useState<SiteSeed | null>(null);
   const [items, setItems] = useState<NavItem[]>([]);
-  const [brand, setBrand] = useState<BrandFields>({ name: '', tagline: '' });
+  const [brand, setBrand] = useState<BrandFields>({ name: '', tagline: '', accentHex: '' });
   const [contact, setContact] = useState<ContactFields>({ address: '', phone: '', email: '', openingHours: '' });
   const [status, setStatus] = useState<
     'loading' | 'ready' | 'demo' | 'saving' | 'saved' | 'publishing' | 'discarding' | 'error'
@@ -43,7 +43,8 @@ export function TenantNavigationEditor() {
       setItems(doc.global.navigation.map((entry) => ({ label: entry.label, href: entry.href })));
       setBrand({
         name: asString(doc.global.brand.name),
-        tagline: asString(doc.global.brand.tagline)
+        tagline: asString(doc.global.brand.tagline),
+        accentHex: normalizeHex(asString(doc.global.brand.accentHex))
       });
       setContact({
         address: asString(doc.global.contact.address),
@@ -70,7 +71,8 @@ export function TenantNavigationEditor() {
         ...seed.global,
         brand: {
           name: brand.name.trim(),
-          tagline: brand.tagline.trim()
+          tagline: brand.tagline.trim(),
+          accentHex: normalizeHex(brand.accentHex.trim())
         },
         contact: {
           ...seed.global.contact,
@@ -220,6 +222,22 @@ export function TenantNavigationEditor() {
           <span>Tagline</span>
           <input value={brand.tagline} onChange={(e) => updateBrand({ tagline: e.target.value })} />
         </label>
+        <label className="cms-field">
+          <span>Akzentfarbe</span>
+          <input
+            type="color"
+            value={normalizeHex(brand.accentHex) || '#ff3d68'}
+            onChange={(e) => updateBrand({ accentHex: e.target.value })}
+          />
+        </label>
+        <label className="cms-field">
+          <span>Akzentfarbe HEX</span>
+          <input
+            value={brand.accentHex}
+            placeholder="#ff3d68"
+            onChange={(e) => updateBrand({ accentHex: e.target.value })}
+          />
+        </label>
         <label className="cms-field is-wide">
           <span>Adresse</span>
           <textarea rows={2} value={contact.address} onChange={(e) => updateContact({ address: e.target.value })} />
@@ -318,4 +336,11 @@ export function TenantNavigationEditor() {
 
 function asString(value: unknown): string {
   return typeof value === 'string' ? value : '';
+}
+
+function normalizeHex(value: string): string {
+  const v = value.trim();
+  if (!v) return '';
+  const withHash = v.startsWith('#') ? v : `#${v}`;
+  return /^#[0-9a-fA-F]{6}$/.test(withHash) ? withHash.toLowerCase() : '';
 }

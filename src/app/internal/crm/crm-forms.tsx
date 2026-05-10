@@ -1,10 +1,10 @@
 'use client';
 
-import { useActionState, useRef, useState } from 'react';
+import { useActionState, useRef, useState, type FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   createProspectAction,
   deleteProspectAction,
-  provisionProspectAction,
   updateProspectStatusAction,
   type CrmFormState
 } from './crm-actions';
@@ -224,8 +224,33 @@ function ProvisionTenantDialog(props: {
   defaultStyle: string;
 }) {
   const [open, setOpen] = useState(false);
-  const [state, action, pending] = useActionState(provisionProspectAction, emptyState);
+  const router = useRouter();
+  const [state, setState] = useState<CrmFormState>(emptyState);
+  const [pending, setPending] = useState(false);
   const jsonRef = useRef<HTMLTextAreaElement>(null);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setPending(true);
+    setState({});
+    try {
+      const response = await fetch('/api/internal/crm/provision', {
+        method: 'POST',
+        body: new FormData(event.currentTarget)
+      });
+      const payload = (await response.json()) as CrmFormState;
+      if (!response.ok || payload.error) {
+        setState({ error: payload.error ?? 'Provisioning fehlgeschlagen.' });
+        return;
+      }
+      setState({ message: payload.message ?? 'Tenant angelegt.' });
+      router.refresh();
+    } catch (error) {
+      setState({ error: error instanceof Error ? error.message : 'Provisioning fehlgeschlagen.' });
+    } finally {
+      setPending(false);
+    }
+  }
 
   return (
     <>
@@ -251,7 +276,7 @@ function ProvisionTenantDialog(props: {
             <h2 id="internal-crm-provision-title" style={{ fontFamily: 'Georgia, serif', marginTop: 0 }}>
               Tenant für {props.companyName} anlegen
             </h2>
-            <form action={action} className="crm-form" style={{ marginTop: 12 }}>
+            <form onSubmit={handleSubmit} className="crm-form" style={{ marginTop: 12 }}>
               <input type="hidden" name="prospectId" value={props.prospectId} />
               <label>
                 Slug

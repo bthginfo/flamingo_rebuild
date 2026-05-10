@@ -34,8 +34,9 @@ export function SeedPageRenderer({
   accentHex?: string | null;
 }) {
   const sortedSections = [...page.sections].filter((section) => section.visible).sort((a, b) => a.sortOrder - b.sortOrder);
+  const effectiveAccentHex = accentHex && accentHex.length > 0 ? accentHex : asString(seed.global.brand.accentHex);
   const accentStyle: CSSProperties | undefined =
-    accentHex && accentHex.length > 0 ? ({ ['--tenant-accent']: accentHex } as CSSProperties) : undefined;
+    effectiveAccentHex.length > 0 ? ({ ['--tenant-accent']: effectiveAccentHex } as CSSProperties) : undefined;
 
   return (
     <div className="tenant-site-wrap" data-industry={seed.industryKey} data-style={styleKey} style={accentStyle}>
