@@ -7,6 +7,7 @@ import type { PageInstance, SectionInstance, StyleKey } from '../model';
 import { resolveCtaLinkHref } from '../link-resolution';
 import { sectionAnchorId } from '../section-anchor';
 import type { CollectionSeedItem, SiteSeed } from '../seeds/model';
+import { TiltHoverCard } from '@/ui/marketing/TiltHoverCard';
 
 function SplitHeading({ plain, accent }: { plain: string; accent: string }) {
   if (!accent) return plain;
@@ -284,7 +285,9 @@ function PageHeaderSection({
   return (
     <section className={`tenant-page-hero tenant-page-hero--${styleKey}`} id={domSectionId}>
       <div className="tenant-page-hero__media">
-        <Image src={image} alt="" width={1600} height={720} className="tenant-page-hero__media-img" sizes="100vw" unoptimized />
+        <div className="tenant-page-hero__media-frame">
+          <Image src={image} alt="" fill className="tenant-page-hero__media-img" sizes="100vw" priority unoptimized />
+        </div>
         <div className="tenant-page-hero__shade" />
       </div>
       <div className="shell tenant-page-hero__content">
@@ -326,7 +329,9 @@ function TextImageSection({
         </div>
         {image ? (
           <div className="tenant-split__visual">
-            <Image src={image} alt="" width={1400} height={1050} className="tenant-split__visual-img" sizes="(max-width: 900px) 100vw, 45vw" unoptimized />
+            <div className="tenant-split__visual-frame">
+              <Image src={image} alt="" fill className="tenant-split__visual-img" sizes="(max-width: 900px) 100vw, 45vw" unoptimized />
+            </div>
           </div>
         ) : null}
       </div>
@@ -348,16 +353,17 @@ function GalleryGridSection({ section, domSectionId }: { section: SectionInstanc
         <div className="tenant-gallery-grid">
           {images.map((item, index) => (
             <figure className="tenant-gallery-cell" key={`${item.src}-${index}`}>
-              <Image
-                src={item.src}
-                alt={item.alt}
-                width={900}
-                height={900}
-                className="tenant-gallery-img"
-                sizes="(max-width: 900px) 50vw, 33vw"
-                loading="lazy"
-                unoptimized
-              />
+              <div className="tenant-gallery-cell__frame">
+                <Image
+                  src={item.src}
+                  alt={item.alt}
+                  fill
+                  className="tenant-gallery-img"
+                  sizes="(max-width: 900px) 50vw, 33vw"
+                  loading="lazy"
+                  unoptimized
+                />
+              </div>
             </figure>
           ))}
         </div>
@@ -455,15 +461,17 @@ function HeroSection({
         </div>
         {image && styleKey !== 'bold' ? (
           <div className="tenant-hero-image tenant-hero-image--motion">
-            <Image
-              src={image}
-              alt=""
-              width={1600}
-              height={2000}
-              className="tenant-hero-image-img"
-              sizes="(max-width: 900px) 100vw, 42vw"
-              unoptimized
-            />
+            <div className="tenant-hero-image-frame">
+              <Image
+                src={image}
+                alt=""
+                fill
+                className="tenant-hero-image-img"
+                sizes="(max-width: 900px) 100vw, 42vw"
+                priority
+                unoptimized
+              />
+            </div>
           </div>
         ) : null}
       </div>
@@ -553,16 +561,17 @@ function CollectionGrid({
             const inner = (
               <>
                 {asString(item.data.image) ? (
-                  <Image
-                    src={asString(item.data.image)}
-                    alt=""
-                    width={960}
-                    height={720}
-                    className="tenant-card-img"
-                    sizes="(max-width: 900px) 100vw, 32vw"
-                    loading="lazy"
-                    unoptimized
-                  />
+                  <div className="tenant-card__media">
+                    <Image
+                      src={asString(item.data.image)}
+                      alt=""
+                      fill
+                      className="tenant-card-img"
+                      sizes="(max-width: 900px) 100vw, 32vw"
+                      loading="lazy"
+                      unoptimized
+                    />
+                  </div>
                 ) : null}
                 <div>
                   <h3>{item.title}</h3>
@@ -574,16 +583,20 @@ function CollectionGrid({
 
             if (prefix) {
               return (
-                <Link className="tenant-card tenant-card--link" href={`${previewBasePath}${prefix}/${item.slug}`} key={item.id}>
-                  {inner}
-                </Link>
+                <TiltHoverCard key={item.id} className="tenant-tilt--card">
+                  <Link className="tenant-card tenant-card--link" href={`${previewBasePath}${prefix}/${item.slug}`}>
+                    {inner}
+                  </Link>
+                </TiltHoverCard>
               );
             }
 
             return (
-              <article className="tenant-card" key={item.id}>
-                {inner}
-              </article>
+              <TiltHoverCard key={item.id} className="tenant-tilt--card">
+                <article className="tenant-card">
+                  {inner}
+                </article>
+              </TiltHoverCard>
             );
           })}
         </div>
@@ -825,19 +838,21 @@ function BentoHighlightsSection({
             const span = asString(row.layoutSpan) === '2' ? 'tenant-wow-bento__tile--wide' : '';
             const img = asString(row.image);
             return (
-              <article key={i} className={`tenant-wow-bento__tile ${span}`}>
-                {img ? (
-                  <div className="tenant-wow-bento__visual">
-                    <Image src={img} alt="" width={1200} height={800} className="tenant-bento-img" loading="lazy" unoptimized />
-                    <div className="tenant-wow-bento__shade" />
+              <TiltHoverCard key={i} className="tenant-tilt--bento">
+                <article className={`tenant-wow-bento__tile ${span}`}>
+                  {img ? (
+                    <div className="tenant-wow-bento__visual">
+                      <Image src={img} alt="" fill className="tenant-bento-img" sizes="(max-width: 900px) 100vw, 33vw" loading="lazy" unoptimized />
+                      <div className="tenant-wow-bento__shade" />
+                    </div>
+                  ) : null}
+                  <div className="tenant-wow-bento__body">
+                    {asString(row.kicker) ? <p className="tenant-wow-bento__kicker">{asString(row.kicker)}</p> : null}
+                    <h3>{asString(row.title)}</h3>
+                    {asString(row.body) ? <p>{asString(row.body)}</p> : null}
                   </div>
-                ) : null}
-                <div className="tenant-wow-bento__body">
-                  {asString(row.kicker) ? <p className="tenant-wow-bento__kicker">{asString(row.kicker)}</p> : null}
-                  <h3>{asString(row.title)}</h3>
-                  {asString(row.body) ? <p>{asString(row.body)}</p> : null}
-                </div>
-              </article>
+                </article>
+              </TiltHoverCard>
             );
           })}
         </div>
@@ -878,7 +893,7 @@ function ScrollerHighlightsSection({
               <article className="tenant-scroller__card" key={i}>
                 {img ? (
                   <div className="tenant-scroller__visual">
-                    <Image src={img} alt="" width={900} height={600} className="tenant-scroller-img" loading="lazy" unoptimized />
+                    <Image src={img} alt="" fill className="tenant-scroller-img" sizes="320px" loading="lazy" unoptimized />
                   </div>
                 ) : null}
                 <div className="tenant-scroller__body">
@@ -922,14 +937,16 @@ function IconHighlightsSection({
         </header>
         <div className="tenant-pro-icon__grid" data-stagger-cards>
           {items.map((row, i) => (
-            <article key={i} className="tenant-pro-icon__card">
-              <span className="tenant-pro-icon__glyph" aria-hidden>
-                {asString(row.icon)}
-              </span>
-              <h3>{asString(row.title)}</h3>
-              {asString(row.body) ? <p>{asString(row.body)}</p> : null}
-              <CtaButton value={row.cta} previewBasePath={previewBasePath} seed={seed} />
-            </article>
+            <TiltHoverCard key={i} className="tenant-tilt--card">
+              <article className="tenant-pro-icon__card">
+                <span className="tenant-pro-icon__glyph" aria-hidden>
+                  {asString(row.icon)}
+                </span>
+                <h3>{asString(row.title)}</h3>
+                {asString(row.body) ? <p>{asString(row.body)}</p> : null}
+                <CtaButton value={row.cta} previewBasePath={previewBasePath} seed={seed} />
+              </article>
+            </TiltHoverCard>
           ))}
         </div>
       </div>
@@ -1091,15 +1108,16 @@ function AsymmetricSpotSection({ section, domSectionId }: { section: SectionInst
   );
   const visual = image ? (
     <div className="tenant-split__visual">
-      <Image
-        src={image}
-        alt=""
-        width={1400}
-        height={1050}
-        className="tenant-split__visual-img"
-        sizes="(max-width: 900px) 100vw, 45vw"
-        unoptimized
-      />
+      <div className="tenant-split__visual-frame">
+        <Image
+          src={image}
+          alt=""
+          fill
+          className="tenant-split__visual-img"
+          sizes="(max-width: 900px) 100vw, 45vw"
+          unoptimized
+        />
+      </div>
     </div>
   ) : null;
   return (
@@ -1143,23 +1161,25 @@ function PricingTiersSection({ section, domSectionId }: { section: SectionInstan
             const ctaHref = asString(row.ctaHref);
             const href = ctaHref.startsWith('http') ? ctaHref : ctaHref ? `https://${ctaHref}` : '';
             return (
-              <article key={i} className={`tenant-pro-pricing__card${hi ? ' tenant-pro-pricing__card--hi' : ''}`}>
-                <h3>{asString(row.name)}</h3>
-                <p className="tenant-pro-pricing__price">{asString(row.priceLine)}</p>
-                {asString(row.summary) ? <p className="tenant-pro-pricing__summary">{asString(row.summary)}</p> : null}
-                {bullets.length > 0 ? (
-                  <ul className="tenant-pro-pricing__bullets">
-                    {bullets.map((b, bi) => (
-                      <li key={`${i}-${bi}`}>{b}</li>
-                    ))}
-                  </ul>
-                ) : null}
-                {ctaLabel && href ? (
-                  <a className="tenant-button" href={href}>
-                    {ctaLabel}
-                  </a>
-                ) : null}
-              </article>
+              <TiltHoverCard key={i} className="tenant-tilt--card">
+                <article className={`tenant-pro-pricing__card${hi ? ' tenant-pro-pricing__card--hi' : ''}`}>
+                  <h3>{asString(row.name)}</h3>
+                  <p className="tenant-pro-pricing__price">{asString(row.priceLine)}</p>
+                  {asString(row.summary) ? <p className="tenant-pro-pricing__summary">{asString(row.summary)}</p> : null}
+                  {bullets.length > 0 ? (
+                    <ul className="tenant-pro-pricing__bullets">
+                      {bullets.map((b, bi) => (
+                        <li key={`${i}-${bi}`}>{b}</li>
+                      ))}
+                    </ul>
+                  ) : null}
+                  {ctaLabel && href ? (
+                    <a className="tenant-button" href={href}>
+                      {ctaLabel}
+                    </a>
+                  ) : null}
+                </article>
+              </TiltHoverCard>
             );
           })}
         </div>

@@ -584,6 +584,118 @@ const QUOTE_PACK: Record<IndustryKey, { quote: string; name: string; role: strin
   ]
 };
 
+const ICON_HIGHLIGHT_INTRO_BY_INDUSTRY: Record<IndustryKey, string> = {
+  restaurant: 'Kurz und einladend — was Gäste bei euch sofort spüren.',
+  hotel: 'Vom ersten Klick bis zum Check-out: was Aufenthalte leichter macht.',
+  tourism: 'Orientierung, Sicherheit, Vorfreude — bevor die Tour startet.',
+  salon: 'Beratung, Handwerk, Pflege — was euer Studio von anderen unterscheidet.',
+  tradesman: 'Anfrage, Plan, Ausführung — transparent und termintreu.',
+  consulting: 'Klarheit, Tempo, messbare Wirkung — ohne Folien-Theater.',
+  medical: 'Erreichbarkeit, Diagnostik, Begleitung — ruhig und verständlich.',
+  fitness: 'Einstieg, Plan, Community — Training, das motiviert statt zu stressen.',
+  wedding: 'Planung, Details, großer Tag — damit ihr wirklich feiern könnt.'
+};
+
+type GuestTimelinePack = {
+  eyebrow: string;
+  headline: { plain: string; accent: string };
+  steps: { label: string; title: string; body: string }[];
+};
+
+/** Guest- / patient-facing journey copy (not internal agency process). */
+const GUEST_JOURNEY_TIMELINE: Record<IndustryKey, GuestTimelinePack> = {
+  restaurant: {
+    eyebrow: 'Dein Besuch',
+    headline: { plain: 'Vom ersten', accent: 'Happen bis zum Digestif.' },
+    steps: [
+      { label: '01', title: 'Reservieren', body: 'Tisch, Allergien, Anlass — wir bereiten alles vor.' },
+      { label: '02', title: 'Willkommen', body: 'Begleitung, erste Empfehlungen, Tisch im richtigen Rhythmus.' },
+      { label: '03', title: 'Genießen', body: 'Gänge, Wein, Service — ohne Hetzen.' },
+      { label: '04', title: 'Wiedersehen', body: 'Take-away, nächster Termin, Gästefeedback — bis bald.' }
+    ]
+  },
+  hotel: {
+    eyebrow: 'Aufenthalt',
+    headline: { plain: 'Vom Klick', accent: 'bis zur stillen Minute.' },
+    steps: [
+      { label: '01', title: 'Buchen', body: 'Zimmertyp, Extras, Anreise — alles digital erfasst.' },
+      { label: '02', title: 'Ankommen', body: 'Check-in, Gepäck, erste Orientierung im Haus.' },
+      { label: '03', title: 'Erleben', body: 'Spa, Kulinarik, Concierge — euer Tempo zählt.' },
+      { label: '04', title: 'Gehen', body: 'Late check-out, Transfer, herzlicher Abschied.' }
+    ]
+  },
+  tourism: {
+    eyebrow: 'Tour',
+    headline: { plain: 'Vom Plan', accent: 'zum Gipfelmoment.' },
+    steps: [
+      { label: '01', title: 'Inspiration', body: 'Schwierigkeit, Dauer, Saison — wir finden die passende Route.' },
+      { label: '02', title: 'Buchung', body: 'Ausrüstung, Treffpunkt, Wetterfenster — alles fix.' },
+      { label: '03', title: 'Guiding', body: 'Sicherheit, Pausen, Storytelling vor Ort.' },
+      { label: '04', title: 'Nachklang', body: 'Fotos, Tipps fürs Tal, nächste Abenteuer.' }
+    ]
+  },
+  salon: {
+    eyebrow: 'Salon-Besuch',
+    headline: { plain: 'Vom Beratungs', accent: 'gespräch zum Finish.' },
+    steps: [
+      { label: '01', title: 'Analyse', body: 'Struktur, Wunschbild, Pflege zu Hause.' },
+      { label: '02', title: 'Color & Cut', body: 'Präzises Handwerk, entspannte Pausen.' },
+      { label: '03', title: 'Finish', body: 'Styling, Produkte, Pflege-Tipps für jeden Tag.' },
+      { label: '04', title: 'Follow-up', body: 'Nachtermin, Refresh, Treue-Vorteile.' }
+    ]
+  },
+  tradesman: {
+    eyebrow: 'Projekt',
+    headline: { plain: 'Vom Erst', accent: 'gespräch bis zur Abnahme.' },
+    steps: [
+      { label: '01', title: 'Anfrage', body: 'Fotos, Maße, Wunschtermin — wir melden uns schnell.' },
+      { label: '02', title: 'Vor-Ort', body: 'Aufmaß, Varianten, transparentes Angebot.' },
+      { label: '03', title: 'Umsetzung', body: 'Termintreue, Sauberkeit, Zwischenstände.' },
+      { label: '04', title: 'Übergabe', body: 'Abnahme, Garantie, Dokumentation.' }
+    ]
+  },
+  consulting: {
+    eyebrow: 'Mandat',
+    headline: { plain: 'Vom Briefing', accent: 'zur messbaren Wirkung.' },
+    steps: [
+      { label: '01', title: 'Diagnose', body: 'Markt, Kennzahlen, Organisation — klare Ausgangslage.' },
+      { label: '02', title: 'Roadmap', body: 'Prioritäten, Quick Wins, Verantwortlichkeiten.' },
+      { label: '03', title: 'Umsetzung', body: 'Sprints, Steuerung, regelmäßige Entscheidungszyklen.' },
+      { label: '04', title: 'Impact', body: 'KPI-Review, Skalierung, Übergabe ins Team.' }
+    ]
+  },
+  medical: {
+    eyebrow: 'Patientenweg',
+    headline: { plain: 'Vom Erstkontakt', accent: 'bis zur Nachsorge.' },
+    steps: [
+      { label: '01', title: 'Kontakt', body: 'Online, Telefon oder Empfang — wir koordinieren Termine.' },
+      { label: '02', title: 'Diagnostik', body: 'Befunde verständlich, Zeit für Fragen.' },
+      { label: '03', title: 'Therapie', body: 'Behandlung, Medikation, klare nächste Schritte.' },
+      { label: '04', title: 'Nachsorge', body: 'Kontrollen, Prävention, langfristige Betreuung.' }
+    ]
+  },
+  fitness: {
+    eyebrow: 'Studio-Flow',
+    headline: { plain: 'Vom Probetraining', accent: 'zur Routine.' },
+    steps: [
+      { label: '01', title: 'Onboarding', body: 'Ziele, Level, Gesundheitscheck — sicher starten.' },
+      { label: '02', title: 'Plan', body: 'Kurse, Personal, Ernährung — alles abgestimmt.' },
+      { label: '03', title: 'Trainieren', body: 'Coaching, Technik, Fortschritt sichtbar machen.' },
+      { label: '04', title: 'Bleiben', body: 'Community, Challenges, nächste Meilensteine.' }
+    ]
+  },
+  wedding: {
+    eyebrow: 'Euer Tag',
+    headline: { plain: 'Von Save-the-Date', accent: 'bis zum letzten Tanz.' },
+    steps: [
+      { label: '01', title: 'Planung', body: 'Timeline, Budget, Dienstleister — strukturiert und ruhig.' },
+      { label: '02', title: 'Details', body: 'RSVP, Menü, Shuttle — alles an einem Ort.' },
+      { label: '03', title: 'Feiern', body: 'Ablauf mit Puffer — ihr seid Gäste auf eurer Party.' },
+      { label: '04', title: 'Memories', body: 'Fotos, Dank, nächste Meilensteine — der Nachhall zählt.' }
+    ]
+  }
+};
+
 function buildPremiumWowSections(
   idBase: string,
   industryKey: IndustryKey,
@@ -607,33 +719,12 @@ function buildPremiumWowSections(
     styleKey
   );
 
-  const steps = [
-    {
-      label: '01',
-      title: 'Discovery',
-      body: `Wir synchronisieren Ziele, Zielgruppe und Angebote — speziell für ${industryKey === 'hotel' ? 'Gäste' : 'deine Marke'}.`
-    },
-    {
-      label: '02',
-      title: 'Design System',
-      body: 'UI, Motion-Regeln und Content-Hierarchie werden zu einem stimmigen Auftritt.'
-    },
-    {
-      label: '03',
-      title: 'Build & QA',
-      body: 'Performance, A11y-Basics, Tracking — alles technisch sauber verdrahtet.'
-    },
-    {
-      label: '04',
-      title: 'Launch & Growth',
-      body: 'Go-live, Feinschliff, Übergabe ins CMS — damit du selbst weiterbauen kannst.'
-    }
-  ];
+  const guestJourney = GUEST_JOURNEY_TIMELINE[industryKey];
 
   const timelineHead = adaptTrustHeadlineForStyle(
     {
-      eyebrow: withPageEyebrow('Prozess', ctx),
-      headline: { plain: 'So arbeiten', accent: 'wir mit dir.' }
+      eyebrow: withPageEyebrow(guestJourney.eyebrow, ctx),
+      headline: guestJourney.headline
     },
     styleKey
   );
@@ -662,14 +753,14 @@ function buildPremiumWowSections(
   const iconSection = section(`${idBase}-icons`, 'global.iconHighlights', 0, {
     eyebrow: iconHead.eyebrow,
     headline: iconHead.headline,
-    intro: 'Kurz, klar, messerscharf — die Werte, die deine Gäste und Kund:innen sofort verstehen.',
+    intro: ICON_HIGHLIGHT_INTRO_BY_INDUSTRY[industryKey],
     items: iconItems
   });
 
   const timelineSection = section(`${idBase}-timeline`, 'global.storyTimeline', 0, {
     eyebrow: timelineHead.eyebrow,
     headline: timelineHead.headline,
-    steps
+    steps: guestJourney.steps
   });
 
   const mediaSection = section(`${idBase}-media`, 'global.mediaSpotlight', 0, {
