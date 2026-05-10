@@ -45,6 +45,9 @@ for (const industry of INDUSTRY_KEYS) {
       if (visible.length < 3) {
         issues.push({ scope: pageScope, message: 'Page has fewer than three visible sections.' });
       }
+      if (page.key !== 'home' && visible.length < 4) {
+        issues.push({ scope: pageScope, message: 'Subpage has fewer than four visible sections.' });
+      }
       if (page.key === 'home' && premiumCount < 2) {
         issues.push({ scope: pageScope, message: 'Home page has fewer than two premium interaction sections.' });
       }
@@ -57,6 +60,16 @@ for (const industry of INDUSTRY_KEYS) {
           checkFaq(`${pageScope}/${section.sectionKey}`, section.data);
         }
         checkLongTokens(`${pageScope}/${section.sectionKey}`, section.data);
+      }
+    }
+
+    const byCollection = new Map<string, number>();
+    for (const item of seed.collections) {
+      byCollection.set(item.collectionKey, (byCollection.get(item.collectionKey) ?? 0) + 1);
+    }
+    for (const [collectionKey, count] of byCollection) {
+      if (count < 6) {
+        issues.push({ scope: `${scope}/${collectionKey}`, message: 'Collection has fewer than six demo items.' });
       }
     }
   }

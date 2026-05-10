@@ -19,6 +19,8 @@ import {
   STYLE_STRIP,
   previewHref
 } from '@/ui/marketing/template-showcase-data';
+import { sections } from '@/template-engine/sections';
+import { industries } from '@/template-engine/industries';
 
 export const metadata: Metadata = {
   title: 'Templates & Stile',
@@ -110,6 +112,34 @@ export default function TemplatesPage() {
               </RevealOnScroll>
             );
           })}
+        </div>
+      </section>
+
+      <section className="section fm-section-library" id="sections">
+        <div className="shell">
+          <div className="fm-section-library__head">
+            <div>
+              <p className="eyebrow">CMS Section Library</p>
+              <h2 className="section-title">Alle verfügbaren Bausteine.</h2>
+            </div>
+            <p className="hero-copy">
+              Diese Sections sind in der Registry definiert, im Admin auswählbar und werden vom Template-Renderer aus
+              CMS-Feldern befüllt.
+            </p>
+          </div>
+          <div className="fm-section-library__grid">
+            {sections.map((section) => (
+              <article className="fm-section-chip" key={section.key}>
+                <span>{section.key}</span>
+                <strong>{section.label}</strong>
+                <small>
+                  {section.industries === 'all'
+                    ? 'Alle Branchen'
+                    : section.industries.map((key) => industries.find((industry) => industry.key === key)?.label ?? key).join(', ')}
+                </small>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 

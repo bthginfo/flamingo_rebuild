@@ -791,7 +791,7 @@ function subpageWowSlot(pageKey: string): 0 | 1 | 2 {
   let h = 2166136261 >>> 0;
   for (let i = 0; i < pageKey.length; i++) {
     h ^= pageKey.charCodeAt(i);
-    h = Math.imul(h, 16777619);
+    h = Math.imul(h, 16777619) >>> 0;
   }
   return (h % 3) as 0 | 1 | 2;
 }
@@ -855,7 +855,10 @@ export function buildWowSectionInstances(
   }
 
   const slot = subpageWowSlot(page.pageKey);
-  const secondary = (slot + 1) % premium.length;
-  const tertiary = (slot + 3) % premium.length;
-  return [triple[slot], premium[secondary], premium[tertiary]].filter(Boolean);
+  const rotatedTriple = [triple[slot], triple[(slot + 1) % triple.length]];
+  const rotatedPremium =
+    premium.length > 0
+      ? [premium[slot % premium.length], premium[(slot + 1) % premium.length], premium[(slot + 2) % premium.length]]
+      : [];
+  return [...rotatedTriple, ...rotatedPremium].filter(Boolean);
 }

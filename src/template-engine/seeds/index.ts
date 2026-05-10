@@ -11,6 +11,7 @@ import { tradesmanSeed } from './tradesman';
 import { weddingSeed } from './wedding';
 
 import { applyWowToSeed } from './wow-inject';
+import { deepenDemoSeed } from './content-depth';
 
 export function getDemoSeed(industryKey: IndustryKey, styleKey: StyleKey): SiteSeed | undefined {
   let seed: SiteSeed | undefined;
@@ -23,5 +24,5 @@ export function getDemoSeed(industryKey: IndustryKey, styleKey: StyleKey): SiteS
   else if (industryKey === 'medical') seed = medicalSeed(styleKey);
   else if (industryKey === 'fitness') seed = fitnessSeed(styleKey);
   else if (industryKey === 'wedding') seed = weddingSeed(styleKey);
-  return seed ? applyWowToSeed(seed) : undefined;
+  return seed ? applyWowToSeed(deepenDemoSeed(seed)) : undefined;
 }

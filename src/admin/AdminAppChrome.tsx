@@ -14,6 +14,7 @@ import {
   Search
 } from 'lucide-react';
 import { AdminLogoutButton } from '@/admin/AdminLogoutButton';
+import { AdminOnboarding, AdminTourButton } from '@/admin/AdminOnboarding';
 import type { IndustryKey, StyleKey } from '@/template-engine/model';
 
 const GLOBAL_NAV = [
@@ -98,6 +99,7 @@ export function AdminAppChrome({
         <div className="admin-app__header-right">
           {tenantSlug ? (
             <>
+              <AdminTourButton enabled={Boolean(tenantSlug)} />
               <AdminLogoutButton className="admin-app__logout" />
             </>
           ) : (
@@ -145,6 +147,7 @@ export function AdminAppChrome({
 
         <main className="admin-app__main">{children}</main>
       </div>
+      <AdminOnboarding enabled={Boolean(tenantSlug)} />
     </div>
   );
 }
