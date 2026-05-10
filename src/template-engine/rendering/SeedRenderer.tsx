@@ -181,6 +181,15 @@ function SectionRenderer({
     case 'fitness.trainerTeam':
     case 'wedding.schedule':
     case 'wedding.accommodation':
+    case 'restaurant.deepDives':
+    case 'hotel.deepDives':
+    case 'tourism.deepDives':
+    case 'salon.deepDives':
+    case 'tradesman.deepDives':
+    case 'consulting.deepDives':
+    case 'medical.deepDives':
+    case 'fitness.deepDives':
+    case 'wedding.deepDives':
       return (
         <CollectionGrid
           seed={seed}
@@ -624,22 +633,31 @@ function collectionDetailPrefix(sectionKey: string): string | null {
   const map: Record<string, string> = {
     'restaurant.menuHighlights': '/speisekarte',
     'restaurant.diningExperiences': '/erlebnisse',
+    'restaurant.deepDives': '/insights',
     'hotel.roomHighlights': '/zimmer',
     'hotel.offers': '/angebote',
+    'hotel.deepDives': '/insights',
     'tourism.tourHighlights': '/touren',
+    'tourism.deepDives': '/insights',
     'salon.treatmentHighlights': '/leistungen',
     'salon.lookbook': '/looks',
+    'salon.deepDives': '/insights',
     'tradesman.serviceOverview': '/leistungen',
     'tradesman.references': '/referenzen',
+    'tradesman.deepDives': '/insights',
     'consulting.offerOverview': '/leistungen',
     'consulting.caseStudies': '/cases',
+    'consulting.deepDives': '/insights',
     'medical.treatmentOverview': '/leistungen',
     'medical.doctorTeam': '/team',
+    'medical.deepDives': '/insights',
     'fitness.classOverview': '/kurse',
     'fitness.trainingPlan': '/kurse',
     'fitness.trainerTeam': '/trainer',
+    'fitness.deepDives': '/insights',
     'wedding.schedule': '/ablauf',
-    'wedding.accommodation': '/unterkunft'
+    'wedding.accommodation': '/unterkunft',
+    'wedding.deepDives': '/insights'
   };
   return map[sectionKey] ?? null;
 }
@@ -661,9 +679,10 @@ function CollectionGrid({
     .map((id) => seed.collections.find((item) => item.id === id))
     .filter((item): item is CollectionSeedItem => Boolean(item));
   const prefix = collectionDetailPrefix(section.sectionKey);
+  const isDeepDive = section.sectionKey.endsWith('.deepDives');
 
   return (
-    <section className="tenant-section" id={domSectionId}>
+    <section className={isDeepDive ? 'tenant-section tenant-deep-dive-section' : 'tenant-section'} id={domSectionId}>
       <div className="shell">
         <p className="eyebrow">{asString(section.data.eyebrow)}</p>
         <h2 className="tenant-section-title">
@@ -731,11 +750,14 @@ function CollectionGrid({
 
 function collectionMetaItems(item: CollectionSeedItem): string[] {
   return [
+    asString(item.data.kicker),
+    asString(item.data.metric),
     asString(item.data.price),
     asString(item.data.time),
     asString(item.data.weekday),
     asString(item.data.level),
-    asString(item.data.trainer)
+    asString(item.data.trainer),
+    asString(item.data.detail)
   ].filter(Boolean).slice(0, 3);
 }
 

@@ -120,6 +120,7 @@ export function PreviewFab({
                 onClick={() => {
                   const nextAccent: PreviewAccentId | null = isActive ? null : id;
                   router.push(`${pathname ?? ''}${queryWithAccentUpdates(searchParams, nextAccent)}`);
+                  window.dispatchEvent(new CustomEvent('flamingo-preview-accent', { detail: nextAccent }));
                   setOpen(false);
                 }}
               />

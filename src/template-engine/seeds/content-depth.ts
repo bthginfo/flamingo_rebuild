@@ -56,21 +56,54 @@ const IMAGE_BY_INDUSTRY: Record<IndustryKey, readonly string[]> = {
 const TITLE_BANK: Record<string, readonly string[]> = {
   menuItem: ['Hausgemachte Pasta', 'Gerösteter Blumenkohl', 'Rinderfilet vom Grill', 'Zitronen-Tarte', 'Winzerplatte', 'Signature Aperitif'],
   diningExperience: ['Chef Table', 'Sonntagsbrunch', 'Weinabend', 'Private Dining', 'Terrassen-Lunch', 'Küchenparty'],
+  restaurantInsight: ['Warum unser Sauerteig ruht', 'Die Produzentenrunde', 'Pairing ohne Dogma', 'Terrassenservice bei Regen', 'Kinder am Tisch', 'Reservieren wie Stammgäste'],
   room: ['Garden Suite', 'Rheinblick Deluxe', 'Family Loft', 'Business Comfort', 'Spa Junior Suite', 'Classic Doppelzimmer'],
   hotelOffer: ['Wellness Wochenende', 'Workation Paket', 'Dinner & Stay', 'Familienferien', 'Late Checkout Special', 'Meeting Retreat'],
+  hotelInsight: ['Check-in ohne Reibung', 'Spa-Zeit richtig planen', 'Frühstück mit Herkunft', 'Kissenmenü & Schlaf', 'Anreise mit Gepäck', 'Meetingtage, die laufen'],
   tour: ['Sonnenaufgangs-Wanderung', 'Altstadt & Genuss', 'E-Bike Panorama', 'Familienabenteuer', 'Weinberg Picknick', 'Winter Walk'],
+  tourismInsight: ['Packliste nach Wetter', 'Wie unsere Guides führen', 'Sicherheit am Treffpunkt', 'Fotospots ohne Gedränge', 'Touren mit Kindern', 'Plan B bei Regen'],
   treatment: ['Glossing & Pflege', 'Balayage Refresh', 'Bridal Styling', 'Herren Cut', 'Color Correction', 'Relax Ritual'],
   look: ['Soft Copper', 'French Bob', 'Glossy Brunette', 'Blonde Dimension', 'Clean Bridal', 'Textured Waves'],
+  salonInsight: ['Beratung vor Farbe', 'Pflegeplan für Zuhause', 'Brautprobe ohne Stress', 'Color Save Ritual', 'Schnitt, der wächst', 'Produkte mit Sinn'],
   tradeService: ['Bad Modernisierung', 'Dach Check', 'Smart Home Nachrüstung', 'Wartungsvertrag', 'Energieberatung', 'Notfallservice'],
   referenceProject: ['Altbau Loft', 'Familienhaus Nord', 'Praxis Umbau', 'Hotel Terrasse', 'Küchenstudio', 'Denkmal Fassade'],
+  tradesmanInsight: ['Ablauf vom Ersttermin', 'Materialentscheidung ohne Druck', 'Baustelle sauber übergeben', 'Wartung spart Kosten', 'Notfall richtig melden', 'Qualität sichtbar prüfen'],
   consultingService: ['Strategie Sprint', 'Go-to-Market Audit', 'Funding Readiness', 'Brand Positioning', 'Process Design', 'Leadership Workshop'],
   caseStudy: ['SaaS Relaunch', 'Hotelgruppe Wachstum', 'Praxis Digitalisierung', 'Retail Turnaround', 'B2B Pipeline', 'Employer Brand'],
+  consultingInsight: ['Was im Erstcall zählt', 'Board-Deck statt Folienfriedhof', 'Research in 10 Tagen', 'Entscheidungen sichtbar machen', 'MVP-Scope schützen', 'Nach dem Workshop'],
   treatmentOverview: [],
   doctor: ['Dr. Mira Keller', 'Dr. Jonas Hart', 'Nina Vogt', 'Leon Weber', 'Aylin Demir', 'Prof. Simon Falk'],
+  medicalInsight: ['Vor dem Termin', 'Befunde verständlich lesen', 'Diagnostik ohne Wartechaos', 'Nachsorge planen', 'Barrierefrei ankommen', 'Akut oder Routine'],
   fitnessClass: ['Strength 45', 'Mobility Flow', 'HIIT Circuit', 'Pilates Core', 'Run Club', 'Recovery Yoga'],
   scheduleItem: ['Getting Ready', 'Freie Trauung', 'Aperitif & Fotos', 'Dinner', 'Eröffnungstanz', 'Late-Night Snacks'],
   trainer: ['Mara Stein', 'Noah Kraft', 'Lina Core', 'Ben Mobility', 'Elif Run', 'Tom Recovery'],
-  accommodation: ['Hotel Rheinblick', 'Pension Marktgasse', 'Boutique Loft', 'Winzerhof Gästehaus', 'Apartment Hafen', 'Shuttle Treffpunkt']
+  fitnessInsight: ['Probetraining ohne Druck', 'Trainingsziel in 30 Tagen', 'Peak-Zeiten clever nutzen', 'Community statt Anonymität', 'Regeneration zählt', 'Startplan für Wiedereinsteiger'],
+  accommodation: ['Hotel Rheinblick', 'Pension Marktgasse', 'Boutique Loft', 'Winzerhof Gästehaus', 'Apartment Hafen', 'Shuttle Treffpunkt'],
+  weddingInsight: ['Plan B bei Wetter', 'Dresscode ohne Rätsel', 'Kinder & Ruhezone', 'Geschenke & Beiträge', 'Shuttle nach Mitternacht', 'Fotos ohne Zeitdruck']
+};
+
+const DEEP_SECTION_BY_INDUSTRY: Record<IndustryKey, string> = {
+  restaurant: 'restaurant.deepDives',
+  hotel: 'hotel.deepDives',
+  tourism: 'tourism.deepDives',
+  salon: 'salon.deepDives',
+  tradesman: 'tradesman.deepDives',
+  consulting: 'consulting.deepDives',
+  medical: 'medical.deepDives',
+  fitness: 'fitness.deepDives',
+  wedding: 'wedding.deepDives'
+};
+
+const DEEP_COLLECTION_BY_INDUSTRY: Record<IndustryKey, string> = {
+  restaurant: 'restaurantInsight',
+  hotel: 'hotelInsight',
+  tourism: 'tourismInsight',
+  salon: 'salonInsight',
+  tradesman: 'tradesmanInsight',
+  consulting: 'consultingInsight',
+  medical: 'medicalInsight',
+  fitness: 'fitnessInsight',
+  wedding: 'weddingInsight'
 };
 
 const SECTION_COLLECTION = new Map(
@@ -98,9 +131,11 @@ export function deepenDemoSeed(seed: SiteSeed): SiteSeed {
   return {
     ...seed,
     collections,
-    pages: seed.pages.map((page) => ({
-      ...page,
-      sections: page.sections.map((section) => {
+    pages: seed.pages.map((page) => {
+      const deepCollection = DEEP_COLLECTION_BY_INDUSTRY[seed.industryKey];
+      const deepSection = DEEP_SECTION_BY_INDUSTRY[seed.industryKey];
+      const deepIds = idsByCollection.get(deepCollection) ?? [];
+      const sections = page.sections.map((section) => {
         const collectionKey = SECTION_COLLECTION.get(section.sectionKey);
         const ids = collectionKey ? idsByCollection.get(collectionKey) : undefined;
         if (!ids || ids.length === 0) return section;
@@ -111,9 +146,38 @@ export function deepenDemoSeed(seed: SiteSeed): SiteSeed {
             items: ids
           }
         };
-      })
-    }))
+      });
+      const withDeepDive =
+        page.key === 'home' || sections.some((section) => section.sectionKey === deepSection) || deepIds.length === 0
+          ? sections
+          : insertAfterHeader(sections, {
+              id: `depth-${page.key}-deep-dive`,
+              sectionKey: deepSection,
+              visible: true,
+              sortOrder: 0,
+              data: {
+                eyebrow: deepEyebrow(seed.industryKey, page.title),
+                headline: deepHeadline(seed.industryKey),
+                intro: deepIntro(seed.industryKey, page.title),
+                items: deepIds
+              }
+            });
+      return {
+        ...page,
+        sections: renumber(withDeepDive)
+      };
+    })
   };
+}
+
+function insertAfterHeader(sections: readonly SiteSeed['pages'][number]['sections'][number][], insert: SiteSeed['pages'][number]['sections'][number]) {
+  const idx = sections.findIndex((section) => section.sectionKey === 'global.pageHeader');
+  const at = idx >= 0 ? idx + 1 : Math.min(1, sections.length);
+  return [...sections.slice(0, at), insert, ...sections.slice(at)];
+}
+
+function renumber<T extends { sortOrder: number }>(sections: readonly T[]): T[] {
+  return sections.map((section, index) => ({ ...section, sortOrder: index + 1 }));
 }
 
 function ensureCollectionItems(items: CollectionSeedItem[], collection: CollectionDefinition, industry: IndustryKey) {
@@ -157,6 +221,9 @@ function valueForField(
     return `${title} ist als echtes Demo-CMS-Item gepflegt: mit Nutzen, Kontext, Ablauf und klarer Erwartung. So wirken Unterseiten nicht leer, sondern wie ein belastbarer Kundenauftritt.`;
   }
   if (field.key === 'image') return IMAGE_BY_INDUSTRY[industry][index % IMAGE_BY_INDUSTRY[industry].length];
+  if (field.key === 'kicker') return ['Insider', 'Gut zu wissen', 'Ablauf', 'Empfehlung', 'Detail', 'Service'][index % 6];
+  if (field.key === 'metric') return ['3 Min.', 'Premium', 'Planbar', 'Vor Ort', 'Sicher', 'Direkt'][index % 6];
+  if (field.key === 'detail') return `${title} macht die Entscheidung leichter, weil Erwartung, Timing und naechster Schritt klar sind.`;
   if (field.key === 'weekday') return ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'][index % 6];
   if (field.key === 'time') return ['08:00', '10:30', '13:00', '16:30', '18:00', '20:00'][index % 6];
   if (field.key === 'level') return ['Einsteiger', 'Alle Level', 'Fortgeschritten', 'Performance'][index % 4];
@@ -165,6 +232,40 @@ function valueForField(
   if (field.type === 'boolean') return false;
   if (field.type === 'number') return index + 1;
   return field.required ? title : '';
+}
+
+function deepEyebrow(industry: IndustryKey, pageTitle: string): string {
+  return `${pageTitle} · Deep Dive`;
+}
+
+function deepHeadline(industry: IndustryKey): { plain: string; accent: string } {
+  const map: Record<IndustryKey, { plain: string; accent: string }> = {
+    restaurant: { plain: 'Mehr als', accent: 'eine Karte.' },
+    hotel: { plain: 'Details, die', accent: 'Aufenthalt machen.' },
+    tourism: { plain: 'Gut geplant', accent: 'besser erlebt.' },
+    salon: { plain: 'Beratung mit', accent: 'echtem Plan.' },
+    tradesman: { plain: 'Qualität beginnt', accent: 'vor dem Termin.' },
+    consulting: { plain: 'Methodik, die', accent: 'Entscheidungen trägt.' },
+    medical: { plain: 'Orientierung vor', accent: 'dem Termin.' },
+    fitness: { plain: 'Training, das', accent: 'dranbleiben lässt.' },
+    wedding: { plain: 'Details für', accent: 'entspannte Gäste.' }
+  };
+  return map[industry];
+}
+
+function deepIntro(industry: IndustryKey, pageTitle: string): string {
+  const map: Record<IndustryKey, string> = {
+    restaurant: 'Produzenten, Pairings, Reservierungsdetails und kleine Hinweise, die aus einem Besuch einen Abend machen.',
+    hotel: 'Alles, was Gäste wissen wollen, bevor sie buchen: Komfort, Timing, Services und die kleinen Extras.',
+    tourism: 'Praktische Vorbereitung mit Guide-Wissen, Sicherheitsgefühl und Insider-Tipps für unterwegs.',
+    salon: 'Von Beratung bis Pflege danach: klare Erwartungen, bessere Ergebnisse, weniger Unsicherheit.',
+    tradesman: 'Ablauf, Material, Qualität und Notfallwege so erklärt, dass Anfragen direkt besser werden.',
+    consulting: 'Playbooks, Entscheidungswege und Deliverables, damit Beratung greifbar statt abstrakt wird.',
+    medical: 'Patientenfreundliche Orientierung: Vorbereitung, Diagnostik, Nachsorge und Terminlogik.',
+    fitness: 'Mehr Kontext zu Start, Ziel, Community und Trainingsrhythmus, damit Probetrainings leichter fallen.',
+    wedding: 'Gäste lesen hier die Details, die am Hochzeitstag Ruhe schaffen: Plan B, Shuttle, Dresscode und Timing.'
+  };
+  return `${pageTitle}: ${map[industry]}`;
 }
 
 function titleFor(collectionKey: string, index: number): string {

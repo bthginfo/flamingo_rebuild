@@ -5134,10 +5134,15 @@ a {
   margin-top: 6px;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(255, 255, 255, 0.06);
+  background: #0b0f16;
   color: #fff;
   padding: 8px 10px;
   font-size: 0.9rem;
+}
+
+.preview-fab__select option {
+  color: #fff;
+  background: #0b0f16;
 }
 
 .preview-fab__styles {
@@ -7956,6 +7961,29 @@ a {
 
 .tenant-card__more::after {
   content: ' ->';
+}
+
+.tenant-deep-dive-section {
+  position: relative;
+  background:
+    radial-gradient(circle at 10% 0%, color-mix(in oklab, var(--tenant-accent), transparent 82%), transparent 30%),
+    color-mix(in oklab, var(--tenant-soft, var(--tenant-bg)), #fff 14%);
+}
+
+.tenant-deep-dive-section .tenant-card-grid {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.tenant-deep-dive-section .tenant-card {
+  min-height: 100%;
+  border-color: color-mix(in oklab, var(--tenant-accent), var(--tenant-line) 58%);
+  background:
+    linear-gradient(180deg, color-mix(in oklab, var(--tenant-accent), transparent 94%), transparent 42%),
+    color-mix(in oklab, var(--tenant-bg), #fff 62%);
+}
+
+.tenant-deep-dive-section .tenant-card__media {
+  aspect-ratio: 16 / 9;
 }
 
 .tenant-nav {

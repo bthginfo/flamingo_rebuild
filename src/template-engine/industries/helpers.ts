@@ -59,3 +59,48 @@ export function standardServiceCollection(
     }
   };
 }
+
+export function premiumContentCollection(
+  industry: IndustryKey,
+  key: string,
+  label: string,
+  slugPrefix: string
+): CollectionDefinition {
+  return {
+    key,
+    label,
+    industry,
+    slugPrefix,
+    fields: [
+      field.text('title', 'Titel', { required: true }),
+      field.text('slug', 'Slug', { required: true }),
+      field.textarea('summary', 'Kurzbeschreibung', { required: true }),
+      field.richText('description', 'Beschreibung'),
+      field.image('image', 'Bild'),
+      field.text('kicker', 'Kicker'),
+      field.text('metric', 'Kennzahl / Signal'),
+      field.text('detail', 'Detailzeile'),
+      field.cta('cta', 'Button'),
+      field.seo()
+    ],
+    detailPage: {
+      pathPattern: `${slugPrefix}/[slug]`,
+      allowedSections: [
+        'global.pageHeader',
+        'global.textImage',
+        'global.galleryGrid',
+        'global.faq',
+        'global.contactCta',
+        'global.statsBand',
+        'global.bentoHighlights',
+        'global.iconHighlights',
+        'global.storyTimeline',
+        'global.mediaSpotlight',
+        'global.quoteMarquee',
+        'global.keyFactsGrid',
+        'global.stepsStrip'
+      ],
+      defaultSections: ['global.pageHeader', 'global.textImage', 'global.contactCta']
+    }
+  };
+}

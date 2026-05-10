@@ -24,6 +24,18 @@ const premiumSections = new Set([
   'global.featureCompare'
 ]);
 
+const deepDiveSectionByIndustry: Record<string, string> = {
+  restaurant: 'restaurant.deepDives',
+  hotel: 'hotel.deepDives',
+  tourism: 'tourism.deepDives',
+  salon: 'salon.deepDives',
+  tradesman: 'tradesman.deepDives',
+  consulting: 'consulting.deepDives',
+  medical: 'medical.deepDives',
+  fitness: 'fitness.deepDives',
+  wedding: 'wedding.deepDives'
+};
+
 for (const industry of INDUSTRY_KEYS) {
   for (const style of STYLE_KEYS) {
     const seed = getDemoSeed(industry, style);
@@ -47,6 +59,9 @@ for (const industry of INDUSTRY_KEYS) {
       }
       if (page.key !== 'home' && visible.length < 4) {
         issues.push({ scope: pageScope, message: 'Subpage has fewer than four visible sections.' });
+      }
+      if (page.key !== 'home' && !visible.some((section) => section.sectionKey === deepDiveSectionByIndustry[industry])) {
+        issues.push({ scope: pageScope, message: 'Subpage is missing its industry deep-dive CMS section.' });
       }
       if (page.key === 'home' && premiumCount < 2) {
         issues.push({ scope: pageScope, message: 'Home page has fewer than two premium interaction sections.' });
