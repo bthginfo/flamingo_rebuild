@@ -848,11 +848,14 @@ export function buildWowSectionInstances(
     })
   ];
 
-  const premium = buildPremiumWowSections(id, industryKey, styleKey, page, page === undefined ? 'full' : 'compact');
+  const premium = buildPremiumWowSections(id, industryKey, styleKey, page, 'full');
 
   if (page === undefined) {
     return [...triple, ...premium];
   }
 
-  return [triple[subpageWowSlot(page.pageKey)], ...premium];
+  const slot = subpageWowSlot(page.pageKey);
+  const secondary = (slot + 1) % premium.length;
+  const tertiary = (slot + 3) % premium.length;
+  return [triple[slot], premium[secondary], premium[tertiary]].filter(Boolean);
 }
