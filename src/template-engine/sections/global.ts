@@ -128,6 +128,8 @@ export const globalSections: readonly SectionDefinition[] = [
       field.text('eyebrow', 'Eyebrow'),
       field.splitHeading('headline', 'Überschrift'),
       field.textarea('subline', 'Einleitung'),
+      field.text('primaryActionLabel', 'Primäre Schnellaktion'),
+      field.text('secondaryActionLabel', 'Sekundäre Schnellaktion'),
       { key: 'address', label: 'Adresse', type: 'address', required: true },
       { key: 'phone', label: 'Telefon', type: 'phone' },
       { key: 'email', label: 'E-Mail', type: 'email' },

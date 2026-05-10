@@ -77,6 +77,8 @@ function enrichSections(sections: readonly SectionInstance[], seed: SiteSeed): S
       ...section,
       data: {
         subline: contactSubline(seed.industryKey),
+        primaryActionLabel: contactActions(seed.industryKey).primary,
+        secondaryActionLabel: contactActions(seed.industryKey).secondary,
         ...section.data,
         mapsUrl: stringValue(section.data.mapsUrl) || stringValue(contact.mapsUrl),
         locations: Array.isArray(section.data.locations) && section.data.locations.length > 0
@@ -97,6 +99,21 @@ function enrichSections(sections: readonly SectionInstance[], seed: SiteSeed): S
       }
     };
   });
+}
+
+function contactActions(industry: SiteSeed['industryKey']): { primary: string; secondary: string } {
+  const map: Record<SiteSeed['industryKey'], { primary: string; secondary: string }> = {
+    restaurant: { primary: 'Jetzt reservieren', secondary: 'Event anfragen' },
+    hotel: { primary: 'Zimmer anfragen', secondary: 'Anreise klären' },
+    tourism: { primary: 'Tour buchen', secondary: 'Frage senden' },
+    salon: { primary: 'Termin buchen', secondary: 'Look anfragen' },
+    tradesman: { primary: 'Rückruf starten', secondary: 'Projekt senden' },
+    consulting: { primary: 'Erstgespräch buchen', secondary: 'Briefing senden' },
+    medical: { primary: 'Termin vereinbaren', secondary: 'Rückfrage senden' },
+    fitness: { primary: 'Probetraining buchen', secondary: 'Kursfrage senden' },
+    wedding: { primary: 'RSVP senden', secondary: 'Frage stellen' }
+  };
+  return map[industry];
 }
 
 function stringValue(value: unknown): string {

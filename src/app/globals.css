@@ -8470,6 +8470,13 @@ a {
   margin: 0;
 }
 
+.tenant-contact-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 26px;
+}
+
 .tenant-contact-card dt {
   font-size: 0.68rem;
   font-weight: 900;

@@ -420,6 +420,8 @@ function MapContactSection({
   const openingHours = asString(section.data.openingHours) || asString(contact.openingHours);
   const mapsUrl = asString(section.data.mapsUrl) || asString(contact.mapsUrl);
   const mapQuery = encodeURIComponent(address || seed.global.brand.name);
+  const primaryLabel = asString(section.data.primaryActionLabel);
+  const secondaryLabel = asString(section.data.secondaryActionLabel);
   const locations = arrayRecords(section.data.locations);
   const arrival = arrayRecords(section.data.arrival);
 
@@ -445,6 +447,10 @@ function MapContactSection({
                 {email ? <><dt>E-Mail</dt><dd><a href={`mailto:${email}`}>{email}</a></dd></> : null}
                 {openingHours ? <><dt>Zeiten</dt><dd>{openingHours}</dd></> : null}
               </dl>
+              <div className="tenant-contact-card__actions">
+                {phone && primaryLabel ? <a className="tenant-button" href={`tel:${phone}`}>{primaryLabel}</a> : null}
+                {email && secondaryLabel ? <a className="tenant-button secondary" href={`mailto:${email}`}>{secondaryLabel}</a> : null}
+              </div>
             </article>
           </TiltHoverCard>
           <div className="tenant-contact-map">
