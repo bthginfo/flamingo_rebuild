@@ -39,7 +39,7 @@ export const industries: readonly IndustryDefinition[] = [
       page('home', 'Startseite', '/', ['global.hero', 'global.actionBar', 'restaurant.menuHighlights', 'restaurant.diningExperiences', 'global.testimonials', 'global.contactCta'], [...globalAllowed, 'restaurant.menuHighlights', 'restaurant.diningExperiences']),
       page('menu', 'Speisekarte', '/speisekarte', ['global.pageHeader', 'restaurant.menuHighlights', 'global.contactCta'], [...globalAllowed, 'restaurant.menuHighlights', 'restaurant.diningExperiences']),
       page('experiences', 'Erlebnisse', '/erlebnisse', ['global.pageHeader', 'restaurant.diningExperiences', 'global.contactCta'], [...globalAllowed, 'restaurant.menuHighlights', 'restaurant.diningExperiences']),
-      page('gallery', 'Galerie', '/galerie', ['global.pageHeader', 'global.galleryGrid', 'global.contactCta']),
+      page('gallery', 'Galerie', '/galerie', ['global.pageHeader', 'global.galleryGrid', 'global.contactCta'], globalAllowed),
       page('about', 'Über uns', '/ueber-uns', ['global.pageHeader', 'global.textImage', 'global.testimonials']),
       page('contact', 'Kontakt', '/kontakt', ['global.pageHeader', 'global.mapContact', 'global.contactCta'], [...globalAllowed, 'global.mapContact'])
     ],

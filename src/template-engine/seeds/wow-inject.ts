@@ -2,6 +2,7 @@ import type { SectionInstance } from '../model';
 import type { SiteSeed } from './model';
 import { buildWowSectionInstances } from './wow-section-data';
 import { THEME_PRESETS } from '../theme-presets';
+import { getIndustryDefinition } from '../industries';
 
 function renumber(sections: readonly SectionInstance[]): SectionInstance[] {
   const cleaned = sections.filter(
@@ -35,16 +36,21 @@ function pickSubpageMarker(sections: readonly SectionInstance[]): string {
 export function applyWowToSeed(seed: SiteSeed): SiteSeed {
   const { industryKey, styleKey } = seed;
   const preset = THEME_PRESETS[industryKey]?.[styleKey === 'bold' ? 1 : styleKey === 'modern' ? 2 : 0] ?? THEME_PRESETS[industryKey]?.[0];
+  const pageAllowedSections = allowedSectionsByPage(seed);
 
   const pages = seed.pages.map((page) => {
+    const allowedSections = pageAllowedSections.get(page.key);
     if (page.key === 'home') {
       const marker = pickHomeMarker(page.sections);
-      const wow = buildWowSectionInstances(industryKey, styleKey);
+      const wow = filterAllowedSections(buildWowSectionInstances(industryKey, styleKey), allowedSections);
       return { ...page, sections: enrichSections(insertAfterMarker(page.sections, marker, wow), seed) };
     }
 
     const marker = pickSubpageMarker(page.sections);
-    const inserts = buildWowSectionInstances(industryKey, styleKey, { pageKey: page.key, pageTitle: page.title });
+    const inserts = filterAllowedSections(
+      buildWowSectionInstances(industryKey, styleKey, { pageKey: page.key, pageTitle: page.title }),
+      allowedSections
+    );
     if (!marker) {
       return { ...page, sections: enrichSections(renumber([...inserts, ...page.sections]), seed) };
     }
@@ -63,6 +69,22 @@ export function applyWowToSeed(seed: SiteSeed): SiteSeed {
     },
     pages
   };
+}
+
+function allowedSectionsByPage(seed: SiteSeed): Map<string, ReadonlySet<string>> {
+  const industry = getIndustryDefinition(seed.industryKey);
+  const entries =
+    industry?.corePages.map((page) => [page.key, new Set(page.allowedSections)] as const) ??
+    [];
+  return new Map(entries);
+}
+
+function filterAllowedSections(
+  sections: readonly SectionInstance[],
+  allowedSections: ReadonlySet<string> | undefined
+): SectionInstance[] {
+  if (!allowedSections) return [...sections];
+  return sections.filter((section) => allowedSections.has(section.sectionKey));
 }
 
 function enrichSections(sections: readonly SectionInstance[], seed: SiteSeed): SectionInstance[] {
