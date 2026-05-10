@@ -189,6 +189,26 @@ export function TenantNavigationEditor() {
     });
   }
 
+  function addCustomThemeFromPreset(presetId: string) {
+    if (!seed) return;
+    const preset = THEME_PRESETS[seed.industryKey].find((item) => item.id === presetId);
+    if (!preset) return;
+    const id = `theme-${Date.now().toString(36)}`;
+    updateBrand({
+      themePresetId: `${CUSTOM_THEME_PREFIX}${id}`,
+      accentHex: preset.accent,
+      customThemes: [
+        ...brand.customThemes,
+        {
+          ...preset,
+          id,
+          label: `${preset.label} Kopie`,
+          name: `${preset.label} Kopie`
+        }
+      ]
+    });
+  }
+
   function removeCustomTheme(index: number) {
     const removed = brand.customThemes[index];
     const next = brand.customThemes.filter((_, i) => i !== index);
@@ -298,6 +318,32 @@ export function TenantNavigationEditor() {
             ))}
           </select>
         </label>
+        {seed ? (
+          <div className="cms-list is-wide">
+            <span>Preset-Vorschau</span>
+            <div className="admin-theme-preset-grid">
+              {THEME_PRESETS[seed.industryKey].map((preset) => (
+                <div className={brand.themePresetId === preset.id ? 'admin-theme-preset is-active' : 'admin-theme-preset'} key={preset.id}>
+                  <button type="button" onClick={() => updateBrand({ themePresetId: preset.id, accentHex: preset.accent })}>
+                    <span className="admin-theme-preset__swatches" aria-hidden>
+                      {[preset.primary, preset.accent, preset.surface, preset.bg, preset.text].map((color) => (
+                        <i key={color} style={{ background: color }} />
+                      ))}
+                    </span>
+                    <strong>{preset.label}</strong>
+                    <small>{contrastSummary(preset.bg, preset.text)} · CTA {contrastSummary(preset.accent, preset.accentFg || preset.primaryFg)}</small>
+                  </button>
+                  <button type="button" className="button secondary" onClick={() => addCustomThemeFromPreset(preset.id)}>
+                    Kopieren
+                  </button>
+                </div>
+              ))}
+            </div>
+            <button type="button" className="button secondary" onClick={() => updateBrand({ themePresetId: '', accentHex: '' })}>
+              Auf Template-Standard zurücksetzen
+            </button>
+          </div>
+        ) : null}
         <div className="cms-list is-wide">
           <span>Eigene Farbschemas</span>
           {brand.customThemes.map((theme, index) => (
@@ -315,9 +361,16 @@ export function TenantNavigationEditor() {
                 <ColorPair label="Primär" value={theme.primary} onChange={(value) => updateTheme(index, { primary: value })} />
                 <ColorPair label="Primär-Text" value={theme.primaryFg} onChange={(value) => updateTheme(index, { primaryFg: value })} />
                 <ColorPair label="Akzent" value={theme.accent} onChange={(value) => updateTheme(index, { accent: value })} />
+                <ColorPair label="Akzent-Text" value={theme.accentFg || theme.primaryFg} onChange={(value) => updateTheme(index, { accentFg: value })} />
                 <ColorPair label="Fläche" value={theme.surface} onChange={(value) => updateTheme(index, { surface: value })} />
                 <ColorPair label="Hintergrund" value={theme.bg} onChange={(value) => updateTheme(index, { bg: value })} />
                 <ColorPair label="Text" value={theme.text} onChange={(value) => updateTheme(index, { text: value })} />
+                <p className={contrastRatio(theme.bg, theme.text) >= 4.5 ? 'cms-field-hint' : 'cms-error-text'}>
+                  Text-Kontrast: {contrastSummary(theme.bg, theme.text)}
+                </p>
+                <p className={contrastRatio(theme.accent, theme.accentFg || theme.primaryFg) >= 4.5 ? 'cms-field-hint' : 'cms-error-text'}>
+                  CTA-Kontrast: {contrastSummary(theme.accent, theme.accentFg || theme.primaryFg)}
+                </p>
               </div>
             </div>
           ))}
@@ -463,4 +516,27 @@ function normalizeHex(value: string): string {
   if (!v) return '';
   const withHash = v.startsWith('#') ? v : `#${v}`;
   return /^#[0-9a-fA-F]{6}$/.test(withHash) ? withHash.toLowerCase() : '';
+}
+
+function contrastSummary(bg: string, fg: string): string {
+  const ratio = contrastRatio(bg, fg);
+  return `${ratio.toFixed(1)}:1${ratio >= 4.5 ? ' OK' : ' niedrig'}`;
+}
+
+function contrastRatio(a: string, b: string): number {
+  const la = luminance(a);
+  const lb = luminance(b);
+  const lighter = Math.max(la, lb);
+  const darker = Math.min(la, lb);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+function luminance(hex: string): number {
+  const normalized = normalizeHex(hex).replace('#', '');
+  if (normalized.length !== 6) return 0;
+  const channels = [normalized.slice(0, 2), normalized.slice(2, 4), normalized.slice(4, 6)].map((part) => {
+    const s = parseInt(part, 16) / 255;
+    return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+  });
+  return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
 }
