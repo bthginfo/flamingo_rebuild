@@ -5,6 +5,8 @@ import { usePathname } from 'next/navigation';
 import {
   Boxes,
   Code2,
+  ExternalLink,
+  Files,
   ImageIcon,
   LayoutDashboard,
   Link2,
@@ -78,8 +80,17 @@ export function AdminAppChrome({
           {tenantSlug ? <span className="admin-app__tenant-badge">{badge}</span> : null}
           {tenantSlug ? (
             <nav className="admin-app__quicknav" aria-label="Admin-Quicklinks">
+              <Link className={navLinkActive(pathname, '/admin/pages') ? 'admin-app__header-link is-active' : 'admin-app__header-link'} href="/admin/pages">
+                <Files size={15} strokeWidth={1.9} aria-hidden />
+                <span>Seiten</span>
+              </Link>
+              <Link className={navLinkActive(pathname, '/admin/media') ? 'admin-app__header-link is-active' : 'admin-app__header-link'} href="/admin/media">
+                <ImageIcon size={15} strokeWidth={1.9} aria-hidden />
+                <span>Medien</span>
+              </Link>
               <a className="admin-app__header-link" href={websiteHref} target="_blank" rel="noreferrer">
-                Website ansehen
+                <ExternalLink size={15} strokeWidth={1.9} aria-hidden />
+                <span>Website ansehen</span>
               </a>
             </nav>
           ) : null}
