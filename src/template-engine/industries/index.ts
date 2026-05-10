@@ -41,7 +41,7 @@ export const industries: readonly IndustryDefinition[] = [
       page('experiences', 'Erlebnisse', '/erlebnisse', ['global.pageHeader', 'restaurant.diningExperiences', 'global.contactCta'], [...globalAllowed, 'restaurant.menuHighlights', 'restaurant.diningExperiences']),
       page('gallery', 'Galerie', '/galerie', ['global.pageHeader', 'global.galleryGrid', 'global.contactCta']),
       page('about', 'Über uns', '/ueber-uns', ['global.pageHeader', 'global.textImage', 'global.testimonials']),
-      page('contact', 'Kontakt', '/kontakt', ['global.pageHeader', 'global.textImage', 'global.contactCta'], [...globalAllowed, 'global.mapContact'])
+      page('contact', 'Kontakt', '/kontakt', ['global.pageHeader', 'global.mapContact', 'global.contactCta'], [...globalAllowed, 'global.mapContact'])
     ],
     collections: [
       standardServiceCollection('restaurant', 'menuItem', 'Gerichte', '/speisekarte'),
@@ -57,7 +57,7 @@ export const industries: readonly IndustryDefinition[] = [
       page('rooms', 'Zimmer', '/zimmer', ['global.pageHeader', 'hotel.roomHighlights', 'hotel.offers'], [...globalAllowed, 'hotel.roomHighlights', 'hotel.offers']),
       page('gallery', 'Galerie', '/galerie', ['global.pageHeader', 'global.galleryGrid']),
       page('about', 'Haus', '/haus', ['global.pageHeader', 'global.textImage', 'global.testimonials']),
-      page('contact', 'Anreise & Kontakt', '/kontakt', ['global.pageHeader', 'global.mapContact'])
+      page('contact', 'Anreise & Kontakt', '/kontakt', ['global.pageHeader', 'global.mapContact', 'global.contactCta'])
     ],
     collections: [
       standardServiceCollection('hotel', 'room', 'Zimmer', '/zimmer'),
@@ -73,7 +73,7 @@ export const industries: readonly IndustryDefinition[] = [
       page('tours', 'Touren', '/touren', ['global.pageHeader', 'tourism.tourHighlights'], [...globalAllowed, 'tourism.tourHighlights']),
       page('gallery', 'Eindrücke', '/galerie', ['global.pageHeader', 'global.galleryGrid']),
       page('about', 'Guides', '/guides', ['global.pageHeader', 'global.textImage']),
-      page('contact', 'Buchen', '/kontakt', ['global.pageHeader', 'global.mapContact'])
+      page('contact', 'Buchen', '/kontakt', ['global.pageHeader', 'global.mapContact', 'global.contactCta'])
     ],
     collections: [standardServiceCollection('tourism', 'tour', 'Touren', '/touren')]
   },
@@ -86,7 +86,7 @@ export const industries: readonly IndustryDefinition[] = [
       page('services', 'Leistungen', '/leistungen', ['global.pageHeader', 'salon.treatmentHighlights'], [...globalAllowed, 'salon.treatmentHighlights', 'salon.lookbook']),
       page('gallery', 'Looks', '/looks', ['global.pageHeader', 'salon.lookbook', 'global.galleryGrid'], [...globalAllowed, 'salon.lookbook']),
       page('about', 'Studio', '/studio', ['global.pageHeader', 'global.textImage', 'global.testimonials']),
-      page('contact', 'Termin', '/kontakt', ['global.pageHeader', 'global.mapContact'])
+      page('contact', 'Termin', '/kontakt', ['global.pageHeader', 'global.mapContact', 'global.contactCta'])
     ],
     collections: [
       standardServiceCollection('salon', 'treatment', 'Leistungen', '/leistungen'),
@@ -102,7 +102,7 @@ export const industries: readonly IndustryDefinition[] = [
       page('services', 'Leistungen', '/leistungen', ['global.pageHeader', 'tradesman.serviceOverview'], [...globalAllowed, 'tradesman.serviceOverview', 'tradesman.references']),
       page('references', 'Referenzen', '/referenzen', ['global.pageHeader', 'tradesman.references'], [...globalAllowed, 'tradesman.references']),
       page('about', 'Betrieb', '/betrieb', ['global.pageHeader', 'global.textImage']),
-      page('contact', 'Anfrage', '/kontakt', ['global.pageHeader', 'global.mapContact'])
+      page('contact', 'Anfrage', '/kontakt', ['global.pageHeader', 'global.mapContact', 'global.contactCta'])
     ],
     collections: [
       standardServiceCollection('tradesman', 'tradeService', 'Leistungen', '/leistungen'),
@@ -118,7 +118,7 @@ export const industries: readonly IndustryDefinition[] = [
       page('services', 'Leistungen', '/leistungen', ['global.pageHeader', 'consulting.offerOverview'], [...globalAllowed, 'consulting.offerOverview', 'consulting.caseStudies']),
       page('cases', 'Cases', '/cases', ['global.pageHeader', 'consulting.caseStudies'], [...globalAllowed, 'consulting.caseStudies']),
       page('about', 'Expertise', '/expertise', ['global.pageHeader', 'global.textImage']),
-      page('contact', 'Kontakt', '/kontakt', ['global.pageHeader', 'global.mapContact'])
+      page('contact', 'Kontakt', '/kontakt', ['global.pageHeader', 'global.mapContact', 'global.contactCta'])
     ],
     collections: [
       standardServiceCollection('consulting', 'consultingService', 'Angebote', '/leistungen'),
@@ -134,7 +134,7 @@ export const industries: readonly IndustryDefinition[] = [
       page('services', 'Leistungen', '/leistungen', ['global.pageHeader', 'medical.treatmentOverview'], [...globalAllowed, 'medical.treatmentOverview', 'medical.doctorTeam']),
       page('team', 'Team', '/team', ['global.pageHeader', 'medical.doctorTeam'], [...globalAllowed, 'medical.doctorTeam']),
       page('about', 'Praxis', '/praxis', ['global.pageHeader', 'global.textImage']),
-      page('contact', 'Termin', '/kontakt', ['global.pageHeader', 'global.mapContact'])
+      page('contact', 'Termin', '/kontakt', ['global.pageHeader', 'global.mapContact', 'global.contactCta'])
     ],
     collections: [
       standardServiceCollection('medical', 'treatment', 'Behandlungen', '/leistungen'),
@@ -150,7 +150,7 @@ export const industries: readonly IndustryDefinition[] = [
       page('classes', 'Kurse', '/kurse', ['global.pageHeader', 'fitness.classOverview', 'fitness.trainingPlan'], [...globalAllowed, 'fitness.classOverview', 'fitness.trainingPlan']),
       page('trainers', 'Trainer:innen', '/trainer', ['global.pageHeader', 'fitness.trainerTeam'], [...globalAllowed, 'fitness.trainerTeam']),
       page('about', 'Studio', '/studio', ['global.pageHeader', 'global.textImage']),
-      page('contact', 'Probetraining', '/kontakt', ['global.pageHeader', 'global.mapContact'])
+      page('contact', 'Probetraining', '/kontakt', ['global.pageHeader', 'global.mapContact', 'global.contactCta'])
     ],
     collections: [
       standardServiceCollection('fitness', 'fitnessClass', 'Kurse', '/kurse'),

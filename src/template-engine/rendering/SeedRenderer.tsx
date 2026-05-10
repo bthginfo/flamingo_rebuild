@@ -8,6 +8,7 @@ import { resolveCtaLinkHref } from '../link-resolution';
 import { sectionAnchorId } from '../section-anchor';
 import type { CollectionSeedItem, SiteSeed } from '../seeds/model';
 import { TiltHoverCard } from '@/ui/marketing/TiltHoverCard';
+import { resolveTenantTheme } from '../theme-presets';
 
 function SplitHeading({ plain, accent }: { plain: string; accent: string }) {
   if (!accent) return plain;
@@ -34,9 +35,23 @@ export function SeedPageRenderer({
   accentHex?: string | null;
 }) {
   const sortedSections = [...page.sections].filter((section) => section.visible).sort((a, b) => a.sortOrder - b.sortOrder);
-  const effectiveAccentHex = accentHex && accentHex.length > 0 ? accentHex : asString(seed.global.brand.accentHex);
-  const accentStyle: CSSProperties | undefined =
-    effectiveAccentHex.length > 0 ? ({ ['--tenant-accent']: effectiveAccentHex } as CSSProperties) : undefined;
+  const theme = resolveTenantTheme(seed);
+  const effectiveAccentHex = accentHex && accentHex.length > 0 ? accentHex : asString(seed.global.brand.accentHex) || theme?.accent || '';
+  const accentStyle = {
+    ...(theme
+      ? {
+          ['--tenant-bg']: theme.bg,
+          ['--tenant-fg']: theme.text,
+          ['--tenant-muted']: readableMuted(theme.bg),
+          ['--tenant-line']: readableLine(theme.bg),
+          ['--tenant-soft']: theme.surface,
+          ['--tenant-primary']: theme.primary,
+          ['--tenant-primary-fg']: theme.primaryFg,
+          ['--tenant-button-fg']: theme.accentFg ?? theme.primaryFg
+        }
+      : {}),
+    ...(effectiveAccentHex.length > 0 ? { ['--tenant-accent']: effectiveAccentHex } : {})
+  } as CSSProperties;
 
   return (
     <div className="tenant-site-wrap" data-industry={seed.industryKey} data-style={styleKey} style={accentStyle}>
@@ -403,34 +418,69 @@ function MapContactSection({
   const phone = asString(section.data.phone) || asString(contact.phone);
   const email = asString(section.data.email) || asString(contact.email);
   const openingHours = asString(section.data.openingHours) || asString(contact.openingHours);
+  const mapsUrl = asString(section.data.mapsUrl) || asString(contact.mapsUrl);
   const mapQuery = encodeURIComponent(address || seed.global.brand.name);
+  const locations = arrayRecords(section.data.locations);
+  const arrival = arrayRecords(section.data.arrival);
 
   return (
-    <section className="tenant-section tenant-soft" id={domSectionId}>
-      <div className="shell">
-        <p className="eyebrow">{asString(section.data.eyebrow)}</p>
-        <h2 className="tenant-section-title">
-          <SplitHeading plain={headline.plain} accent={headline.accent} />
-        </h2>
-        <div className="tenant-map-grid">
-          <div className="tenant-map-card">
-            <h3>Adresse</h3>
-            <p>{address || 'Adresse folgt.'}</p>
-            {phone ? <p>Tel. {phone}</p> : null}
-            {email ? <p>{email}</p> : null}
-            {openingHours ? <p className="tenant-map-card__hours">{openingHours}</p> : null}
-          </div>
-          <a
-            className="tenant-map-placeholder tenant-map-placeholder--link"
-            href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`}
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Adresse in Google Maps öffnen"
-          >
-            <span>Karte öffnen</span>
-            <small>{address || seed.global.brand.name}</small>
-          </a>
+    <section className="tenant-section tenant-soft tenant-contact-pro" id={domSectionId}>
+      <div className="shell tenant-contact-pro__shell">
+        <div className="tenant-contact-pro__intro">
+          <span className="tenant-contact-pro__line" aria-hidden />
+          <p className="eyebrow">{asString(section.data.eyebrow)}</p>
+          <h2 className="tenant-section-title">
+            <SplitHeading plain={headline.plain} accent={headline.accent} />
+          </h2>
+          {asString(section.data.subline) ? <p className="tenant-section-intro">{asString(section.data.subline)}</p> : null}
         </div>
+        <div className="tenant-contact-pro__grid">
+          <TiltHoverCard className="tenant-tilt--card">
+            <article className="tenant-contact-card tenant-contact-card--primary">
+              <p className="eyebrow">Direkt</p>
+              <h3>{seed.global.brand.name}</h3>
+              <dl>
+                {address ? <><dt>Adresse</dt><dd>{address}</dd></> : null}
+                {phone ? <><dt>Telefon</dt><dd><a href={`tel:${phone}`}>{phone}</a></dd></> : null}
+                {email ? <><dt>E-Mail</dt><dd><a href={`mailto:${email}`}>{email}</a></dd></> : null}
+                {openingHours ? <><dt>Zeiten</dt><dd>{openingHours}</dd></> : null}
+              </dl>
+            </article>
+          </TiltHoverCard>
+          <div className="tenant-contact-map">
+            <a
+              className="tenant-contact-map__inner"
+              href={mapsUrl || `https://www.google.com/maps/search/?api=1&query=${mapQuery}`}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Adresse in Google Maps öffnen"
+            >
+              <span>Karte öffnen</span>
+              <small>{address || seed.global.brand.name}</small>
+            </a>
+          </div>
+        </div>
+        {locations.length > 0 ? (
+          <div className="tenant-contact-locations" data-stagger-grid>
+            {locations.map((location, index) => (
+              <article className="tenant-contact-mini" key={index}>
+                <strong>{asString(location.name) || `Standort ${index + 1}`}</strong>
+                <span>{[asString(location.address), asString(location.city)].filter(Boolean).join(' · ')}</span>
+                {asString(location.phone) ? <a href={`tel:${asString(location.phone)}`}>{asString(location.phone)}</a> : null}
+              </article>
+            ))}
+          </div>
+        ) : null}
+        {arrival.length > 0 ? (
+          <div className="tenant-arrival-strip">
+            {arrival.map((item, index) => (
+              <span key={index}>
+                <b>{asString(item.title) || asString(item.t)}</b>
+                {asString(item.body) || asString(item.d)}
+              </span>
+            ))}
+          </div>
+        ) : null}
       </div>
     </section>
   );
@@ -1448,6 +1498,27 @@ function CtaButton({
 
 function asString(value: unknown): string {
   return typeof value === 'string' ? value : '';
+}
+
+function arrayRecords(value: unknown): Record<string, unknown>[] {
+  return Array.isArray(value) ? value.filter((item): item is Record<string, unknown> => isRecord(item)) : [];
+}
+
+function readableMuted(bg: string): string {
+  return isDarkHex(bg) ? 'rgba(255,255,255,0.72)' : '#6b6b76';
+}
+
+function readableLine(bg: string): string {
+  return isDarkHex(bg) ? 'rgba(255,255,255,0.18)' : 'rgba(11,11,16,0.11)';
+}
+
+function isDarkHex(hex: string): boolean {
+  const m = hex.replace('#', '');
+  const v = m.length === 3 ? m.split('').map((c) => c + c).join('') : m;
+  const r = parseInt(v.slice(0, 2), 16);
+  const g = parseInt(v.slice(2, 4), 16);
+  const b = parseInt(v.slice(4, 6), 16);
+  return (r * 299 + g * 587 + b * 114) / 1000 < 128;
 }
 
 function asSplit(value: unknown): { plain: string; accent: string } {

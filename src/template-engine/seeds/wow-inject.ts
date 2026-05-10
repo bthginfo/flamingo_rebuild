@@ -1,6 +1,7 @@
 import type { SectionInstance } from '../model';
 import type { SiteSeed } from './model';
 import { buildWowSectionInstances } from './wow-section-data';
+import { THEME_PRESETS } from '../theme-presets';
 
 function renumber(sections: readonly SectionInstance[]): SectionInstance[] {
   const cleaned = sections.filter(
@@ -33,21 +34,138 @@ function pickSubpageMarker(sections: readonly SectionInstance[]): string {
 
 export function applyWowToSeed(seed: SiteSeed): SiteSeed {
   const { industryKey, styleKey } = seed;
+  const preset = THEME_PRESETS[industryKey]?.[styleKey === 'bold' ? 1 : styleKey === 'modern' ? 2 : 0] ?? THEME_PRESETS[industryKey]?.[0];
 
   const pages = seed.pages.map((page) => {
     if (page.key === 'home') {
       const marker = pickHomeMarker(page.sections);
       const wow = buildWowSectionInstances(industryKey, styleKey);
-      return { ...page, sections: insertAfterMarker(page.sections, marker, wow) };
+      return { ...page, sections: enrichSections(insertAfterMarker(page.sections, marker, wow), seed) };
     }
 
     const marker = pickSubpageMarker(page.sections);
     const inserts = buildWowSectionInstances(industryKey, styleKey, { pageKey: page.key, pageTitle: page.title });
     if (!marker) {
-      return { ...page, sections: renumber([...inserts, ...page.sections]) };
+      return { ...page, sections: enrichSections(renumber([...inserts, ...page.sections]), seed) };
     }
-    return { ...page, sections: insertAfterMarker(page.sections, marker, inserts) };
+    return { ...page, sections: enrichSections(insertAfterMarker(page.sections, marker, inserts), seed) };
   });
 
-  return { ...seed, pages };
+  return {
+    ...seed,
+    global: {
+      ...seed.global,
+      brand: {
+        ...seed.global.brand,
+        themePresetId: seed.global.brand.themePresetId || preset?.id || '',
+        accentHex: seed.global.brand.accentHex || preset?.accent || ''
+      }
+    },
+    pages
+  };
+}
+
+function enrichSections(sections: readonly SectionInstance[], seed: SiteSeed): SectionInstance[] {
+  return sections.map((section) => {
+    if (section.sectionKey !== 'global.mapContact') return section;
+    const contact = seed.global.contact;
+    const address = stringValue(section.data.address) || stringValue(contact.address);
+    const phone = stringValue(section.data.phone) || stringValue(contact.phone);
+    const email = stringValue(section.data.email) || stringValue(contact.email);
+    const openingHours = stringValue(section.data.openingHours) || stringValue(contact.openingHours);
+    return {
+      ...section,
+      data: {
+        subline: contactSubline(seed.industryKey),
+        ...section.data,
+        mapsUrl: stringValue(section.data.mapsUrl) || stringValue(contact.mapsUrl),
+        locations: Array.isArray(section.data.locations) && section.data.locations.length > 0
+          ? section.data.locations
+          : [
+              {
+                name: seed.global.brand.name,
+                address,
+                city: '',
+                phone,
+                email,
+                mapsUrl: stringValue(contact.mapsUrl)
+              }
+            ],
+        arrival: Array.isArray(section.data.arrival) && section.data.arrival.length > 0
+          ? section.data.arrival
+          : contactArrival(seed.industryKey, openingHours)
+      }
+    };
+  });
+}
+
+function stringValue(value: unknown): string {
+  return typeof value === 'string' ? value : '';
+}
+
+function contactSubline(industry: SiteSeed['industryKey']): string {
+  const map: Record<SiteSeed['industryKey'], string> = {
+    restaurant: 'Reservierung, Anfahrt und direkte Rückfragen an einem Ort.',
+    hotel: 'Anreise, Buchung und Fragen zum Aufenthalt schnell klären.',
+    tourism: 'Buchungsfragen, Treffpunkt und Ablauf ohne Umwege abstimmen.',
+    salon: 'Terminwunsch, Adresse und Öffnungszeiten auf einen Blick.',
+    tradesman: 'Anfrage, Rückruf und Einsatzgebiet schnell koordinieren.',
+    consulting: 'Erstgespräch, Projektfit und nächste Schritte direkt vereinbaren.',
+    medical: 'Termin, Adresse und organisatorische Fragen klar gebündelt.',
+    fitness: 'Probetraining, Kursfragen und Studiozeiten direkt abklären.',
+    wedding: 'Rückfragen, Location und Anreise zentral sammeln.'
+  };
+  return map[industry];
+}
+
+function contactArrival(industry: SiteSeed['industryKey'], openingHours: string): { title: string; body: string }[] {
+  const first = openingHours || 'Antwort meist am selben Werktag.';
+  const map: Record<SiteSeed['industryKey'], { title: string; body: string }[]> = {
+    restaurant: [
+      { title: 'Reservieren', body: first },
+      { title: 'Ankommen', body: 'Parken und Route vorab prüfen.' },
+      { title: 'Feiern', body: 'Gruppen und Events direkt anfragen.' }
+    ],
+    hotel: [
+      { title: 'Check-in', body: first },
+      { title: 'Anreise', body: 'Route, Parken und Transfer planen.' },
+      { title: 'Extras', body: 'Zimmerwünsche direkt mitsenden.' }
+    ],
+    tourism: [
+      { title: 'Anfrage', body: first },
+      { title: 'Treffpunkt', body: 'Route und Startzeit vorab klären.' },
+      { title: 'Ausrüstung', body: 'Wichtige Details direkt abfragen.' }
+    ],
+    salon: [
+      { title: 'Termin', body: first },
+      { title: 'Beratung', body: 'Wunschlook oder Anlass mitschicken.' },
+      { title: 'Besuch', body: 'Adresse und Timing schnell finden.' }
+    ],
+    tradesman: [
+      { title: 'Anfrage', body: first },
+      { title: 'Rückruf', body: 'Projektumfang kurz beschreiben.' },
+      { title: 'Vor-Ort', body: 'Adresse und Wunschzeit ergänzen.' }
+    ],
+    consulting: [
+      { title: 'Erstcall', body: first },
+      { title: 'Briefing', body: 'Ziel und Ausgangslage skizzieren.' },
+      { title: 'Nächster Schritt', body: 'Passendes Format vereinbaren.' }
+    ],
+    medical: [
+      { title: 'Termin', body: first },
+      { title: 'Unterlagen', body: 'Relevante Infos vorbereiten.' },
+      { title: 'Anfahrt', body: 'Adresse und Orientierung prüfen.' }
+    ],
+    fitness: [
+      { title: 'Probetraining', body: first },
+      { title: 'Kursfit', body: 'Ziel und Level kurz angeben.' },
+      { title: 'Start', body: 'Studio und Kurszeiten prüfen.' }
+    ],
+    wedding: [
+      { title: 'Rückfrage', body: first },
+      { title: 'Location', body: 'Adresse und Ablauf griffbereit.' },
+      { title: 'RSVP', body: 'Antwort und Begleitung abstimmen.' }
+    ]
+  };
+  return map[industry];
 }

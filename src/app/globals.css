@@ -8291,6 +8291,231 @@ a {
   padding-right: 42px;
 }
 
+.tenant-site-wrap {
+  background: var(--tenant-bg);
+}
+
+.tenant-soft {
+  background: var(--tenant-soft, color-mix(in oklab, var(--tenant-bg), #fff 48%));
+}
+
+.tenant-button {
+  color: var(--tenant-button-fg, #fff);
+  box-shadow: 0 14px 30px -18px color-mix(in oklab, var(--tenant-accent), #000 38%);
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    filter 0.22s ease;
+}
+
+.tenant-button:hover {
+  transform: translateY(-2px);
+  filter: saturate(1.08);
+  box-shadow: 0 22px 42px -18px color-mix(in oklab, var(--tenant-accent), #000 32%);
+}
+
+.tenant-button.secondary:hover {
+  background: color-mix(in oklab, var(--tenant-accent), transparent 90%);
+}
+
+.tenant-hero::before,
+.tenant-page-hero::before {
+  content: '';
+  position: absolute;
+  inset: -18% -10% auto auto;
+  width: min(48vw, 680px);
+  height: min(48vw, 680px);
+  border-radius: 999px;
+  pointer-events: none;
+  background: radial-gradient(circle, color-mix(in oklab, var(--tenant-accent), transparent 58%), transparent 68%);
+  filter: blur(42px);
+  opacity: 0.52;
+  z-index: 0;
+}
+
+.tenant-hero-image,
+.tenant-page-hero__media {
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tenant-hero-image:hover,
+  .tenant-page-hero:hover .tenant-page-hero__media {
+    transform: perspective(1000px) rotateX(1.2deg) rotateY(-1.8deg) translateY(-3px);
+    transition: transform 0.42s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+}
+
+.tenant-contact-pro {
+  position: relative;
+  overflow: hidden;
+}
+
+.tenant-contact-pro::before {
+  content: '';
+  position: absolute;
+  inset: 8% auto auto -18%;
+  width: min(42vw, 520px);
+  height: min(42vw, 520px);
+  border-radius: 999px;
+  background: radial-gradient(circle, color-mix(in oklab, var(--tenant-accent), transparent 68%), transparent 70%);
+  filter: blur(34px);
+  pointer-events: none;
+}
+
+.tenant-contact-pro__shell {
+  position: relative;
+  z-index: 1;
+}
+
+.tenant-contact-pro__intro {
+  max-width: 920px;
+}
+
+.tenant-contact-pro__line {
+  display: block;
+  width: 54px;
+  height: 5px;
+  border-radius: 999px;
+  margin-bottom: 18px;
+  background: var(--tenant-accent);
+}
+
+.tenant-contact-pro__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.78fr) minmax(320px, 1fr);
+  gap: 22px;
+  align-items: stretch;
+  margin-top: clamp(28px, 5vw, 56px);
+}
+
+.tenant-contact-card,
+.tenant-contact-map {
+  min-height: 360px;
+  border: 1px solid var(--tenant-line);
+  border-radius: var(--tenant-radius-md, 24px);
+  overflow: hidden;
+  background: color-mix(in oklab, var(--tenant-bg), #fff 54%);
+  box-shadow: 0 28px 70px rgba(15, 23, 42, 0.08);
+}
+
+.tenant-contact-card {
+  padding: clamp(24px, 4vw, 38px);
+}
+
+.tenant-contact-card h3 {
+  margin: 12px 0 26px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  line-height: 0.95;
+}
+
+.tenant-contact-card dl {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+}
+
+.tenant-contact-card dt {
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tenant-accent);
+}
+
+.tenant-contact-card dd {
+  margin: 4px 0 0;
+  color: var(--tenant-muted);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.tenant-contact-map {
+  background:
+    linear-gradient(135deg, color-mix(in oklab, var(--tenant-accent), transparent 75%), transparent 46%),
+    color-mix(in oklab, var(--tenant-fg), #000 10%);
+  color: #fff;
+}
+
+.tenant-contact-map__inner {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: clamp(24px, 4vw, 38px);
+  color: inherit;
+}
+
+.tenant-contact-map__inner span {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(2.2rem, 5vw, 4.8rem);
+  line-height: 0.9;
+}
+
+.tenant-contact-map__inner small {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 1rem;
+}
+
+.tenant-contact-locations {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.tenant-contact-mini {
+  border: 1px solid var(--tenant-line);
+  border-radius: 18px;
+  padding: 18px;
+  background: color-mix(in oklab, var(--tenant-bg), #fff 44%);
+}
+
+.tenant-contact-mini strong,
+.tenant-contact-mini span,
+.tenant-contact-mini a {
+  display: block;
+}
+
+.tenant-contact-mini span,
+.tenant-contact-mini a {
+  margin-top: 6px;
+  color: var(--tenant-muted);
+  font-size: 0.92rem;
+}
+
+.tenant-arrival-strip {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.tenant-arrival-strip span {
+  padding: 16px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--tenant-line);
+  background: color-mix(in oklab, var(--tenant-accent), transparent 92%);
+  color: var(--tenant-muted);
+  font-size: 0.9rem;
+}
+
+.tenant-arrival-strip b {
+  display: block;
+  color: var(--tenant-fg);
+}
+
+@media (max-width: 900px) {
+  .tenant-contact-pro__grid,
+  .tenant-contact-locations,
+  .tenant-arrival-strip {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 720px) {
   .fm-process-sticky {
     top: 0;

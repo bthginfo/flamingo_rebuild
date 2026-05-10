@@ -127,9 +127,23 @@ export const globalSections: readonly SectionDefinition[] = [
     fields: [
       field.text('eyebrow', 'Eyebrow'),
       field.splitHeading('headline', 'Überschrift'),
+      field.textarea('subline', 'Einleitung'),
       { key: 'address', label: 'Adresse', type: 'address', required: true },
       { key: 'phone', label: 'Telefon', type: 'phone' },
       { key: 'email', label: 'E-Mail', type: 'email' },
+      field.url('mapsUrl', 'Google-Maps-Link'),
+      field.repeater('locations', 'Weitere Standorte', [
+        field.text('name', 'Name'),
+        { key: 'address', label: 'Adresse', type: 'address' },
+        field.text('city', 'Ort'),
+        { key: 'phone', label: 'Telefon', type: 'phone' },
+        { key: 'email', label: 'E-Mail', type: 'email' },
+        field.url('mapsUrl', 'Maps-Link')
+      ]),
+      field.repeater('arrival', 'Anreise / Ablauf', [
+        field.text('title', 'Titel'),
+        field.textarea('body', 'Beschreibung')
+      ]),
       { key: 'openingHours', label: 'Öffnungszeiten', type: 'openingHours' }
     ]
   },
@@ -162,7 +176,7 @@ export const globalSections: readonly SectionDefinition[] = [
       field.splitHeading('headline', 'Überschrift'),
       field.repeater('items', 'Logos', [
         field.text('name', 'Name', { required: true }),
-        field.text('logo', 'Logo-URL', { required: true }),
+        field.image('logo', 'Logo', { required: true }),
         field.text('href', 'Link (optional)')
       ])
     ]
@@ -181,7 +195,7 @@ export const globalSections: readonly SectionDefinition[] = [
         field.text('kicker', 'Kicker'),
         field.text('title', 'Titel', { required: true }),
         field.textarea('body', 'Text'),
-        field.text('image', 'Bild-URL'),
+        field.image('image', 'Bild'),
         field.text('layoutSpan', 'Breite (1 oder 2)')
       ])
     ]

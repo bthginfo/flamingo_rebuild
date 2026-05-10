@@ -10,17 +10,18 @@ import {
   type AdminContentState
 } from '@/cms/admin-content-api';
 import type { SiteSeed } from '@/template-engine/seeds/model';
+import { CUSTOM_THEME_PREFIX, THEME_PRESETS, normalizeTheme, type TenantCustomTheme } from '@/template-engine/theme-presets';
 
 type NavItem = { label: string; href: string };
-type BrandFields = { name: string; tagline: string; accentHex: string };
-type ContactFields = { address: string; phone: string; email: string; openingHours: string };
+type BrandFields = { name: string; tagline: string; accentHex: string; themePresetId: string; customThemes: TenantCustomTheme[] };
+type ContactFields = { address: string; phone: string; email: string; openingHours: string; mapsUrl: string };
 
 export function TenantNavigationEditor() {
   const [contentState, setContentState] = useState<AdminContentState>({ mode: 'demo' });
   const [seed, setSeed] = useState<SiteSeed | null>(null);
   const [items, setItems] = useState<NavItem[]>([]);
-  const [brand, setBrand] = useState<BrandFields>({ name: '', tagline: '', accentHex: '' });
-  const [contact, setContact] = useState<ContactFields>({ address: '', phone: '', email: '', openingHours: '' });
+  const [brand, setBrand] = useState<BrandFields>({ name: '', tagline: '', accentHex: '', themePresetId: '', customThemes: [] });
+  const [contact, setContact] = useState<ContactFields>({ address: '', phone: '', email: '', openingHours: '', mapsUrl: '' });
   const [status, setStatus] = useState<
     'loading' | 'ready' | 'demo' | 'saving' | 'saved' | 'publishing' | 'discarding' | 'error'
   >('loading');
@@ -44,13 +45,16 @@ export function TenantNavigationEditor() {
       setBrand({
         name: asString(doc.global.brand.name),
         tagline: asString(doc.global.brand.tagline),
-        accentHex: normalizeHex(asString(doc.global.brand.accentHex))
+        accentHex: normalizeHex(asString(doc.global.brand.accentHex)),
+        themePresetId: asString(doc.global.brand.themePresetId),
+        customThemes: arrayThemes(doc.global.brand.customThemes)
       });
       setContact({
         address: asString(doc.global.contact.address),
         phone: asString(doc.global.contact.phone),
         email: asString(doc.global.contact.email),
-        openingHours: asString(doc.global.contact.openingHours)
+        openingHours: asString(doc.global.contact.openingHours),
+        mapsUrl: asString(doc.global.contact.mapsUrl)
       });
       setStatus('ready');
     } catch (error) {
@@ -72,14 +76,17 @@ export function TenantNavigationEditor() {
         brand: {
           name: brand.name.trim(),
           tagline: brand.tagline.trim(),
-          accentHex: normalizeHex(brand.accentHex.trim())
+          accentHex: normalizeHex(brand.accentHex.trim()),
+          themePresetId: brand.themePresetId.trim(),
+          customThemes: brand.customThemes.map(normalizeTheme)
         },
         contact: {
           ...seed.global.contact,
           address: contact.address.trim(),
           phone: contact.phone.trim(),
           email: contact.email.trim(),
-          openingHours: contact.openingHours.trim()
+          openingHours: contact.openingHours.trim(),
+          mapsUrl: contact.mapsUrl.trim()
         },
         navigation: items.map((entry) => ({ label: entry.label.trim(), href: entry.href.trim() }))
       }
@@ -152,6 +159,43 @@ export function TenantNavigationEditor() {
   function updateContact(patch: Partial<ContactFields>) {
     setContact((current) => ({ ...current, ...patch }));
     if (status === 'ready' || status === 'saved') setStatus('ready');
+  }
+
+  function updateTheme(index: number, patch: Partial<TenantCustomTheme>) {
+    updateBrand({
+      customThemes: brand.customThemes.map((theme, i) => (i === index ? { ...theme, ...patch } : theme))
+    });
+  }
+
+  function addCustomTheme() {
+    const id = `theme-${Date.now().toString(36)}`;
+    updateBrand({
+      themePresetId: `${CUSTOM_THEME_PREFIX}${id}`,
+      customThemes: [
+        ...brand.customThemes,
+        {
+          id,
+          label: 'Eigenes Schema',
+          name: 'Eigenes Schema',
+          primary: '#111827',
+          primaryFg: '#ffffff',
+          accent: normalizeHex(brand.accentHex) || '#ff3d68',
+          accentFg: '#ffffff',
+          surface: '#f8fafc',
+          bg: '#ffffff',
+          text: '#111827'
+        }
+      ]
+    });
+  }
+
+  function removeCustomTheme(index: number) {
+    const removed = brand.customThemes[index];
+    const next = brand.customThemes.filter((_, i) => i !== index);
+    updateBrand({
+      customThemes: next,
+      themePresetId: brand.themePresetId === `${CUSTOM_THEME_PREFIX}${removed?.id}` ? '' : brand.themePresetId
+    });
   }
 
   function addRow() {
@@ -239,6 +283,49 @@ export function TenantNavigationEditor() {
           />
         </label>
         <label className="cms-field is-wide">
+          <span>Aktives Farbschema</span>
+          <select value={brand.themePresetId} onChange={(e) => updateBrand({ themePresetId: e.target.value })}>
+            <option value="">Template-Standard / Akzentfarbe</option>
+            {(seed ? THEME_PRESETS[seed.industryKey] : []).map((preset) => (
+              <option key={preset.id} value={preset.id}>
+                {preset.label}
+              </option>
+            ))}
+            {brand.customThemes.map((theme) => (
+              <option key={theme.id} value={`${CUSTOM_THEME_PREFIX}${theme.id}`}>
+                Eigen: {theme.label || theme.name || theme.id}
+              </option>
+            ))}
+          </select>
+        </label>
+        <div className="cms-list is-wide">
+          <span>Eigene Farbschemas</span>
+          {brand.customThemes.map((theme, index) => (
+            <div className="cms-repeat-item" key={theme.id}>
+              <div className="cms-repeat-toolbar">
+                <button type="button" className="button secondary" onClick={() => removeCustomTheme(index)}>
+                  Schema entfernen
+                </button>
+              </div>
+              <div className="cms-field-grid">
+                <label className="cms-field">
+                  <span>Name</span>
+                  <input value={theme.label || theme.name || ''} onChange={(e) => updateTheme(index, { label: e.target.value, name: e.target.value })} />
+                </label>
+                <ColorPair label="Primär" value={theme.primary} onChange={(value) => updateTheme(index, { primary: value })} />
+                <ColorPair label="Primär-Text" value={theme.primaryFg} onChange={(value) => updateTheme(index, { primaryFg: value })} />
+                <ColorPair label="Akzent" value={theme.accent} onChange={(value) => updateTheme(index, { accent: value })} />
+                <ColorPair label="Fläche" value={theme.surface} onChange={(value) => updateTheme(index, { surface: value })} />
+                <ColorPair label="Hintergrund" value={theme.bg} onChange={(value) => updateTheme(index, { bg: value })} />
+                <ColorPair label="Text" value={theme.text} onChange={(value) => updateTheme(index, { text: value })} />
+              </div>
+            </div>
+          ))}
+          <button type="button" className="button secondary" onClick={addCustomTheme}>
+            Eigenes Farbschema hinzufügen
+          </button>
+        </div>
+        <label className="cms-field is-wide">
           <span>Adresse</span>
           <textarea rows={2} value={contact.address} onChange={(e) => updateContact({ address: e.target.value })} />
         </label>
@@ -257,6 +344,10 @@ export function TenantNavigationEditor() {
             value={contact.openingHours}
             onChange={(e) => updateContact({ openingHours: e.target.value })}
           />
+        </label>
+        <label className="cms-field is-wide">
+          <span>Google-Maps-Link</span>
+          <input value={contact.mapsUrl} onChange={(e) => updateContact({ mapsUrl: e.target.value })} />
         </label>
       </div>
       <p className="eyebrow">Hauptmenü</p>
@@ -334,8 +425,37 @@ export function TenantNavigationEditor() {
   );
 }
 
+function ColorPair({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
+  const normalized = normalizeHex(value) || '#000000';
+  return (
+    <label className="cms-field">
+      <span>{label}</span>
+      <input type="color" value={normalized} onChange={(e) => onChange(e.target.value)} />
+      <input value={value} onChange={(e) => onChange(e.target.value)} placeholder="#000000" />
+    </label>
+  );
+}
+
 function asString(value: unknown): string {
   return typeof value === 'string' ? value : '';
+}
+
+function arrayThemes(value: unknown): TenantCustomTheme[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter((item): item is Record<string, unknown> => typeof item === 'object' && item !== null && !Array.isArray(item))
+    .map((item) => ({
+      id: asString(item.id) || `theme-${Math.random().toString(36).slice(2)}`,
+      label: asString(item.label) || asString(item.name) || 'Eigenes Schema',
+      name: asString(item.name) || asString(item.label) || 'Eigenes Schema',
+      primary: normalizeHex(asString(item.primary)) || '#111827',
+      primaryFg: normalizeHex(asString(item.primaryFg)) || '#ffffff',
+      accent: normalizeHex(asString(item.accent)) || '#ff3d68',
+      accentFg: normalizeHex(asString(item.accentFg)) || '#ffffff',
+      surface: normalizeHex(asString(item.surface)) || '#f8fafc',
+      bg: normalizeHex(asString(item.bg)) || '#ffffff',
+      text: normalizeHex(asString(item.text)) || '#111827'
+    }));
 }
 
 function normalizeHex(value: string): string {

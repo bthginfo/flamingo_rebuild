@@ -1,4 +1,5 @@
 import type { IndustryKey, PageInstance, StyleKey } from '../model';
+import type { TenantCustomTheme } from '../theme-presets';
 
 export type CollectionSeedItem = {
   id: string;
@@ -53,6 +54,8 @@ export type SiteSeed = {
       name: string;
       tagline: string;
       accentHex?: string;
+      themePresetId?: string;
+      customThemes?: readonly TenantCustomTheme[];
     };
     navigation: readonly { label: string; href: string }[];
     contact: Record<string, unknown>;
