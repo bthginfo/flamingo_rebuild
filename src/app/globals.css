@@ -8514,6 +8514,67 @@ a {
   background: var(--tenant-bg);
 }
 
+.tenant-preview,
+.tenant-section,
+.tenant-card-grid,
+.tenant-wow-bento__grid,
+.tenant-wow-stats__grid,
+.tenant-wow-trust__row,
+.tenant-contact-pro__grid {
+  min-width: 0;
+}
+
+.tenant-section,
+.tenant-wow-stats,
+.tenant-wow-trust,
+.tenant-wow-bento,
+.tenant-pro-media,
+.tenant-pro-pricing,
+.tenant-pro-compare {
+  overflow-x: clip;
+}
+
+.tenant-section-title,
+.tenant-wow-stats__title,
+.tenant-wow-trust__title,
+.tenant-wow-bento__title,
+.tenant-hero h1,
+.tenant-page-hero__title {
+  text-wrap: balance;
+}
+
+.tenant-section-intro,
+.tenant-card p,
+.tenant-body-text,
+.tenant-faq-accordion__panel {
+  text-wrap: pretty;
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .tenant-section,
+    .tenant-wow-stats,
+    .tenant-wow-trust,
+    .tenant-wow-bento,
+    .tenant-pro-media {
+      animation: tenant-section-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 24%;
+    }
+  }
+}
+
+@keyframes tenant-section-rise {
+  from {
+    opacity: 0.72;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .tenant-soft {
   background: var(--tenant-soft, color-mix(in oklab, var(--tenant-bg), #fff 48%));
 }
@@ -8556,13 +8617,16 @@ a {
 .tenant-page-hero__media {
   position: relative;
   transform-style: preserve-3d;
+  transition:
+    transform 0.42s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.42s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 @media (prefers-reduced-motion: no-preference) {
   .tenant-hero-image:hover,
   .tenant-page-hero:hover .tenant-page-hero__media {
     transform: perspective(1000px) rotateX(1.2deg) rotateY(-1.8deg) translateY(-3px);
-    transition: transform 0.42s cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow: 0 34px 90px rgba(15, 23, 42, 0.16);
   }
 }
 

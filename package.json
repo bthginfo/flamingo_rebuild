@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit",
     "audit:cms-surface": "tsx scripts/audit-cms-surface.ts",
     "check:provisioning": "tsx scripts/check-provisioning-preflight.ts",
+    "check:templates": "tsx scripts/check-template-health.ts",
     "validate:registry": "tsx scripts/validate-registry.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
