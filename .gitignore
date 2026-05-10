@@ -6,3 +6,4 @@ out
 .vercel
 *.tsbuildinfo
 tenant-credentials.txt
+.env*.local
