@@ -12,11 +12,15 @@ import {
 import type { SiteSeed } from '@/template-engine/seeds/model';
 
 type NavItem = { label: string; href: string };
+type BrandFields = { name: string; tagline: string };
+type ContactFields = { address: string; phone: string; email: string; openingHours: string };
 
 export function TenantNavigationEditor() {
   const [contentState, setContentState] = useState<AdminContentState>({ mode: 'demo' });
   const [seed, setSeed] = useState<SiteSeed | null>(null);
   const [items, setItems] = useState<NavItem[]>([]);
+  const [brand, setBrand] = useState<BrandFields>({ name: '', tagline: '' });
+  const [contact, setContact] = useState<ContactFields>({ address: '', phone: '', email: '', openingHours: '' });
   const [status, setStatus] = useState<
     'loading' | 'ready' | 'demo' | 'saving' | 'saved' | 'publishing' | 'discarding' | 'error'
   >('loading');
@@ -37,6 +41,16 @@ export function TenantNavigationEditor() {
       const doc = await loadAdminDocument(cs.tenantSlug, true);
       setSeed(doc);
       setItems(doc.global.navigation.map((entry) => ({ label: entry.label, href: entry.href })));
+      setBrand({
+        name: asString(doc.global.brand.name),
+        tagline: asString(doc.global.brand.tagline)
+      });
+      setContact({
+        address: asString(doc.global.contact.address),
+        phone: asString(doc.global.contact.phone),
+        email: asString(doc.global.contact.email),
+        openingHours: asString(doc.global.contact.openingHours)
+      });
       setStatus('ready');
     } catch (error) {
       setStatus('error');
@@ -54,6 +68,17 @@ export function TenantNavigationEditor() {
       ...seed,
       global: {
         ...seed.global,
+        brand: {
+          name: brand.name.trim(),
+          tagline: brand.tagline.trim()
+        },
+        contact: {
+          ...seed.global.contact,
+          address: contact.address.trim(),
+          phone: contact.phone.trim(),
+          email: contact.email.trim(),
+          openingHours: contact.openingHours.trim()
+        },
         navigation: items.map((entry) => ({ label: entry.label.trim(), href: entry.href.trim() }))
       }
     };
@@ -117,6 +142,16 @@ export function TenantNavigationEditor() {
     if (status === 'ready' || status === 'saved') setStatus('ready');
   }
 
+  function updateBrand(patch: Partial<BrandFields>) {
+    setBrand((current) => ({ ...current, ...patch }));
+    if (status === 'ready' || status === 'saved') setStatus('ready');
+  }
+
+  function updateContact(patch: Partial<ContactFields>) {
+    setContact((current) => ({ ...current, ...patch }));
+    if (status === 'ready' || status === 'saved') setStatus('ready');
+  }
+
   function addRow() {
     setItems((current) => [...current, { label: 'Neuer Link', href: '/' }]);
     if (status === 'ready' || status === 'saved') setStatus('ready');
@@ -172,6 +207,40 @@ export function TenantNavigationEditor() {
 
   return (
     <div className="card" style={{ marginTop: 24 }}>
+      <p className="eyebrow">Brand & Kontakt</p>
+      <p style={{ color: 'var(--muted)', marginBottom: 20 }}>
+        Diese Werte steuern Logo-Text, Footer-Claim und globale Kontakt-Fallbacks in den Templates.
+      </p>
+      <div className="cms-field-grid" style={{ marginBottom: 26 }}>
+        <label className="cms-field">
+          <span>Brand-Name</span>
+          <input value={brand.name} onChange={(e) => updateBrand({ name: e.target.value })} />
+        </label>
+        <label className="cms-field">
+          <span>Tagline</span>
+          <input value={brand.tagline} onChange={(e) => updateBrand({ tagline: e.target.value })} />
+        </label>
+        <label className="cms-field is-wide">
+          <span>Adresse</span>
+          <textarea rows={2} value={contact.address} onChange={(e) => updateContact({ address: e.target.value })} />
+        </label>
+        <label className="cms-field">
+          <span>Telefon</span>
+          <input value={contact.phone} onChange={(e) => updateContact({ phone: e.target.value })} />
+        </label>
+        <label className="cms-field">
+          <span>E-Mail</span>
+          <input value={contact.email} onChange={(e) => updateContact({ email: e.target.value })} />
+        </label>
+        <label className="cms-field is-wide">
+          <span>Öffnungszeiten</span>
+          <textarea
+            rows={3}
+            value={contact.openingHours}
+            onChange={(e) => updateContact({ openingHours: e.target.value })}
+          />
+        </label>
+      </div>
       <p className="eyebrow">Hauptmenü</p>
       <p style={{ color: 'var(--muted)', marginBottom: 20 }}>
         Einträge sind die gleichen Links wie in der Vorschau (<code>href</code> relativ zur Site, z. B.{' '}
@@ -245,4 +314,8 @@ export function TenantNavigationEditor() {
       </div>
     </div>
   );
+}
+
+function asString(value: unknown): string {
+  return typeof value === 'string' ? value : '';
 }
