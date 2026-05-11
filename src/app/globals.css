@@ -4288,7 +4288,7 @@ a {
   align-items: center;
   gap: 48px;
   width: max-content;
-  animation: fm-branch-marquee-scroll 55s linear infinite;
+  animation: fm-branch-marquee-scroll 88s linear infinite;
 }
 
 .fm-branch-marquee__item {

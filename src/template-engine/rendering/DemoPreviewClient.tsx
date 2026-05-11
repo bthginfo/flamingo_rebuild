@@ -1,6 +1,7 @@
 'use client';
 
 import { Suspense, useMemo, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import type { IndustryKey, StyleKey } from '../model';
 import type { SiteSeed } from '../seeds/model';
 import { loadDemoContent } from '@/cms/demo-store';
@@ -24,7 +25,9 @@ export function DemoPreviewClient({
   previewBasePath: string;
 }) {
   const [seed, setSeed] = useState(initialSeed);
-  const [accentId, setAccentId] = useState<PreviewAccentId | null>(null);
+  const searchParams = useSearchParams();
+  const rawAccent = searchParams.get('accent');
+  const accentId: PreviewAccentId | null = isPreviewAccentId(rawAccent) ? rawAccent : null;
 
   useEffect(() => {
     let active = true;
@@ -56,24 +59,6 @@ export function DemoPreviewClient({
       window.removeEventListener('focus', onStorage);
     };
   }, [initialSeed]);
-
-  useEffect(() => {
-    function syncFromUrl() {
-      const raw = new URLSearchParams(window.location.search).get('accent');
-      setAccentId(isPreviewAccentId(raw) ? raw : null);
-    }
-    function syncFromEvent(event: Event) {
-      const detail = event instanceof CustomEvent ? event.detail : null;
-      setAccentId(isPreviewAccentId(detail) ? detail : null);
-    }
-    syncFromUrl();
-    window.addEventListener('popstate', syncFromUrl);
-    window.addEventListener('flamingo-preview-accent', syncFromEvent);
-    return () => {
-      window.removeEventListener('popstate', syncFromUrl);
-      window.removeEventListener('flamingo-preview-accent', syncFromEvent);
-    };
-  }, [industryKey, styleKey]);
 
   const page = useMemo(() => resolvePreviewPage(seed, pathSegments), [seed, pathSegments]);
   const accentHex = resolvePreviewAccentHex(accentId, styleKey);

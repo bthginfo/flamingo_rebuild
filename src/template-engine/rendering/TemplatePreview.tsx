@@ -25,14 +25,16 @@ export function TemplatePreview({
   if (seed) {
     const previewPathKey = `${industryKey}-${styleKey}-${previewPathFromSegments(pathSegments)}`;
     return (
-      <DemoPreviewClient
-        key={previewPathKey}
-        industryKey={industryKey}
-        initialSeed={seed}
-        styleKey={styleKey}
-        pathSegments={pathSegments}
-        previewBasePath={previewBasePath}
-      />
+      <Suspense fallback={null}>
+        <DemoPreviewClient
+          key={previewPathKey}
+          industryKey={industryKey}
+          initialSeed={seed}
+          styleKey={styleKey}
+          pathSegments={pathSegments}
+          previewBasePath={previewBasePath}
+        />
+      </Suspense>
     );
   }
 
