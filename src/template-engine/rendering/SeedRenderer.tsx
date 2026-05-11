@@ -698,6 +698,7 @@ function CollectionGrid({
         <div className="tenant-card-grid tenant-card-grid--motion" data-stagger-grid>
           {items.map((item) => {
             const meta = collectionMetaItems(item);
+            const facts = collectionCardFacts(item);
             const inner = (
               <>
                 {asString(item.data.image) ? (
@@ -723,6 +724,16 @@ function CollectionGrid({
                   ) : null}
                   <h3>{item.title}</h3>
                   <p>{asString(item.data.summary)}</p>
+                  {facts.length > 0 ? (
+                    <dl className="tenant-card__facts" aria-label="CMS-Fakten">
+                      {facts.map((fact) => (
+                        <div key={`${fact.label}-${fact.value}`}>
+                          <dt>{fact.label}</dt>
+                          <dd>{fact.value}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  ) : null}
                   <span className="tenant-card__more" aria-hidden>
                     Details ansehen
                   </span>
@@ -777,6 +788,55 @@ function collectionMetaItems(item: CollectionSeedItem): string[] {
     asString(item.data.level),
     asString(item.data.trainer)
   ].filter(Boolean).slice(0, 3);
+}
+
+function collectionCardFacts(item: CollectionSeedItem): Array<{ label: string; value: string }> {
+  const data = item.data;
+  const candidates: Array<[string, unknown]> = [
+    ['Preis', data.price],
+    ['Preis ab', data.priceFrom],
+    ['Dauer', data.duration],
+    ['Kapazität', data.capacity],
+    ['Kategorie', data.category],
+    ['Belegung', data.occupancy],
+    ['Bett', data.bedType],
+    ['Ausblick', data.view],
+    ['Fläche', data.sizeSqm ? `${asString(data.sizeSqm)} m²` : ''],
+    ['Level', data.level ?? data.difficulty],
+    ['Termin', data.schedule ?? data.scheduleInfo],
+    ['Treffpunkt', data.meetingPoint],
+    ['Ort', data.location],
+    ['Zeitraum', data.travelPeriod],
+    ['Zielgruppe', data.targetAudience],
+    ['Versicherung', data.coveredByInsurance],
+    ['Inklusive', previewListValue(data.included)],
+    ['Ausstattung', previewListValue(data.amenities)],
+    ['Ziele', previewListValue(data.goals)],
+    ['Tags', previewListValue(data.dietaryTags ?? data.styleTags)],
+    ['Sprachen', previewListValue(data.languages)],
+    ['Schwerpunkte', previewListValue(data.specialties)],
+    ['Gebiet', previewListValue(data.serviceArea)]
+  ];
+
+  const seen = new Set<string>();
+  return candidates
+    .map(([label, value]) => ({ label, value: asString(value) }))
+    .filter((fact) => {
+      const key = `${fact.label}:${fact.value}`;
+      if (!fact.value || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .slice(0, 4);
+}
+
+function previewListValue(value: unknown): string {
+  if (!Array.isArray(value)) return '';
+  return value
+    .map((entry) => asString(entry))
+    .filter(Boolean)
+    .slice(0, 2)
+    .join(' · ');
 }
 
 function FaqSection({ section, domSectionId }: { section: SectionInstance; domSectionId: string }) {
@@ -1704,8 +1764,40 @@ function asSplit(value: unknown): { plain: string; accent: string } {
 }
 
 function toGoogleMapsEmbedUrl(url: string): string {
-  if (!url || !/^https:\/\/www\.google\.[^/]+\/maps\/embed/i.test(url)) return '';
-  return url;
+  if (!url) return '';
+
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname.toLowerCase();
+    const isGoogleMaps =
+      host === 'maps.app.goo.gl' ||
+      host.includes('google.') ||
+      host === 'maps.google.com' ||
+      host === 'www.google.com';
+
+    if (!isGoogleMaps) return '';
+    if (/\/maps\/embed/i.test(parsed.pathname)) return url;
+
+    const query =
+      parsed.searchParams.get('q') ??
+      parsed.searchParams.get('query') ??
+      parsed.searchParams.get('destination') ??
+      parsed.searchParams.get('daddr');
+
+    if (query) {
+      return `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
+    }
+
+    const placeMatch = parsed.pathname.match(/\/maps\/place\/([^/]+)/i);
+    if (placeMatch?.[1]) {
+      const place = decodeURIComponent(placeMatch[1]).replace(/\+/g, ' ');
+      return `https://www.google.com/maps?q=${encodeURIComponent(place)}&output=embed`;
+    }
+  } catch {
+    return '';
+  }
+
+  return '';
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
