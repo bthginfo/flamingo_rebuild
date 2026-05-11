@@ -7662,6 +7662,220 @@ a {
   min-height: 72px;
 }
 
+.tenant-site-wrap[data-industry='restaurant'][data-style='modern'] .tenant-filter-card-grid {
+  padding-block: clamp(2.5rem, 6vw, 4.5rem);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='modern'] .tenant-filter-card-grid__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: clamp(18px, 3vw, 28px) 0 clamp(22px, 3.5vw, 36px);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='modern'] .tenant-filter-card-grid__tab {
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  border: 1px solid color-mix(in oklab, var(--tenant-line), transparent 20%);
+  background: color-mix(in oklab, var(--tenant-bg), #fff 55%);
+  color: var(--tenant-muted);
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='modern'] .tenant-filter-card-grid__tab--active {
+  background: var(--tenant-fg);
+  color: var(--tenant-bg);
+  border-color: var(--tenant-fg);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='modern'] .tenant-filter-card-grid__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: clamp(16px, 2.5vw, 24px);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='modern'] .tenant-filter-card-grid__card {
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid var(--tenant-line);
+  background: color-mix(in oklab, var(--tenant-bg), #fff 35%);
+  box-shadow: 0 18px 48px rgba(20, 17, 26, 0.06);
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='modern'] .tenant-filter-card-grid__visual {
+  position: relative;
+  aspect-ratio: 4 / 3;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='modern'] .tenant-filter-card-grid__img {
+  object-fit: cover;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='modern'] .tenant-filter-card-grid__badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: color-mix(in oklab, var(--tenant-bg), transparent 10%);
+  color: var(--tenant-fg);
+  backdrop-filter: blur(8px);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='modern'] .tenant-filter-card-grid__body {
+  padding: 18px 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='modern'] .tenant-filter-card-grid__price {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--tenant-accent);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='modern'] .tenant-filter-card-grid__title {
+  margin: 0;
+  font-size: 1.15rem;
+  letter-spacing: -0.02em;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='modern'] .tenant-filter-card-grid__desc {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--tenant-muted);
+  flex: 1;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='modern'] .tenant-filter-card-grid__more {
+  margin-top: clamp(22px, 3vw, 36px);
+  display: flex;
+  justify-content: center;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='modern'] .tenant-split-cta-band {
+  padding-block: clamp(2.75rem, 7vw, 5rem);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='modern'] .tenant-split-cta-band__inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(24px, 4vw, 48px);
+  align-items: center;
+}
+
+@media (max-width: 900px) {
+  .tenant-site-wrap[data-industry='restaurant'][data-style='modern'] .tenant-split-cta-band__inner,
+  .tenant-site-wrap[data-industry='restaurant'][data-style='modern'] .tenant-split-cta-band__inner--img-left {
+    grid-template-columns: 1fr;
+  }
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='modern'] .tenant-split-cta-band__visual {
+  position: relative;
+  min-height: 280px;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='modern'] .tenant-split-cta-band__frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+  border-radius: 26px;
+  overflow: hidden;
+  border: 1px solid var(--tenant-line);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='modern'] .tenant-split-cta-band__img {
+  object-fit: cover;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='modern'] .tenant-split-cta-band__sub {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--tenant-muted);
+  max-width: 48ch;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='modern'] .tenant-testimonials__grid {
+  gap: clamp(16px, 2.5vw, 22px);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='modern'] .tenant-testimonials__card {
+  text-align: left;
+  padding: 22px 22px 24px;
+  border-radius: 20px;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='modern'] .tenant-testimonials__stars {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='modern'] .tenant-testimonials__star {
+  color: color-mix(in oklab, var(--tenant-muted), transparent 55%);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='modern'] .tenant-testimonials__star--on {
+  color: var(--tenant-accent);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='modern'] .tenant-testimonials__quote {
+  font-size: 1.05rem;
+  line-height: 1.55;
+  margin: 0 0 16px;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='modern'] .tenant-testimonials__meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='modern'] .tenant-testimonials__avatar {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--tenant-line);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='modern'] .tenant-testimonials__avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='modern'] .tenant-testimonials__role {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--tenant-muted);
+}
+
 /* --- Premium CMS-driven sections (Renderer: SeedRenderer) --- */
 .tenant-pro-icon {
   padding: clamp(3rem, 8vw, 5.5rem) 0;

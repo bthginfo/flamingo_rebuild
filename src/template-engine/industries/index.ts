@@ -32,6 +32,8 @@ const globalAllowed = [
   'global.stepsStrip',
   'global.featureCompare',
   'global.newsTeaser',
+  'global.filterCardGrid',
+  'global.splitCtaBand',
   'restaurant.deepDives',
   'hotel.deepDives',
   'tourism.deepDives',

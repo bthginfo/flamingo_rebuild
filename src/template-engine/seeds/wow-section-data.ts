@@ -822,6 +822,39 @@ function subpageLayoutHash(industryKey: IndustryKey, pageKey: string): number {
   return h >>> 0;
 }
 
+/** Schlankes WOW für Restaurant „modern“: weniger Blöcke, gleichzeitig ≥2 Premium-Sections für Template-Health. */
+function buildRestaurantModernHomeWow(id: string): SectionInstance[] {
+  const stats = adaptStatsForStyle(STATS_BY_INDUSTRY.restaurant, 'modern');
+  const bentoHero = BENTO_BY_INDUSTRY.restaurant.items[0];
+  const heroImg = String(bentoHero?.image ?? '');
+  const mediaHead = adaptTrustHeadlineForStyle(
+    { eyebrow: 'Spotlight', headline: BENTO_BY_INDUSTRY.restaurant.headline },
+    'modern'
+  );
+  const mediaCtas = PREMIUM_MEDIA_CTAS_BY_INDUSTRY.restaurant;
+  return [
+    section(`${id}-stats`, 'global.statsBand', 0, {
+      eyebrow: stats.eyebrow,
+      headline: stats.headline,
+      items: stats.items
+    }),
+    section(`${id}-pull`, 'global.pullQuote', 0, {
+      quote: '„Qualität schmeckt man am ersten Bissen — und an der Ruhe am Pass.“',
+      attribution: 'Giulia & Marco',
+      role: 'Gastgeber:innen · Trattoria Flamingo'
+    }),
+    section(`${id}-media`, 'global.mediaSpotlight', 0, {
+      eyebrow: mediaHead.eyebrow,
+      headline: mediaHead.headline,
+      subline: String(bentoHero?.body ?? ''),
+      image: heroImg,
+      mood: 'soft',
+      primaryCta: { label: mediaCtas.primary, link: { type: 'page' as const, pageKey: 'contact', href: '/kontakt' } },
+      secondaryCta: { label: mediaCtas.secondary, link: { type: 'page' as const, pageKey: 'menu', href: '/speisekarte' } }
+    })
+  ];
+}
+
 /** Optional context for Unterseiten / Detailrouten — eigene Section-IDs + leichte Text-Anreicherung. */
 export type WowPageContext = {
   pageKey: string;
@@ -834,6 +867,10 @@ export function buildWowSectionInstances(
   page?: WowPageContext
 ): SectionInstance[] {
   const id = page !== undefined ? `wow-${industryKey}-${styleKey}-${page.pageKey}` : `wow-${industryKey}-${styleKey}`;
+
+  if (page === undefined && industryKey === 'restaurant' && styleKey === 'modern') {
+    return buildRestaurantModernHomeWow(id);
+  }
 
   const statsSource = STATS_BY_INDUSTRY[industryKey];
   const statsBase =

@@ -60,7 +60,9 @@ export function standardServiceCollection(
         'global.quoteMarquee',
         'global.keyFactsGrid',
         'global.videoEmbed',
-        'global.stepsStrip'
+        'global.stepsStrip',
+        'global.filterCardGrid',
+        'global.splitCtaBand'
       ],
       defaultSections: ['global.pageHeader', 'global.textImage', 'global.contactCta']
     }

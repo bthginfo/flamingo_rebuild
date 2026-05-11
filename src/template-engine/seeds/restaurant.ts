@@ -71,40 +71,102 @@ function homeAfterAction(styleKey: StyleKey): SectionInstance[] {
   }
   if (styleKey === 'modern') {
     return [
-      section('home-pitch', 'global.introBlock', 3, {
-        eyebrow: 'Konzept',
-        headline: { plain: 'Drei Säulen,', accent: 'ein Teller.' },
-        body: 'Manufaktur-Pasta, Neapel-Ofen, Naturweine — jedes Element hat eine klare Rolle im Menü und im Service.',
-        facts: [
-          { label: 'Ofen', value: '485 °C' },
-          { label: 'Weine', value: '120+' },
-          { label: 'Team', value: '28' }
-        ]
-      }),
-      section('home-scroll', 'global.scrollerHighlights', 4, {
-        eyebrow: 'Highlights',
-        headline: { plain: 'Schnell', accent: 'verstanden.' },
-        intro: 'Drei visuelle Anker — ideal für Gäste, die in Sekunden entscheiden.',
-        slides: [
+      section('home-menu-filter', 'global.filterCardGrid', 3, {
+        eyebrow: 'Menü',
+        headline: { plain: 'Gerichte,', accent: 'klar gefiltert.' },
+        intro:
+          'Wie in der offenen Küche: zuerst wählen, dann genießen. Jedes Gericht ist im Restaurant mit saisonalen Details verfügbar.',
+        tabs: [
+          { key: 'all', label: 'Alle' },
+          { key: 'pasta', label: 'Pasta' },
+          { key: 'pizza', label: 'Pizza' },
+          { key: 'pesce', label: 'Pesce' }
+        ],
+        cards: [
           {
-            image: 'https://images.unsplash.com/photo-1556910103-1c02745a30bf?auto=format&fit=crop&w=900&q=80',
-            title: 'Ofen & Teig',
-            body: '48 h Ruhe, 90 s Backen — reproduzierbar, trotzdem handgemacht.',
+            image: 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=900&q=80',
+            title: 'Tagliatelle al Tartufo',
+            price: '24,90 €',
+            badge: 'Manufaktur',
+            body: '48 h Teigruhe, Sommertrüffel, Parmigiano 24 mesi.',
+            tabKey: 'pasta',
+            cta: { label: 'Zum Gericht', link: { type: 'page', href: '/speisekarte/tagliatelle-al-tartufo' } }
+          },
+          {
+            image: 'https://images.unsplash.com/photo-1604382355076-af4b0eb60143?auto=format&fit=crop&w=900&q=80',
+            title: 'Pizza Margherita DOP',
+            price: '15,50 €',
+            badge: 'Ofen 485 °C',
+            body: 'San Marzano, Büffelmozzarella, Basilikum — 90 Sekunden im Feuer.',
+            tabKey: 'pizza',
+            cta: { label: 'Zum Gericht', link: { type: 'page', href: '/speisekarte/pizza-margherita-dop' } }
+          },
+          {
+            image: 'https://images.unsplash.com/photo-1559847844-5315695dadae?auto=format&fit=crop&w=900&q=80',
+            title: 'Branzino al Forno',
+            price: '29,00 €',
+            badge: 'Tagesfang',
+            body: 'Wolfsbarsch, Zitrone, Rosmarin — leicht und klar.',
+            tabKey: 'pesce',
+            cta: { label: 'Zum Gericht', link: { type: 'page', href: '/speisekarte/branzino-al-forno' } }
+          },
+          {
+            image: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=900&q=80',
+            title: 'Bucatini all’Amatriciana',
+            price: '18,50 €',
+            badge: 'Klassiker',
+            body: 'Guanciale, Pecorino, sanfter Schärfe-Kick.',
+            tabKey: 'pasta',
             cta: { label: 'Speisekarte', link: { type: 'page', href: '/speisekarte' } }
           },
           {
-            image: 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=900&q=80',
-            title: 'Manufaktur',
-            body: 'Kurze Wege vom Teig zum Teller — Transparenz statt Show.',
+            image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=900&q=80',
+            title: 'Diavola',
+            price: '17,00 €',
+            badge: 'Scharf',
+            body: 'Salami ventricina, Honig-Finish optional.',
+            tabKey: 'pizza',
+            cta: { label: 'Speisekarte', link: { type: 'page', href: '/speisekarte' } }
+          },
+          {
+            image: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=900&q=80',
+            title: 'Orata al cartoccio',
+            price: '32,00 €',
+            badge: 'Saison',
+            body: 'Mit Gemüse aus dem Ofen — für zwei zum Teilen.',
+            tabKey: 'pesce',
+            cta: { label: 'Speisekarte', link: { type: 'page', href: '/speisekarte' } }
+          },
+          {
+            image: 'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?auto=format&fit=crop&w=900&q=80',
+            title: 'Antipasti della Casa',
+            price: 'für den Tisch',
+            badge: 'Sharing',
+            body: 'Crudo, Gemüse, Öl — der Einstieg ohne Schwere.',
+            tabKey: 'all',
             cta: { label: 'Erlebnisse', link: { type: 'page', href: '/erlebnisse' } }
           },
           {
-            image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=900&q=80',
-            title: 'Wein',
-            body: 'Italien & Alpen — kuratiert, nicht überladen.',
-            cta: { label: 'Galerie', link: { type: 'page', href: '/galerie' } }
+            image: 'https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=900&q=80',
+            title: 'Calzone ripieno',
+            price: '16,50 €',
+            badge: 'Ofen',
+            body: 'Ricotta, Spinat, Mozzarella — knusprig außen, dampfend innen.',
+            tabKey: 'pizza',
+            cta: { label: 'Speisekarte', link: { type: 'page', href: '/speisekarte' } }
           }
-        ]
+        ],
+        initialVisible: 6,
+        loadMoreLabel: 'Mehr Gerichte'
+      }),
+      section('home-split-cta', 'global.splitCtaBand', 4, {
+        eyebrow: 'Heute Abend',
+        headline: { plain: 'Tisch', accent: 'mit Aussicht?' },
+        subline:
+          'Bar, Saal oder Fensterplatz — wir melden uns mit einem konkreten Vorschlag und halten kurzfristig den Tresen frei, wenn es passt.',
+        image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=82',
+        imageSide: 'links',
+        cta: { label: 'Reservierung anfragen', link: { type: 'page', href: '/kontakt' } }
       })
     ];
   }
@@ -148,12 +210,33 @@ function homeClosing(styleKey: StyleKey): SectionInstance[] {
     items: ['experience-wine', 'experience-family']
   });
   const testimonials = section('home-testimonials', 'global.testimonials', 0, {
-    eyebrow: 'Stimmen',
-    headline: { plain: 'Was unsere', accent: 'Gäste sagen.' },
+    eyebrow: styleKey === 'modern' ? 'Reviews' : 'Stimmen',
+    headline:
+      styleKey === 'modern'
+        ? { plain: 'Liebe zum', accent: 'Detail.' }
+        : { plain: 'Was unsere', accent: 'Gäste sagen.' },
     items: [
-      { quote: 'Ein Geheimtipp. Wir machen extra einen Umweg, wenn wir in Tirol sind.', name: 'Markus W., München' },
-      { quote: 'Tolle Pasta, herzliche Bedienung und faire Preise. Unsere Kinder lieben Giulia.', name: 'Familie Berger' },
-      { quote: 'Authentisch wie selten. Die Trüffel-Tagliatelle ist legendär.', name: 'Andrea L., Bozen' }
+      {
+        quote: 'Ein Geheimtipp. Wir machen extra einen Umweg, wenn wir in Tirol sind.',
+        name: 'Markus W.',
+        role: 'Google · München',
+        rating: 5,
+        avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=120&q=72'
+      },
+      {
+        quote: 'Tolle Pasta, herzliche Bedienung und faire Preise. Unsere Kinder lieben Giulia.',
+        name: 'Familie Berger',
+        role: 'Stammgäste · Innsbruck',
+        rating: 5,
+        avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=120&q=72'
+      },
+      {
+        quote: 'Authentisch wie selten. Die Trüffel-Tagliatelle ist legendär.',
+        name: 'Andrea L.',
+        role: 'Bozen',
+        rating: 4,
+        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=72'
+      }
     ]
   });
   const cta = section('home-cta', 'global.contactCta', 0, {
@@ -202,6 +285,85 @@ function buildMenuSections(styleKey: StyleKey): SectionInstance[] {
     headline: { plain: 'Aus der', accent: 'Küche.' },
     intro: 'Alle Signature-Gerichte mit Preisen und Bildern — klicken Sie für Details.',
     items: ['dish-tagliatelle', 'dish-margherita', 'dish-branzino']
+  });
+
+  const menuFilter = section('menu-filter', 'global.filterCardGrid', 3, {
+    eyebrow: 'Die Karte',
+    headline: { plain: 'Alles auf', accent: 'einen Blick.' },
+    intro: 'Filter nach Linie — die Karten sind vollständig im CMS steuerbar.',
+    tabs: [
+      { key: 'all', label: 'Alle' },
+      { key: 'pasta', label: 'Pasta' },
+      { key: 'pizza', label: 'Pizza' },
+      { key: 'pesce', label: 'Pesce' }
+    ],
+    cards: [
+      {
+        image: 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=900&q=80',
+        title: 'Tagliatelle al Tartufo',
+        price: '24,90 €',
+        badge: 'Signature',
+        body: 'Trüffel, Butter, Parmigiano — reduziert auf das Wesentliche.',
+        tabKey: 'pasta',
+        cta: { label: 'Details', link: { type: 'page', href: '/speisekarte/tagliatelle-al-tartufo' } }
+      },
+      {
+        image: 'https://images.unsplash.com/photo-1604382355076-af4b0eb60143?auto=format&fit=crop&w=900&q=80',
+        title: 'Pizza Margherita DOP',
+        price: '15,50 €',
+        badge: 'Ofen',
+        body: 'Klassiker, täglich frisch aus dem Neapel-Setup.',
+        tabKey: 'pizza',
+        cta: { label: 'Details', link: { type: 'page', href: '/speisekarte/pizza-margherita-dop' } }
+      },
+      {
+        image: 'https://images.unsplash.com/photo-1559847844-5315695dadae?auto=format&fit=crop&w=900&q=80',
+        title: 'Branzino al Forno',
+        price: '29,00 €',
+        badge: 'Fisch',
+        body: 'Zitrone, Olivenöl, Kräuter — leicht und klar.',
+        tabKey: 'pesce',
+        cta: { label: 'Details', link: { type: 'page', href: '/speisekarte/branzino-al-forno' } }
+      },
+      {
+        image: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=900&q=80',
+        title: 'Bucatini all’Amatriciana',
+        price: '18,50 €',
+        badge: 'Roman',
+        body: 'Guanciale, Pecorino — die süße Schärfe am Ende.',
+        tabKey: 'pasta',
+        cta: { label: 'Speisekarte', link: { type: 'page', href: '/speisekarte' } }
+      },
+      {
+        image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=900&q=80',
+        title: 'Pizza Diavola',
+        price: '17,00 €',
+        badge: 'Scharf',
+        body: 'San Marzano, Salami, Chili — optional mit Honig.',
+        tabKey: 'pizza',
+        cta: { label: 'Speisekarte', link: { type: 'page', href: '/speisekarte' } }
+      },
+      {
+        image: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=900&q=80',
+        title: 'Orata al cartoccio',
+        price: '32,00 €',
+        badge: 'Sharing',
+        body: 'Im Pergament mit Marktgemüse — für zwei.',
+        tabKey: 'pesce',
+        cta: { label: 'Speisekarte', link: { type: 'page', href: '/speisekarte' } }
+      }
+    ],
+    initialVisible: 6,
+    loadMoreLabel: 'Weitere anzeigen'
+  });
+
+  const menuSplit = section('menu-split-cta', 'global.splitCtaBand', 4, {
+    eyebrow: 'Service',
+    headline: { plain: 'Allergien &', accent: 'Wünsche.' },
+    subline: 'Bei der Reservierung kurz Bescheid — Küche und Service stimmen Menü und Rhythmus vorab mit euch ab.',
+    image: 'https://images.unsplash.com/photo-1551218808-94e220e084d2?auto=format&fit=crop&w=1200&q=82',
+    imageSide: 'rechts',
+    cta: { label: 'Kontakt', link: { type: 'page', href: '/kontakt' } }
   });
 
   const scroller = section('menu-scroller', 'global.scrollerHighlights', 4, {
@@ -300,7 +462,7 @@ function buildMenuSections(styleKey: StyleKey): SectionInstance[] {
     return orderSections([head, intro, grid, scroller, deep, faq, cta]);
   }
   if (styleKey === 'modern') {
-    return orderSections([head, intro, grid, bento, deep, faq, cta]);
+    return orderSections([head, intro, menuFilter, grid, menuSplit, deep, faq, cta]);
   }
   return orderSections([head, intro, grid, scroller, asymmetric, deep, faq, cta]);
 }

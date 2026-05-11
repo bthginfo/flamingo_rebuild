@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, type CSSProperties } from 'react';
+import { useState, useEffect, useCallback, useMemo, type CSSProperties } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -178,6 +178,25 @@ function SectionRenderer({
         <ImageCarouselSection
           section={section}
           styleKey={styleKey}
+          previewBasePath={previewBasePath}
+          seed={seed}
+          domSectionId={domSectionId}
+        />
+      );
+    case 'global.filterCardGrid':
+      return (
+        <FilterCardGridSection
+          section={section}
+          styleKey={styleKey}
+          previewBasePath={previewBasePath}
+          seed={seed}
+          domSectionId={domSectionId}
+        />
+      );
+    case 'global.splitCtaBand':
+      return (
+        <SplitCtaBandSection
+          section={section}
           previewBasePath={previewBasePath}
           seed={seed}
           domSectionId={domSectionId}
@@ -582,6 +601,192 @@ function ImageCarouselSection({
               </div>
             ) : null}
           </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function FilterCardGridSection({
+  section,
+  styleKey,
+  previewBasePath,
+  seed,
+  domSectionId
+}: {
+  section: SectionInstance;
+  styleKey: StyleKey;
+  previewBasePath: string;
+  seed: SiteSeed;
+  domSectionId: string;
+}) {
+  const headline = asSplit(section.data.headline);
+  const tabs = useMemo(() => arrayItems(section.data.tabs), [section.data.tabs]);
+  const cards = useMemo(
+    () =>
+      arrayItems(section.data.cards).map((row) => ({
+        image:
+          asString(row.image) ||
+          (isRecord(row.image) ? asString((row.image as Record<string, unknown>).url) : ''),
+        title: asString(row.title),
+        price: asString(row.price),
+        badge: asString(row.badge),
+        body: asString(row.body),
+        tabKey: asString(row.tabKey).trim().toLowerCase(),
+        cta: row.cta
+      })),
+    [section.data.cards]
+  );
+
+  const rawInitial = section.data.initialVisible;
+  const initialCap =
+    typeof rawInitial === 'number' && Number.isFinite(rawInitial)
+      ? Math.max(2, Math.floor(rawInitial))
+      : Math.max(2, Math.floor(Number(rawInitial)) || 8);
+
+  const firstKey = tabs.length > 0 ? asString(tabs[0]?.key).trim().toLowerCase() : 'all';
+  const [activeTab, setActiveTab] = useState(firstKey || 'all');
+  const [visibleCount, setVisibleCount] = useState(initialCap);
+
+  const filtered = useMemo(() => {
+    const key = activeTab || 'all';
+    if (key === 'all') return cards.filter((c) => c.image);
+    return cards.filter((c) => c.image && (c.tabKey === key || c.tabKey === ''));
+  }, [activeTab, cards]);
+
+  useEffect(() => {
+    setVisibleCount(Math.min(initialCap, filtered.length));
+  }, [activeTab, initialCap, filtered.length]);
+
+  const loadMoreLabel = asString(section.data.loadMoreLabel) || 'Mehr laden';
+  const shown = filtered.slice(0, Math.min(visibleCount, filtered.length));
+  const canLoadMore = visibleCount < filtered.length;
+
+  const loadMore = useCallback(() => {
+    setVisibleCount((n) => Math.min(n + initialCap, filtered.length));
+  }, [filtered.length, initialCap]);
+
+  return (
+    <section className={`tenant-section tenant-filter-card-grid tenant-filter-card-grid--${styleKey}`} id={domSectionId}>
+      <div className="shell">
+        {asString(section.data.eyebrow) ? <p className="eyebrow">{asString(section.data.eyebrow)}</p> : null}
+        <h2 className="tenant-section-title">
+          <SplitHeading plain={headline.plain} accent={headline.accent} />
+        </h2>
+        {asString(section.data.intro) ? <p className="tenant-section-intro">{asString(section.data.intro)}</p> : null}
+
+        {tabs.length > 0 ? (
+          <div className="tenant-filter-card-grid__tabs" role="tablist" aria-label="Filter">
+            {tabs.map((t, i) => {
+              const key = asString(t.key).trim().toLowerCase();
+              const label = asString(t.label) || key;
+              const selected = key === activeTab;
+              return (
+                <button
+                  key={`${key}-${i}`}
+                  type="button"
+                  role="tab"
+                  aria-selected={selected}
+                  className={`tenant-filter-card-grid__tab${selected ? ' tenant-filter-card-grid__tab--active' : ''}`}
+                  onClick={() => {
+                    setActiveTab(key);
+                    setVisibleCount(initialCap);
+                  }}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
+
+        <div className="tenant-filter-card-grid__grid">
+          {shown.map((row, i) => (
+            <article className="tenant-filter-card-grid__card" key={`${row.title}-${i}`}>
+              {row.image ? (
+                <div className="tenant-filter-card-grid__visual">
+                  <Image
+                    src={row.image}
+                    alt=""
+                    fill
+                    className="tenant-filter-card-grid__img"
+                    sizes="(max-width: 720px) 100vw, 33vw"
+                    loading="lazy"
+                    unoptimized
+                  />
+                  {row.badge ? <span className="tenant-filter-card-grid__badge">{row.badge}</span> : null}
+                </div>
+              ) : null}
+              <div className="tenant-filter-card-grid__body">
+                {row.price ? <p className="tenant-filter-card-grid__price">{row.price}</p> : null}
+                <h3 className="tenant-filter-card-grid__title">{row.title}</h3>
+                {row.body ? <p className="tenant-filter-card-grid__desc">{row.body}</p> : null}
+                <CtaButton value={row.cta} previewBasePath={previewBasePath} seed={seed} compact />
+              </div>
+            </article>
+          ))}
+        </div>
+
+        {canLoadMore ? (
+          <div className="tenant-filter-card-grid__more">
+            <button type="button" className="tenant-button secondary" onClick={loadMore}>
+              {loadMoreLabel}
+            </button>
+          </div>
+        ) : null}
+      </div>
+    </section>
+  );
+}
+
+function SplitCtaBandSection({
+  section,
+  previewBasePath,
+  seed,
+  domSectionId
+}: {
+  section: SectionInstance;
+  previewBasePath: string;
+  seed: SiteSeed;
+  domSectionId: string;
+}) {
+  const headline = asSplit(section.data.headline);
+  const image = asString(section.data.image);
+  const sideRaw = asString(section.data.imageSide).toLowerCase();
+  const imageLeft = sideRaw === 'links' || sideRaw === 'left';
+
+  const textBlock = (
+    <div className="tenant-split-cta-band__copy">
+      {asString(section.data.eyebrow) ? <p className="eyebrow">{asString(section.data.eyebrow)}</p> : null}
+      <h2 className="tenant-section-title">
+        <SplitHeading plain={headline.plain} accent={headline.accent} />
+      </h2>
+      {asString(section.data.subline) ? <p className="tenant-split-cta-band__sub">{asString(section.data.subline)}</p> : null}
+      <CtaButton value={section.data.cta} previewBasePath={previewBasePath} seed={seed} />
+    </div>
+  );
+
+  const visual = image ? (
+    <div className="tenant-split-cta-band__visual">
+      <div className="tenant-split-cta-band__frame">
+        <Image src={image} alt="" fill className="tenant-split-cta-band__img" sizes="(max-width: 900px) 100vw, 48vw" unoptimized />
+      </div>
+    </div>
+  ) : null;
+
+  return (
+    <section className="tenant-section tenant-split-cta-band" id={domSectionId}>
+      <div className={`shell tenant-split-cta-band__inner${imageLeft && image ? ' tenant-split-cta-band__inner--img-left' : ''}`}>
+        {imageLeft && visual ? (
+          <>
+            {visual}
+            {textBlock}
+          </>
+        ) : (
+          <>
+            {textBlock}
+            {visual}
+          </>
         )}
       </div>
     </section>
@@ -1250,19 +1455,43 @@ function Testimonials({ section, domSectionId }: { section: SectionInstance; dom
   const items = Array.isArray(section.data.items) ? section.data.items : [];
 
   return (
-    <section className="tenant-section tenant-soft" id={domSectionId}>
+    <section className="tenant-section tenant-soft tenant-testimonials" id={domSectionId}>
       <div className="shell">
         <p className="eyebrow">{asString(section.data.eyebrow)}</p>
         <h2 className="tenant-section-title">
           <SplitHeading plain={headline.plain} accent={headline.accent} />
         </h2>
-        <div className="tenant-card-grid">
+        <div className="tenant-card-grid tenant-testimonials__grid">
           {items.map((raw, index) => {
             const item = isRecord(raw) ? raw : {};
+            const rating = clampRating(item.rating);
+            const avatar =
+              asString(item.avatar) ||
+              (isRecord(item.avatar) ? asString((item.avatar as Record<string, unknown>).url) : '');
+            const role = asString(item.role);
             return (
-              <article className="tenant-quote" key={index}>
-                <p>“{asString(item.quote)}”</p>
-                <strong>{asString(item.name)}</strong>
+              <article className="tenant-quote tenant-testimonials__card" key={index}>
+                {rating > 0 ? (
+                  <div className="tenant-testimonials__stars" aria-label={`${rating} von 5 Sternen`}>
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <span key={i} className={i <= rating ? 'tenant-testimonials__star tenant-testimonials__star--on' : 'tenant-testimonials__star'}>
+                        ★
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
+                <p className="tenant-testimonials__quote">“{asString(item.quote)}”</p>
+                <div className="tenant-testimonials__meta">
+                  {avatar ? (
+                    <div className="tenant-testimonials__avatar">
+                      <Image src={avatar} alt="" width={48} height={48} className="tenant-testimonials__avatar-img" unoptimized />
+                    </div>
+                  ) : null}
+                  <div>
+                    <strong>{asString(item.name)}</strong>
+                    {role ? <span className="tenant-testimonials__role">{role}</span> : null}
+                  </div>
+                </div>
               </article>
             );
           })}
@@ -2002,6 +2231,12 @@ function CtaButton({
 
 function asString(value: unknown): string {
   return typeof value === 'string' ? value : '';
+}
+
+function clampRating(value: unknown): number {
+  const n = typeof value === 'number' ? value : Number(value);
+  if (!Number.isFinite(n) || n < 0) return 0;
+  return Math.min(5, Math.round(n));
 }
 
 function formatDate(value: string): string {

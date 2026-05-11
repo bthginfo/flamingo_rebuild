@@ -33,6 +33,8 @@ const rendererSectionFields: Record<string, readonly string[]> = {
   'global.imageCarousel': ['eyebrow', 'headline', 'intro', 'slides'],
   'global.actionBar': ['useOpeningHours', 'statusOverride', 'primaryCta', 'secondaryCta'],
   'global.testimonials': ['eyebrow', 'headline', 'items'],
+  'global.filterCardGrid': ['eyebrow', 'headline', 'intro', 'tabs', 'cards', 'initialVisible', 'loadMoreLabel'],
+  'global.splitCtaBand': ['eyebrow', 'headline', 'subline', 'image', 'imageSide', 'cta'],
   'global.newsTeaser': ['eyebrow', 'headline', 'intro', 'limit', 'items', 'cta'],
   'global.faq': ['eyebrow', 'headline', 'items'],
   'global.contactCta': ['eyebrow', 'headline', 'subline', 'cta'],

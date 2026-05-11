@@ -127,6 +127,66 @@ export const globalSections: readonly SectionDefinition[] = [
     ]
   },
   {
+    key: 'global.filterCardGrid',
+    label: 'Filter-Karten (Menü / Angebote)',
+    industries: 'all',
+    styles: 'all',
+    allowedPageKinds: ['core', 'custom', 'collectionDetail'],
+    repeatable: true,
+    fields: [
+      field.text('eyebrow', 'Eyebrow'),
+      field.splitHeading('headline', 'Überschrift'),
+      field.textarea('intro', 'Einleitung'),
+      field.repeater(
+        'tabs',
+        'Filter',
+        [
+          { key: 'key', label: 'Filter-ID', type: 'text', required: true, helpText: 'z. B. all, pasta, vegan — muss zu Karten-Tab passen.' },
+          field.text('label', 'Beschriftung', { required: true })
+        ],
+        { required: true, helpText: 'Erster Filter ist beim Laden aktiv. ID „all“ zeigt alle Karten.' }
+      ),
+      field.repeater(
+        'cards',
+        'Karten',
+        [
+          field.image('image', 'Bild', { required: true }),
+          field.text('title', 'Titel', { required: true }),
+          field.text('price', 'Preis / Meta'),
+          field.text('badge', 'Badge / Kategorie'),
+          field.textarea('body', 'Beschreibung'),
+          { key: 'tabKey', label: 'Filter-ID (leer = überall)', type: 'text' },
+          field.cta('cta', 'Link (optional)')
+        ],
+        { required: true }
+      ),
+      { key: 'initialVisible', label: 'Zuerst sichtbare Karten', type: 'number', helpText: '„Mehr laden“ blendet weitere ein.' },
+      field.text('loadMoreLabel', 'Button „Mehr laden“')
+    ]
+  },
+  {
+    key: 'global.splitCtaBand',
+    label: 'CTA-Band mit Bild',
+    industries: 'all',
+    styles: 'all',
+    allowedPageKinds: ['core', 'custom', 'collectionDetail'],
+    repeatable: true,
+    fields: [
+      field.text('eyebrow', 'Eyebrow'),
+      field.splitHeading('headline', 'Überschrift'),
+      field.textarea('subline', 'Text'),
+      field.image('image', 'Bild', { required: true }),
+      {
+        key: 'imageSide',
+        label: 'Bild-Seite',
+        type: 'select',
+        options: ['rechts', 'links'],
+        helpText: '„links“: Bild links, Text rechts. Standard: rechts.'
+      },
+      field.cta('cta', 'Button', { required: true })
+    ]
+  },
+  {
     key: 'global.testimonials',
     label: 'Bewertungen',
     industries: 'all',
@@ -138,7 +198,10 @@ export const globalSections: readonly SectionDefinition[] = [
       field.splitHeading('headline', 'Überschrift'),
       field.repeater('items', 'Bewertungen', [
         field.text('quote', 'Zitat', { required: true }),
-        field.text('name', 'Name / Quelle')
+        field.text('name', 'Name / Quelle'),
+        field.text('role', 'Rolle / Ort'),
+        { key: 'rating', label: 'Sterne (0–5)', type: 'number', helpText: 'Optional — wird als Sterne angezeigt.' },
+        field.image('avatar', 'Portrait')
       ])
     ]
   },
