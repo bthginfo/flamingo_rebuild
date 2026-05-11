@@ -125,7 +125,7 @@ export function weddingSeed(styleKey: StyleKey): SiteSeed {
             dietaryLabel: 'Essen, Allergien oder Kinder',
             noteLabel: 'Nachricht an uns',
             submitLabel: 'Antwort senden',
-            successMessage: 'Danke, eure Demo-Antwort wurde erfasst.',
+            successMessage: 'Danke — eure Antwort wurde erfasst.',
             cta: { label: 'Zur RSVP-Seite', link: { type: 'page', href: '/rsvp' } }
           }),
           section('home-gallery', 'global.galleryGrid', 4, {
@@ -253,8 +253,8 @@ export function weddingSeed(styleKey: StyleKey): SiteSeed {
             dietaryLabel: 'Essen, Allergien oder Kinder',
             noteLabel: 'Nachricht an uns',
             submitLabel: 'Antwort senden',
-            successMessage: 'Danke, eure Demo-Antwort wurde erfasst. In einem echten Kundenprojekt geht sie an das hinterlegte Postfach.',
-            cta: { label: 'Demo: Antwort senden', link: { type: 'page', href: '/faq' } }
+            successMessage: 'Danke — eure Antwort wurde erfasst. Mit aktivem Postfach landet sie direkt bei uns.',
+            cta: { label: 'Antwort senden', link: { type: 'page', href: '/faq' } }
           })
         ]
       },

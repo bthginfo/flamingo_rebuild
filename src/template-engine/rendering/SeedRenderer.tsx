@@ -775,7 +775,9 @@ function collectionMetaItems(item: CollectionSeedItem): string[] {
     asString(item.data.kicker),
     asString(item.data.category),
     formatDate(asString(item.data.publishedAt)),
+    asString(item.data.author),
     asString(item.data.metric),
+    asString(item.data.detail),
     asString(item.data.readTime),
     asString(item.data.price),
     asString(item.data.priceFrom),
@@ -815,7 +817,18 @@ function collectionCardFacts(item: CollectionSeedItem): Array<{ label: string; v
     ['Tags', previewListValue(data.dietaryTags ?? data.styleTags)],
     ['Sprachen', previewListValue(data.languages)],
     ['Schwerpunkte', previewListValue(data.specialties)],
-    ['Gebiet', previewListValue(data.serviceArea)]
+    ['Gebiet', previewListValue(data.serviceArea)],
+    ['Zutaten', previewListValue(data.ingredients)],
+    ['Allergene', asString(data.allergens)],
+    ['Pairing', asString(data.pairingRecommendation)],
+    ['Packliste', previewListValue(data.packingList)],
+    ['Voraussetzungen', previewListValue(data.requirements)],
+    ['Sprechzeiten', asString(data.consultationHours)],
+    ['Zertifikate', asString(data.certifications)],
+    ['Equipment', asString(data.equipmentNeeded)],
+    ['Trainingsziel', asString(data.goals)],
+    ['Deliverables', previewListValue(data.deliverables)],
+    ['Kennzahlen', previewMetricsLine(data.metrics)]
   ];
 
   const seen = new Set<string>();
@@ -833,7 +846,28 @@ function collectionCardFacts(item: CollectionSeedItem): Array<{ label: string; v
 function previewListValue(value: unknown): string {
   if (!Array.isArray(value)) return '';
   return value
-    .map((entry) => asString(entry))
+    .map((entry) => {
+      if (typeof entry === 'string') return entry;
+      if (entry && typeof entry === 'object' && 'value' in entry) {
+        return asString((entry as { value?: unknown }).value);
+      }
+      return asString(entry);
+    })
+    .filter(Boolean)
+    .slice(0, 2)
+    .join(' · ');
+}
+
+function previewMetricsLine(value: unknown): string {
+  if (!Array.isArray(value)) return '';
+  return value
+    .map((row) => {
+      if (!row || typeof row !== 'object') return '';
+      const lab = asString((row as { label?: unknown }).label);
+      const val = asString((row as { value?: unknown }).value);
+      if (lab && val) return `${lab}: ${val}`;
+      return lab || val;
+    })
     .filter(Boolean)
     .slice(0, 2)
     .join(' · ');

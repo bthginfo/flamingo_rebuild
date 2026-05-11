@@ -9207,6 +9207,8 @@ a {
 
 .tenant-contact-card,
 .tenant-contact-map {
+  position: relative;
+  isolation: isolate;
   min-height: 360px;
   border: 1px solid var(--tenant-line);
   border-radius: var(--tenant-radius-md, 24px);
@@ -9273,6 +9275,8 @@ a {
 }
 
 .tenant-contact-map__inner {
+  position: relative;
+  z-index: 2;
   min-height: 100%;
   display: flex;
   flex-direction: column;
@@ -9296,6 +9300,7 @@ a {
 .tenant-contact-map iframe {
   position: absolute;
   inset: 0;
+  z-index: 0;
   width: 100%;
   height: 100%;
   border: 0;
@@ -9305,6 +9310,7 @@ a {
 .tenant-contact-map__overlay {
   position: absolute;
   inset: auto 14px 14px 14px;
+  z-index: 3;
   display: grid;
   gap: 4px;
   padding: 13px 14px;
@@ -9313,6 +9319,7 @@ a {
   background: rgba(10, 10, 14, 0.7);
   border: 1px solid rgba(255, 255, 255, 0.18);
   backdrop-filter: blur(12px);
+  pointer-events: auto;
 }
 
 .tenant-contact-map__overlay span {

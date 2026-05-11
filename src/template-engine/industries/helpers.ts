@@ -1,5 +1,5 @@
 import { field } from '../fields';
-import type { CollectionDefinition, IndustryKey, PageDefinition } from '../model';
+import type { CollectionDefinition, FieldDefinition, IndustryKey, PageDefinition } from '../model';
 
 export function page(
   key: string,
@@ -35,7 +35,9 @@ export function standardServiceCollection(
       field.text('title', 'Titel', { required: true }),
       field.text('slug', 'Slug', { required: true }),
       field.textarea('summary', 'Kurzbeschreibung', { required: true }),
-      field.richText('description', 'Beschreibung'),
+      field.richText('description', 'Beschreibung', {
+        helpText: 'Erscheint auf der Detailseite und in Karten-Vorschauen.'
+      }),
       field.image('image', 'Bild'),
       ...extraFields,
       field.cta('cta', 'Button'),
@@ -65,8 +67,8 @@ export function standardServiceCollection(
   };
 }
 
-function textListField(key: string, label: string) {
-  return field.repeater(key, label, [field.text('value', 'Eintrag')]);
+function textListField(key: string, label: string, options: Partial<FieldDefinition> = {}) {
+  return field.repeater(key, label, [field.text('value', 'Eintrag')], options);
 }
 
 function extraCollectionFields(industry: IndustryKey, key: string) {
@@ -74,10 +76,16 @@ function extraCollectionFields(industry: IndustryKey, key: string) {
     return [
       field.text('category', 'Kategorie'),
       field.text('price', 'Preis'),
-      textListField('ingredients', 'Zutaten'),
-      field.textarea('allergens', 'Allergene / Hinweise'),
-      field.textarea('dietaryTags', 'Ernaehrungs-Tags'),
-      field.text('pairingRecommendation', 'Pairing-Empfehlung'),
+      textListField('ingredients', 'Zutaten', {
+        helpText: 'Wird auf der Speisekarten-Detailseite als Genuss-Block ausgespielt.'
+      }),
+      field.textarea('allergens', 'Allergene / Hinweise', {
+        helpText: 'Wichtig für Gäste — erscheint unter den Zutaten auf der Gericht-Detailseite.'
+      }),
+      field.textarea('dietaryTags', 'Ernaehrungs-Tags', { helpText: 'z. B. vegan, glutenfrei — sichtbar auf der Detailseite.' }),
+      field.textarea('pairingRecommendation', 'Pairing-Empfehlung', {
+        helpText: 'Wein oder Serviervorschlag — Detailseite und Kurzinfos.'
+      }),
       field.url('videoUrl', 'Video-URL')
     ];
   }
@@ -121,8 +129,12 @@ function extraCollectionFields(industry: IndustryKey, key: string) {
       field.text('price', 'Preis'),
       field.text('meetingPoint', 'Treffpunkt'),
       textListField('included', 'Inklusive'),
-      textListField('requirements', 'Voraussetzungen'),
-      textListField('packingList', 'Packliste'),
+      textListField('requirements', 'Voraussetzungen', {
+        helpText: 'Sichtbar auf der Tour-Detailseite unter „Voraussetzungen“.'
+      }),
+      textListField('packingList', 'Packliste', {
+        helpText: 'Sichtbar auf der Tour-Detailseite unter „Packliste“.'
+      }),
       field.url('videoUrl', 'Video-URL')
     ];
   }
@@ -177,8 +189,12 @@ function extraCollectionFields(industry: IndustryKey, key: string) {
       field.textarea('challenge', 'Ausgangslage'),
       field.richText('approach', 'Vorgehen'),
       field.richText('results', 'Ergebnisse'),
-      field.repeater('metrics', 'Kennzahlen', [field.text('label', 'Label'), field.text('value', 'Wert')]),
-      field.textarea('testimonial', 'Kundenstimme'),
+      field.repeater('metrics', 'Kennzahlen', [field.text('label', 'Label'), field.text('value', 'Wert')], {
+        helpText: 'Erscheint als Kennzahlen-Zeile auf der Case-Detailseite und in der Kurzübersicht.'
+      }),
+      field.textarea('testimonial', 'Kundenstimme', {
+        helpText: 'Wird als markantes Zitat (Pull Quote) auf der Case-Detailseite ausgespielt.'
+      }),
       field.url('videoUrl', 'Video-URL')
     ];
   }
@@ -259,11 +275,13 @@ export function premiumContentCollection(
       field.text('title', 'Titel', { required: true }),
       field.text('slug', 'Slug', { required: true }),
       field.textarea('summary', 'Kurzbeschreibung', { required: true }),
-      field.richText('description', 'Beschreibung'),
+      field.richText('description', 'Beschreibung', {
+        helpText: 'Erscheint auf der Detailseite und in Karten-Vorschauen.'
+      }),
       field.image('image', 'Bild'),
-      field.text('kicker', 'Kicker'),
-      field.text('metric', 'Kennzahl / Signal'),
-      field.text('detail', 'Detailzeile'),
+      field.text('kicker', 'Kicker', { helpText: 'Kleine Zeile über dem Titel in Story-Karten.' }),
+      field.text('metric', 'Kennzahl / Signal', { helpText: 'Kurze Zahl oder Signal — erscheint in der Karten-Metazeile.' }),
+      field.text('detail', 'Detailzeile', { helpText: 'Zusätzliche Zeile unter dem Teaser in Story-Karten.' }),
       field.cta('cta', 'Button'),
       field.seo()
     ],
@@ -300,7 +318,9 @@ export function newsArticleCollection(industry: IndustryKey): CollectionDefiniti
       field.text('title', 'Titel', { required: true }),
       field.text('slug', 'Slug', { required: true }),
       field.textarea('summary', 'Kurzbeschreibung', { required: true }),
-      field.richText('description', 'Artikeltext'),
+      field.richText('description', 'Artikeltext', {
+        helpText: 'Volltext auf der Artikel-Detailseite; die Kurzbeschreibung steuert Teaser und SEO-Vorschau.'
+      }),
       field.image('image', 'Titelbild'),
       field.text('category', 'Kategorie'),
       { key: 'publishedAt', label: 'Datum', type: 'date' },

@@ -51,7 +51,7 @@ export function consultingSeed(styleKey: StyleKey): SiteSeed {
         title: 'Programm-Office',
         slug: 'programm-office',
         data: {
-          summary: 'Steuerung von Multi-Vendor-Programmen mit KPI-Cockpit und Risiko-Frühindikatoren.',
+          summary: 'Steuerung von Multi-Vendor-Programmen mit Steuerungs-Cockpit und klaren Risiko-Frühindikatoren.',
           image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80'
         }
       },
@@ -155,7 +155,7 @@ export function consultingSeed(styleKey: StyleKey): SiteSeed {
               {
                 image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=900&q=80',
                 title: 'Messbar statt mood',
-                body: 'Deliverables und KPIs — damit Boards Entscheidungen nachvollziehen können.',
+                body: 'Deliverables und messbare Ergebnisse — damit Boards Entscheidungen nachvollziehen können.',
                 cta: { label: 'Cases', link: { type: 'page', href: '/cases' } }
               },
               {

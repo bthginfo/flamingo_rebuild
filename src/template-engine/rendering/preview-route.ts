@@ -1,6 +1,7 @@
 import type { IndustryKey, PageInstance, SectionInstance, StyleKey } from '../model';
 import type { CollectionSeedItem, SiteSeed } from '../seeds/model';
 import { buildWowSectionInstances } from '../seeds/wow-section-data';
+import { COLLECTION_FACT_DETAIL_LABELS } from './collection-render-metadata';
 
 type CollectionDetailRule = {
   industry: IndustryKey;
@@ -179,6 +180,12 @@ function asString(value: unknown): string {
   return typeof value === 'string' ? value : '';
 }
 
+function plainTextFromRich(htmlish: string): string {
+  if (!htmlish) return '';
+  const stripped = htmlish.replace(/<[^>]+>/g, ' ');
+  return stripped.replace(/\s+/g, ' ').trim();
+}
+
 function buildNewsIndexPage(seed: SiteSeed): PageInstance {
   const items = seed.collections
     .filter((item) => item.collectionKey === 'newsArticle')
@@ -234,6 +241,8 @@ function buildStandardCollectionDetailPage(
 ): PageInstance {
   const summary = typeof item.data.summary === 'string' ? item.data.summary : '';
   const image = typeof item.data.image === 'string' ? item.data.image : '';
+  const listCta = { label: config.listLabel, href: config.listHref };
+  const narratives = collectionDetailNarrativeSections(item, industryKey, `std-${item.id}`, 3, listCta);
 
   const sections: SectionInstance[] = [
     {
@@ -258,14 +267,14 @@ function buildStandardCollectionDetailPage(
         headline: { plain: 'Mehr', accent: 'Infos.' },
         body:
           asString(item.data.description) ||
-          asString(item.data.description) ||
           summary ||
           'Alle weiteren Informationen und Buchungswege besprechen wir gern persönlich oder über das Kontaktformular.',
         image: image || '',
         cta: { label: config.listLabel, link: { type: 'page', href: config.listHref } }
       }
     },
-    ...collectionDetailEnhancementSections(item, `std-${item.id}`, 3),
+    ...narratives,
+    ...collectionDetailEnhancementSections(item, `std-${item.id}`, 3 + narratives.length),
     {
       id: `std-${item.id}-cta`,
       sectionKey: 'global.contactCta',
@@ -294,6 +303,10 @@ function buildStandardCollectionDetailPage(
 function buildHotelRoomDetailPage(item: CollectionSeedItem, industryKey: IndustryKey, styleKey: StyleKey): PageInstance {
   const summary = typeof item.data.summary === 'string' ? item.data.summary : '';
   const image = typeof item.data.image === 'string' ? item.data.image : '';
+  const narratives = collectionDetailNarrativeSections(item, industryKey, `room-${item.id}`, 3, {
+    label: 'Alle Zimmer',
+    href: '/zimmer'
+  });
 
   const sections: SectionInstance[] = [
     {
@@ -321,7 +334,8 @@ function buildHotelRoomDetailPage(item: CollectionSeedItem, industryKey: Industr
         cta: { label: 'Alle Zimmer', link: { type: 'page', href: '/zimmer' } }
       }
     },
-    ...collectionDetailEnhancementSections(item, `room-${item.id}`, 3),
+    ...narratives,
+    ...collectionDetailEnhancementSections(item, `room-${item.id}`, 3 + narratives.length),
     {
       id: `room-${item.id}-cta`,
       sectionKey: 'global.contactCta',
@@ -347,9 +361,29 @@ function buildHotelRoomDetailPage(item: CollectionSeedItem, industryKey: Industr
   };
 }
 
+function formatTourIntroBody(item: CollectionSeedItem, summary: string): string {
+  const lines = [asString(item.data.description), summary].filter(Boolean);
+  const bits = [
+    item.data.duration ? `Dauer: ${asString(item.data.duration)}` : '',
+    item.data.difficulty ? `Schwierigkeit: ${asString(item.data.difficulty)}` : '',
+    item.data.meetingPoint ? `Treffpunkt: ${asString(item.data.meetingPoint)}` : '',
+    item.data.distance ? `Distanz: ${asString(item.data.distance)}` : '',
+    item.data.price ? `Preis: ${asString(item.data.price)}` : ''
+  ].filter(Boolean);
+  if (bits.length) lines.push(bits.join(' · '));
+  return (
+    lines.join('\n\n') ||
+    'Treffpunkt, Dauer und Route stimmen wir in der Buchungsbestätigung mit euch ab — bringt wetterfeste Schuhe und eine leichte Jacke mit.'
+  );
+}
+
 function buildTourDetailPage(item: CollectionSeedItem, industryKey: IndustryKey, styleKey: StyleKey): PageInstance {
   const summary = typeof item.data.summary === 'string' ? item.data.summary : '';
   const image = typeof item.data.image === 'string' ? item.data.image : '';
+  const narratives = collectionDetailNarrativeSections(item, industryKey, `tour-${item.id}`, 3, {
+    label: 'Alle Touren',
+    href: '/touren'
+  });
 
   const sections: SectionInstance[] = [
     {
@@ -372,14 +406,13 @@ function buildTourDetailPage(item: CollectionSeedItem, industryKey: IndustryKey,
       data: {
         eyebrow: 'Ablauf',
         headline: { plain: 'Auf den', accent: 'Punkt gebracht.' },
-        body:
-          summary ||
-          'Treffpunkt, Dauer und Schwierigkeit besprechen wir in der Buchungsbestätigung. Bringt wetterfeste Schuhe und eine leichte Jacke mit.',
+        body: formatTourIntroBody(item, summary),
         image: image || '',
         cta: { label: 'Alle Touren', link: { type: 'page', href: '/touren' } }
       }
     },
-    ...collectionDetailEnhancementSections(item, `tour-${item.id}`, 3),
+    ...narratives,
+    ...collectionDetailEnhancementSections(item, `tour-${item.id}`, 3 + narratives.length),
     {
       id: `tour-${item.id}-cta`,
       sectionKey: 'global.contactCta',
@@ -465,6 +498,10 @@ function buildMenuItemDetailPage(item: CollectionSeedItem, industryKey: Industry
   const summary = typeof item.data.summary === 'string' ? item.data.summary : '';
   const image = typeof item.data.image === 'string' ? item.data.image : '';
   const price = typeof item.data.price === 'string' ? item.data.price : '';
+  const narratives = collectionDetailNarrativeSections(item, industryKey, `dish-${item.id}`, 3, {
+    label: 'Zur Speisekarte',
+    href: '/speisekarte'
+  });
 
   const sections: SectionInstance[] = [
     {
@@ -492,7 +529,8 @@ function buildMenuItemDetailPage(item: CollectionSeedItem, industryKey: Industry
         cta: { label: 'Zur Speisekarte', link: { type: 'page', href: '/speisekarte' } }
       }
     },
-    ...collectionDetailEnhancementSections(item, `dish-${item.id}`, 3),
+    ...narratives,
+    ...collectionDetailEnhancementSections(item, `dish-${item.id}`, 3 + narratives.length),
     {
       id: `dish-${item.id}-cta`,
       sectionKey: 'global.contactCta',
@@ -525,6 +563,10 @@ function buildDiningExperienceDetailPage(
 ): PageInstance {
   const summary = typeof item.data.summary === 'string' ? item.data.summary : '';
   const image = typeof item.data.image === 'string' ? item.data.image : '';
+  const narratives = collectionDetailNarrativeSections(item, industryKey, `exp-${item.id}`, 3, {
+    label: 'Alle Erlebnisse',
+    href: '/erlebnisse'
+  });
 
   const sections: SectionInstance[] = [
     {
@@ -552,7 +594,8 @@ function buildDiningExperienceDetailPage(
         cta: { label: 'Alle Erlebnisse', link: { type: 'page', href: '/erlebnisse' } }
       }
     },
-    ...collectionDetailEnhancementSections(item, `exp-${item.id}`, 3),
+    ...narratives,
+    ...collectionDetailEnhancementSections(item, `exp-${item.id}`, 3 + narratives.length),
     {
       id: `exp-${item.id}-cta`,
       sectionKey: 'global.contactCta',
@@ -582,6 +625,116 @@ function buildDiningExperienceDetailPage(
       sections
     )
   };
+}
+
+function factValue(value: unknown): string {
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number') return String(value);
+  if (Array.isArray(value)) {
+    return value
+      .map((entry) => {
+        if (typeof entry === 'string') return entry;
+        if (entry && typeof entry === 'object' && 'value' in entry) return String((entry as { value?: unknown }).value ?? '');
+        return '';
+      })
+      .filter(Boolean)
+      .join(', ');
+  }
+  return '';
+}
+
+function collectionDetailNarrativeSections(
+  item: CollectionSeedItem,
+  industryKey: IndustryKey,
+  idPrefix: string,
+  startSortOrder: number,
+  listCta: { label: string; href: string }
+): SectionInstance[] {
+  const image = typeof item.data.image === 'string' ? item.data.image : '';
+  const sections: SectionInstance[] = [];
+  let order = startSortOrder;
+
+  const pushText = (id: string, eyebrow: string, plain: string, accent: string, bodyRaw: unknown, useImage: string) => {
+    const body = plainTextFromRich(asString(bodyRaw));
+    if (!body.trim()) return;
+    sections.push({
+      id,
+      sectionKey: 'global.textImage',
+      visible: true,
+      sortOrder: order++,
+      data: {
+        eyebrow,
+        headline: { plain, accent },
+        body,
+        image: useImage || '',
+        cta: { label: listCta.label, link: { type: 'page', href: listCta.href } }
+      }
+    });
+  };
+
+  const compositeKey = `${industryKey}:${item.collectionKey}`;
+
+  if (compositeKey === 'consulting:caseStudy') {
+    pushText(`${idPrefix}-nar-1`, 'Kontext', 'Ausgangslage', 'im Überblick.', item.data.challenge, '');
+    pushText(`${idPrefix}-nar-2`, 'Vorgehen', 'Wie wir', 'arbeiten.', item.data.approach, image);
+    pushText(`${idPrefix}-nar-3`, 'Outcome', 'Ergebnisse', 'mit Substanz.', item.data.results, '');
+  } else if (compositeKey === 'consulting:consultingService') {
+    pushText(`${idPrefix}-nar-1`, 'Zielgruppe', 'Für wen', 'das gedacht ist.', item.data.targetAudience, '');
+    pushText(`${idPrefix}-nar-2`, 'Problemfelder', 'Themen', 'die wir lösen.', item.data.problemTypes, '');
+    pushText(`${idPrefix}-nar-3`, 'Deliverables', 'Was ihr', 'in Händen bekommt.', factValue(item.data.deliverables), '');
+  } else if (compositeKey === 'tradesman:tradeService') {
+    pushText(`${idPrefix}-nar-1`, 'Ausgangslage', 'Typisches', 'Problem.', item.data.problemStatement, '');
+    pushText(`${idPrefix}-nar-2`, 'Lösung', 'Unser', 'Ansatz.', item.data.solutionSummary, image);
+    pushText(`${idPrefix}-nar-3`, 'Region', 'Einsatzgebiet', 'vor Ort.', item.data.serviceArea, '');
+  } else if (compositeKey === 'tradesman:referenceProject') {
+    pushText(`${idPrefix}-nar-1`, 'Leistungen', 'Was umgesetzt', 'wurde.', item.data.servicesIncluded, image);
+    pushText(`${idPrefix}-nar-2`, 'Stimme', 'Feedback', 'aus dem Projekt.', item.data.customerQuote, '');
+  } else if (compositeKey === 'medical:treatment') {
+    pushText(`${idPrefix}-nar-1`, 'Indikationen', 'Wann die', 'Leistung sinnvoll ist.', factValue(item.data.indications), image);
+    pushText(`${idPrefix}-nar-2`, 'Ablauf', 'So läuft', 'es ab.', item.data.procedure, '');
+  } else if (compositeKey === 'medical:doctor') {
+    pushText(`${idPrefix}-nar-1`, 'Biografie', 'Werden Sie', 'sicher beraten.', item.data.bio, image);
+    pushText(`${idPrefix}-nar-2`, 'Sprachen', 'Kommunikation', 'ohne Barrieren.', item.data.languages, '');
+    pushText(`${idPrefix}-nar-3`, 'Sprechzeiten', 'Wann wir', 'für Sie da sind.', item.data.consultationHours, '');
+  } else if (compositeKey === 'salon:treatment') {
+    pushText(`${idPrefix}-nar-1`, 'Vorbereitung', 'Gut vorbereitet', 'zum Termin.', item.data.preparation, image);
+    pushText(`${idPrefix}-nar-2`, 'Pflege danach', 'Nach dem', 'Service.', item.data.aftercare, '');
+  } else if (compositeKey === 'fitness:fitnessClass') {
+    pushText(`${idPrefix}-nar-1`, 'Termine', 'Wann es', 'stattfindet.', item.data.schedule, '');
+    pushText(`${idPrefix}-nar-2`, 'Ziele', 'Was ihr', 'trainiert.', item.data.goals, '');
+    pushText(`${idPrefix}-nar-3`, 'Equipment', 'Was ihr', 'mitbringt.', item.data.equipmentNeeded, '');
+  } else if (compositeKey === 'fitness:trainer') {
+    pushText(`${idPrefix}-nar-1`, 'Biografie', 'Euer Coach', 'im Profil.', item.data.bio, image);
+    pushText(`${idPrefix}-nar-2`, 'Zertifikate', 'Qualifikation', 'auf einen Blick.', item.data.certifications, '');
+  } else if (compositeKey === 'wedding:accommodation') {
+    pushText(`${idPrefix}-nar-1`, 'Buchung', 'Hinweise', 'zur Unterkunft.', item.data.bookingHint, '');
+    const maps = asString(item.data.mapsUrl);
+    if (maps) {
+      pushText(`${idPrefix}-nar-2`, 'Anfahrt', 'Kartenlink', 'für Gäste.', maps, '');
+    }
+  } else if (compositeKey === 'wedding:scheduleItem') {
+    pushText(`${idPrefix}-nar-1`, 'Für Gäste', 'Gut zu', 'wissen.', item.data.guestNote, image);
+  } else if (compositeKey === 'restaurant:menuItem') {
+    const bits = [
+      factValue(item.data.ingredients) ? `Zutaten: ${factValue(item.data.ingredients)}` : '',
+      asString(item.data.allergens) ? `Allergene / Hinweise: ${asString(item.data.allergens)}` : '',
+      asString(item.data.dietaryTags) ? `Ernährung: ${asString(item.data.dietaryTags)}` : '',
+      asString(item.data.pairingRecommendation) ? `Pairing: ${asString(item.data.pairingRecommendation)}` : ''
+    ]
+      .filter(Boolean)
+      .join('\n\n');
+    if (bits.trim()) {
+      pushText(`${idPrefix}-nar-1`, 'Genuss', 'Details', 'zum Gang.', bits, '');
+    }
+  } else if (compositeKey === 'restaurant:diningExperience') {
+    pushText(`${idPrefix}-nar-1`, 'Ablauf', 'So läuft', 'das Erlebnis.', item.data.scheduleInfo, image);
+    pushText(`${idPrefix}-nar-2`, 'Inklusive', 'Was dabei', 'ist.', factValue(item.data.included), '');
+  } else if (compositeKey === 'tourism:tour') {
+    pushText(`${idPrefix}-nar-1`, 'Voraussetzungen', 'Fit &', 'vorbereitet.', factValue(item.data.requirements), '');
+    pushText(`${idPrefix}-nar-2`, 'Packliste', 'Was in den', 'Rucksack gehört.', factValue(item.data.packingList), '');
+  }
+
+  return sections;
 }
 
 function collectionDetailEnhancementSections(item: CollectionSeedItem, idPrefix: string, startSortOrder: number): SectionInstance[] {
@@ -632,64 +785,43 @@ function collectionDetailEnhancementSections(item: CollectionSeedItem, idPrefix:
     });
   }
 
+  const testimonial = asString(item.data.testimonial);
+  if (testimonial.trim()) {
+    sections.push({
+      id: `${idPrefix}-quote`,
+      sectionKey: 'global.pullQuote',
+      visible: true,
+      sortOrder: startSortOrder + sections.length,
+      data: {
+        quote: testimonial,
+        attribution: item.title,
+        role: 'Kundenstimme'
+      }
+    });
+  }
+
   return sections;
 }
 
 function collectionFacts(item: CollectionSeedItem): { icon: string; title: string; detail: string }[] {
-  const labels: Record<string, string> = {
-    category: 'Kategorie',
-    price: 'Preis',
-    priceFrom: 'Preis ab',
-    duration: 'Dauer',
-    capacity: 'Kapazitaet',
-    scheduleInfo: 'Ablauf',
-    sizeSqm: 'Groesse',
-    occupancy: 'Belegung',
-    bedType: 'Bett',
-    view: 'Ausblick',
-    travelPeriod: 'Zeitraum',
-    distance: 'Distanz',
-    elevationGain: 'Hoehenmeter',
-    difficulty: 'Level',
-    season: 'Saison',
-    meetingPoint: 'Treffpunkt',
-    preparation: 'Vorbereitung',
-    aftercare: 'Danach',
-    problemStatement: 'Ausgangslage',
-    solutionSummary: 'Loesung',
-    serviceArea: 'Region',
-    location: 'Ort',
-    projectType: 'Projekt',
-    targetAudience: 'Zielgruppe',
-    coveredByInsurance: 'Abrechnung',
-    role: 'Rolle',
-    weekday: 'Tag',
-    time: 'Uhrzeit',
-    level: 'Level',
-    trainer: 'Trainer:in',
-    guestNote: 'Gaestehinweis',
-    bookingHint: 'Buchung'
-  };
-  return Object.entries(labels)
-    .map(([key, title]) => ({ icon: '•', title, detail: factValue(item.data[key]) }))
-    .filter((fact) => fact.detail)
-    .slice(0, 8);
-}
-
-function factValue(value: unknown): string {
-  if (typeof value === 'string') return value;
-  if (typeof value === 'number') return String(value);
-  if (Array.isArray(value)) {
-    return value
-      .map((entry) => {
-        if (typeof entry === 'string') return entry;
-        if (entry && typeof entry === 'object' && 'value' in entry) return String((entry as { value?: unknown }).value ?? '');
-        return '';
-      })
-      .filter(Boolean)
-      .join(', ');
+  const facts: { icon: string; title: string; detail: string }[] = [];
+  const metrics = item.data.metrics;
+  if (Array.isArray(metrics)) {
+    for (const row of metrics) {
+      if (row && typeof row === 'object') {
+        const lab = asString((row as { label?: unknown }).label);
+        const val = asString((row as { value?: unknown }).value);
+        if (lab || val) facts.push({ icon: '•', title: lab || 'Kennzahl', detail: val });
+      }
+    }
   }
-  return '';
+  for (const [key, title] of Object.entries(COLLECTION_FACT_DETAIL_LABELS)) {
+    if (key === 'metrics') continue;
+    const detail = factValue(item.data[key]);
+    if (!detail || detail.length > 220) continue;
+    facts.push({ icon: '•', title, detail });
+  }
+  return facts.slice(0, 14);
 }
 
 function collectionGallery(item: CollectionSeedItem): { url: string; alt?: string }[] {

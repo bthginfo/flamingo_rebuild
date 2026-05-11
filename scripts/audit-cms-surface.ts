@@ -2,6 +2,7 @@ import { INDUSTRY_KEYS, STYLE_KEYS, type FieldDefinition } from '../src/template
 import { industries } from '../src/template-engine/industries';
 import { sections } from '../src/template-engine/sections';
 import { getDemoSeed } from '../src/template-engine/seeds';
+import { renderedCollectionDataRootSet } from '../src/template-engine/rendering/collection-render-metadata';
 
 type Issue = { scope: string; message: string };
 
@@ -48,6 +49,10 @@ for (const section of sections) {
 }
 
 const collectionRendererFields = new Set(['title', 'slug', 'summary', 'image', 'price', 'time', 'weekday', 'level', 'trainer']);
+
+function collectionSchemaRoots(fields: readonly FieldDefinition[]): Set<string> {
+  return new Set(fields.filter((f) => f.key !== 'seo').map((f) => f.key));
+}
 
 function fieldPathSet(fields: readonly FieldDefinition[], prefix = ''): Set<string> {
   const out = new Set<string>();
@@ -119,6 +124,34 @@ for (const industryKey of INDUSTRY_KEYS) {
       if (!editable.has(key) && ['price', 'time', 'weekday', 'level', 'trainer'].includes(key)) continue;
       if (!editable.has(key)) {
         issues.push({ scope: `${industryKey}.${collection.key}`, message: `Collection renderer expects ${key}, but collection editor has no field.` });
+      }
+    }
+
+    const schemaRoots = collectionSchemaRoots(collection.fields);
+    let rendered: Set<string>;
+    try {
+      rendered = renderedCollectionDataRootSet(industryKey, collection.key);
+    } catch {
+      issues.push({
+        scope: `${industryKey}.${collection.key}`,
+        message: 'Missing COLLECTION_RENDERED_DATA_ROOTS entry — add coverage in src/template-engine/rendering/collection-render-metadata.ts.'
+      });
+      continue;
+    }
+    for (const key of schemaRoots) {
+      if (!rendered.has(key)) {
+        issues.push({
+          scope: `${industryKey}.${collection.key}`,
+          message: `CMS field "${key}" is not registered as customer-facing in COLLECTION_RENDERED_DATA_ROOTS (cards, facts, narratives, gallery, video, or CTA).`
+        });
+      }
+    }
+    for (const key of rendered) {
+      if (!schemaRoots.has(key)) {
+        issues.push({
+          scope: `${industryKey}.${collection.key}`,
+          message: `COLLECTION_RENDERED_DATA_ROOTS lists "${key}" but no matching collection field exists (stale coverage entry).`
+        });
       }
     }
   }

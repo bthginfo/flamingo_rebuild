@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
 import { cloneSeed, discardDraft, hasDraft, loadDemoContent, publishDraft, resetPublished, saveDraft } from '@/cms/demo-store';
 import {
@@ -381,6 +381,16 @@ function TextArea({ label, value, onChange }: { label: string; value: string; on
   );
 }
 
+function withFieldHelp(field: FieldDefinition, inner: ReactNode): ReactNode {
+  if (!field.helpText) return inner;
+  return (
+    <>
+      <p className="cms-field-hint">{field.helpText}</p>
+      {inner}
+    </>
+  );
+}
+
 function CollectionFieldEditor({
   field,
   value,
@@ -394,6 +404,7 @@ function CollectionFieldEditor({
   tenantSlug: string | null;
   onChange: (value: unknown) => void;
 }) {
+  const inner = ((): ReactNode => {
   if (
     field.type === 'textarea' ||
     field.type === 'richText' ||
@@ -579,6 +590,8 @@ function CollectionFieldEditor({
   }
 
   return <TextField label={field.label} value={text(value)} onChange={onChange} />;
+  })();
+  return withFieldHelp(field, inner);
 }
 
 function CollectionGalleryFieldEditor({

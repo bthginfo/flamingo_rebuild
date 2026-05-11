@@ -428,7 +428,7 @@ const BENTO_BY_INDUSTRY: Record<IndustryKey, { eyebrow: string; headline: { plai
       {
         kicker: 'Cases',
         title: 'Messbare Ergebnisse',
-        body: 'Von Turnaround bis Wachstum — wir liefern KPIs, keine Folien-Sammlung.',
+        body: 'Von Turnaround bis Wachstum — wir liefern messbare Wirkung, keine reine Folien-Sammlung.',
         image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80',
         layoutSpan: '2'
       },
@@ -661,7 +661,7 @@ const GUEST_JOURNEY_TIMELINE: Record<IndustryKey, GuestTimelinePack> = {
       { label: '01', title: 'Diagnose', body: 'Markt, Kennzahlen, Organisation — klare Ausgangslage.' },
       { label: '02', title: 'Roadmap', body: 'Prioritäten, Quick Wins, Verantwortlichkeiten.' },
       { label: '03', title: 'Umsetzung', body: 'Sprints, Steuerung, regelmäßige Entscheidungszyklen.' },
-      { label: '04', title: 'Impact', body: 'KPI-Review, Skalierung, Übergabe ins Team.' }
+      { label: '04', title: 'Impact', body: 'Wirkungs-Review, Skalierung, Übergabe ins Team.' }
     ]
   },
   medical: {
