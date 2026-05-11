@@ -2647,6 +2647,23 @@ a {
   border-right: 1px solid var(--line);
 }
 
+.cms-microcopy-panel {
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: color-mix(in oklab, var(--surface, #f6f6f4), #fff 40%);
+}
+
+.cms-microcopy-panel summary {
+  cursor: pointer;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.cms-microcopy-panel[open] summary {
+  margin-bottom: 10px;
+}
+
 .cms-editor-panel--wide {
   max-width: 980px;
   margin: 0 auto;

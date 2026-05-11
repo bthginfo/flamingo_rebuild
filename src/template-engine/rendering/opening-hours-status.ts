@@ -3,6 +3,8 @@
  * When parsing fails, callers should fall back to `statusOverride`.
  */
 
+import type { SiteMicrocopy } from '../site-microcopy';
+
 function toMinutes(h: number, m: number): number {
   return h * 60 + m;
 }
@@ -31,14 +33,23 @@ function extractFirstSameDayWindow(text: string): { open: number; close: number 
   return { open, close };
 }
 
+function withTime(template: string, time: string): string {
+  return template.includes('{time}') ? template.replaceAll('{time}', time) : `${template} ${time}`.trim();
+}
+
 export function resolveActionBarStatusLine(input: {
   useOpeningHours: boolean;
   statusOverride: string;
   openingHoursText: string;
+  microcopy: Pick<
+    SiteMicrocopy,
+    'actionHoursFallback' | 'actionHoursOpenUntil' | 'actionHoursClosedBeforeOpen' | 'actionHoursClosedTomorrow'
+  >;
   now?: Date;
 }): string {
-  const { useOpeningHours, statusOverride, openingHoursText, now = new Date() } = input;
-  const fallback = statusOverride.trim().length > 0 ? statusOverride : 'Wir sind für Sie da.';
+  const { useOpeningHours, statusOverride, openingHoursText, microcopy, now = new Date() } = input;
+  const fallback =
+    statusOverride.trim().length > 0 ? statusOverride : microcopy.actionHoursFallback;
   if (!useOpeningHours) return fallback;
 
   const text = openingHoursText.trim();
@@ -52,11 +63,13 @@ export function resolveActionBarStatusLine(input: {
 
   const cur = now.getHours() * 60 + now.getMinutes();
   const { open, close } = win;
+  const timeClose = formatClock(close);
+  const timeOpen = formatClock(open);
   if (cur >= open && cur < close) {
-    return `Geöffnet · bis ${formatClock(close)} Uhr`;
+    return withTime(microcopy.actionHoursOpenUntil, timeClose);
   }
   if (cur < open) {
-    return `Geschlossen · ab ${formatClock(open)} Uhr`;
+    return withTime(microcopy.actionHoursClosedBeforeOpen, timeOpen);
   }
-  return `Geschlossen · morgen ab ${formatClock(open)} Uhr`;
+  return withTime(microcopy.actionHoursClosedTomorrow, timeOpen);
 }

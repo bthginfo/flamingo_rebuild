@@ -21,6 +21,7 @@ import {
 } from '@/template-engine/rendering/preview-accent-palette';
 import { getIndustry, getSection, getAllowedSectionsForCustomPage } from '@/template-engine/registry';
 import { ImageFieldEditor, LinkTargetEditor } from '@/cms/page-editor/field-editors';
+import { DEFAULT_SITE_MICROCOPY, MICROCOPY_EDITOR_FIELDS, type SiteMicrocopy } from '@/template-engine/site-microcopy';
 
 const STYLE_LABELS: Record<StyleKey, string> = {
   classic: 'Klassisch',
@@ -171,6 +172,27 @@ export function RestaurantHomeEditor({
         };
       })
     }));
+    setStatus('dirty');
+  }
+
+  function updateMicrocopyField(key: keyof SiteMicrocopy, value: string) {
+    setSeed((current) => {
+      const prev: Partial<SiteMicrocopy> = { ...(current.global.microcopy ?? {}) };
+      if (!value.trim()) {
+        delete prev[key];
+      } else {
+        prev[key] = value.trim();
+      }
+      const keys = Object.keys(prev) as (keyof SiteMicrocopy)[];
+      const microcopy = keys.length > 0 ? prev : undefined;
+      return {
+        ...current,
+        global: {
+          ...current.global,
+          microcopy
+        }
+      };
+    });
     setStatus('dirty');
   }
 
@@ -390,6 +412,28 @@ export function RestaurantHomeEditor({
       <div className={`cms-workspace-body cms-workspace-body--${workspaceTab}`}>
         {workspaceTab === 'edit' ? (
           <section className="cms-editor-panel cms-editor-panel--standalone" role="tabpanel" aria-labelledby="cms-tab-edit">
+            <details className="cms-microcopy-panel">
+              <summary>UI-Texte (Microcopy)</summary>
+              <p className="cms-field-hint">
+                Feste Beschriftungen für Kontakt, Footer, Sammlungskarten, RSVP und Aktionsleiste. Leer lassen = Standard aus der Demo.
+              </p>
+              <div className="cms-field-grid">
+                {MICROCOPY_EDITOR_FIELDS.map((field) => (
+                  <label key={field.key} className="cms-field is-wide">
+                    <span>{field.label}</span>
+                    <input
+                      type="text"
+                      value={(seed.global.microcopy && seed.global.microcopy[field.key]) ?? ''}
+                      placeholder={DEFAULT_SITE_MICROCOPY[field.key]}
+                      onChange={(event) => {
+                        updateMicrocopyField(field.key, event.target.value);
+                      }}
+                    />
+                    {field.helpText ? <p className="cms-field-hint">{field.helpText}</p> : null}
+                  </label>
+                ))}
+              </div>
+            </details>
             <div className="cms-add-section">
               <label className="cms-field">
                 <span>Abschnitt hinzufügen</span>

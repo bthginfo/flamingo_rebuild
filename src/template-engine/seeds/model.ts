@@ -1,5 +1,6 @@
 import type { IndustryKey, PageInstance, StyleKey } from '../model';
 import type { TenantCustomTheme } from '../theme-presets';
+import type { SiteMicrocopy } from '../site-microcopy';
 
 export type CollectionSeedItem = {
   id: string;
@@ -59,6 +60,8 @@ export type SiteSeed = {
     };
     navigation: readonly { label: string; href: string }[];
     contact: Record<string, unknown>;
+    /** Optional overrides for fixed UI chrome (footer, contact labels, RSVP defaults, …). */
+    microcopy?: Partial<SiteMicrocopy>;
     integrations?: SiteGlobalIntegrations;
   };
   pages: readonly PageInstance[];

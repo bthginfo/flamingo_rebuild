@@ -10,6 +10,8 @@ import type { CollectionSeedItem, SiteSeed } from '../seeds/model';
 import { TiltHoverCard } from '@/ui/marketing/TiltHoverCard';
 import { resolveTenantTheme } from '../theme-presets';
 import { resolveActionBarStatusLine } from './opening-hours-status';
+import { resolveSiteMicrocopy } from '../site-microcopy';
+import { MicrocopyProvider, useMicrocopy } from './microcopy-context';
 
 function SplitHeading({ plain, accent }: { plain: string; accent: string }) {
   if (!accent) return plain;
@@ -54,27 +56,32 @@ export function SeedPageRenderer({
     ...(effectiveAccentHex.length > 0 ? previewColorVars(effectiveAccentHex, styleKey) : {})
   } as CSSProperties;
 
+  const microcopy = resolveSiteMicrocopy(seed);
+
   return (
-    <div className="tenant-site-wrap" data-industry={seed.industryKey} data-style={styleKey} style={accentStyle}>
-      <main className={`tenant-preview tenant-preview--${styleKey}`} style={accentStyle}>
-        <PreviewNav seed={seed} previewBasePath={previewBasePath} />
-        {sortedSections.map((section) => (
-          <SectionRenderer
-            key={section.id}
-            seed={seed}
-            section={section}
-            styleKey={styleKey}
-            previewBasePath={previewBasePath}
-            domSectionId={sectionAnchorId(section.id)}
-          />
-        ))}
-      </main>
-      <PreviewFooter seed={seed} previewBasePath={previewBasePath} />
-    </div>
+    <MicrocopyProvider value={microcopy}>
+      <div className="tenant-site-wrap" data-industry={seed.industryKey} data-style={styleKey} style={accentStyle}>
+        <main className={`tenant-preview tenant-preview--${styleKey}`} style={accentStyle}>
+          <PreviewNav seed={seed} previewBasePath={previewBasePath} />
+          {sortedSections.map((section) => (
+            <SectionRenderer
+              key={section.id}
+              seed={seed}
+              section={section}
+              styleKey={styleKey}
+              previewBasePath={previewBasePath}
+              domSectionId={sectionAnchorId(section.id)}
+            />
+          ))}
+        </main>
+        <PreviewFooter seed={seed} previewBasePath={previewBasePath} />
+      </div>
+    </MicrocopyProvider>
   );
 }
 
 function PreviewFooter({ seed, previewBasePath }: { seed: SiteSeed; previewBasePath: string }) {
+  const mc = useMicrocopy();
   const integ = seed.global.integrations;
   const imprintHref = integ?.imprintHref ?? '/impressum';
   const privacyHref = integ?.privacyHref ?? '/datenschutz';
@@ -87,7 +94,7 @@ function PreviewFooter({ seed, previewBasePath }: { seed: SiteSeed; previewBaseP
           <strong>{seed.global.brand.name}</strong>
           <p>{seed.global.brand.tagline}</p>
         </div>
-        <nav className="tenant-footer__nav" aria-label="Fußzeile">
+        <nav className="tenant-footer__nav" aria-label={mc.footerNavAriaLabel}>
           {seed.global.navigation.map((item) => (
             <Link href={`${previewBasePath}${item.href}`} key={item.href}>
               {item.label}
@@ -95,11 +102,11 @@ function PreviewFooter({ seed, previewBasePath }: { seed: SiteSeed; previewBaseP
           ))}
         </nav>
         <div className="tenant-footer__legal">
-          <Link href={`${previewBasePath}${imprintHref}`}>Impressum</Link>
+          <Link href={`${previewBasePath}${imprintHref}`}>{mc.footerImprint}</Link>
           <span aria-hidden className="tenant-footer__dot">
             ·
           </span>
-          <Link href={`${previewBasePath}${privacyHref}`}>Datenschutz</Link>
+          <Link href={`${previewBasePath}${privacyHref}`}>{mc.footerPrivacy}</Link>
           <span className="tenant-footer__copy">© {year}</span>
         </div>
       </div>
@@ -108,13 +115,14 @@ function PreviewFooter({ seed, previewBasePath }: { seed: SiteSeed; previewBaseP
 }
 
 function PreviewNav({ seed, previewBasePath }: { seed: SiteSeed; previewBasePath: string }) {
+  const mc = useMicrocopy();
   return (
     <header className="tenant-nav">
       <div className="shell tenant-nav-inner">
         <Link href={previewBasePath}>
           <strong>{seed.global.brand.name}</strong>
         </Link>
-        <nav>
+        <nav aria-label={mc.mainNavAriaLabel}>
           {seed.global.navigation.map((item) => (
             <Link href={`${previewBasePath}${item.href}`} key={item.href}>
               {item.label}
@@ -421,6 +429,7 @@ function MapContactSection({
   seed: SiteSeed;
   domSectionId: string;
 }) {
+  const mc = useMicrocopy();
   const headline = asSplit(section.data.headline);
   const contact = seed.global.contact;
   const address = asString(section.data.address) || asString(contact.address);
@@ -466,13 +475,13 @@ function MapContactSection({
         <div className="tenant-contact-pro__grid">
           <TiltHoverCard className="tenant-tilt--card">
             <article className="tenant-contact-card tenant-contact-card--primary">
-              <p className="eyebrow">Direkt</p>
+              <p className="eyebrow">{mc.contactCardEyebrow}</p>
               <h3>{seed.global.brand.name}</h3>
               <dl>
-                {address ? <><dt>Adresse</dt><dd>{address}</dd></> : null}
-                {phone ? <><dt>Telefon</dt><dd><a href={`tel:${phone}`}>{phone}</a></dd></> : null}
-                {email ? <><dt>E-Mail</dt><dd><a href={`mailto:${email}`}>{email}</a></dd></> : null}
-                {openingHours ? <><dt>Zeiten</dt><dd>{openingHours}</dd></> : null}
+                {address ? <><dt>{mc.contactLabelAddress}</dt><dd>{address}</dd></> : null}
+                {phone ? <><dt>{mc.contactLabelPhone}</dt><dd><a href={`tel:${phone}`}>{phone}</a></dd></> : null}
+                {email ? <><dt>{mc.contactLabelEmail}</dt><dd><a href={`mailto:${email}`}>{email}</a></dd></> : null}
+                {openingHours ? <><dt>{mc.contactLabelHours}</dt><dd>{openingHours}</dd></> : null}
               </dl>
               <div className="tenant-contact-card__actions">
                 {phone && primaryLabel ? <a className="tenant-button" href={`tel:${phone}`}>{primaryLabel}</a> : null}
@@ -482,7 +491,7 @@ function MapContactSection({
           </TiltHoverCard>
           <ContactMapVisual
             href={mapsUrl || `https://www.google.com/maps/search/?api=1&query=${mapQuery}`}
-            label="Karte öffnen"
+            label={mc.contactMapOpen}
             detail={address || seed.global.brand.name}
           />
         </div>
@@ -496,12 +505,15 @@ function MapContactSection({
               return (
                 <article className="tenant-contact-mini" key={index}>
                   <div className="tenant-contact-mini__body">
-                    <strong>{asString(location.name) || `Standort ${index + 1}`}</strong>
+                    <strong>
+                      {asString(location.name) ||
+                        mc.contactLocationUntitled.replace('{n}', String(index + 1))}
+                    </strong>
                     {locationAddress ? <span>{locationAddress}</span> : null}
                     {asString(location.phone) ? <a href={`tel:${asString(location.phone)}`}>{asString(location.phone)}</a> : null}
                     {asString(location.email) ? <a href={`mailto:${asString(location.email)}`}>{asString(location.email)}</a> : null}
                   </div>
-                  <ContactMapVisual href={locationMap} label="Route" detail={locationAddress || asString(location.name)} compact />
+                  <ContactMapVisual href={locationMap} label={mc.contactMapRoute} detail={locationAddress || asString(location.name)} compact />
                 </article>
               );
             })}
@@ -641,11 +653,18 @@ function ActionBar({
   seed: SiteSeed;
   domSectionId: string;
 }) {
+  const mc = useMicrocopy();
   const useOpeningHours = section.data.useOpeningHours === true;
   const statusLine = resolveActionBarStatusLine({
     useOpeningHours,
     statusOverride: asString(section.data.statusOverride),
-    openingHoursText: openingHoursTextForActionBar(seed)
+    openingHoursText: openingHoursTextForActionBar(seed),
+    microcopy: {
+      actionHoursFallback: mc.actionHoursFallback,
+      actionHoursOpenUntil: mc.actionHoursOpenUntil,
+      actionHoursClosedBeforeOpen: mc.actionHoursClosedBeforeOpen,
+      actionHoursClosedTomorrow: mc.actionHoursClosedTomorrow
+    }
   });
 
   return (
@@ -709,6 +728,7 @@ function CollectionGrid({
   previewBasePath: string;
   domSectionId: string;
 }) {
+  const mc = useMicrocopy();
   const headline = asSplit(section.data.headline);
   const itemIds = Array.isArray(section.data.items) ? section.data.items.map(String) : [];
   const limit = Math.max(1, Number(section.data.limit) || itemIds.length || 4);
@@ -752,7 +772,7 @@ function CollectionGrid({
                 ) : null}
                 <div>
                   {meta.length > 0 ? (
-                    <p className="tenant-card__meta" aria-label="Details">
+                    <p className="tenant-card__meta" aria-label={mc.collectionCardMetaAria}>
                       {meta.map((entry) => (
                         <span key={entry}>{entry}</span>
                       ))}
@@ -761,7 +781,7 @@ function CollectionGrid({
                   <h3>{item.title}</h3>
                   <p>{asString(item.data.summary)}</p>
                   {facts.length > 0 ? (
-                    <dl className="tenant-card__facts" aria-label="CMS-Fakten">
+                    <dl className="tenant-card__facts" aria-label={mc.collectionCardFactsAria}>
                       {facts.map((fact) => (
                         <div key={`${fact.label}-${fact.value}`}>
                           <dt>{fact.label}</dt>
@@ -771,7 +791,7 @@ function CollectionGrid({
                     </dl>
                   ) : null}
                   <span className="tenant-card__more" aria-hidden>
-                    Details ansehen
+                    {mc.collectionCardMoreHint}
                   </span>
                 </div>
               </>
@@ -945,6 +965,7 @@ function RsvpSection({
   section: SectionInstance;
   domSectionId: string;
 }) {
+  const mc = useMicrocopy();
   const headline = asSplit(section.data.headline);
   const [submitted, setSubmitted] = useState(false);
 
@@ -971,35 +992,35 @@ function RsvpSection({
           }}
         >
           <label>
-            <span>{asString(section.data.nameLabel) || 'Name'}</span>
+            <span>{asString(section.data.nameLabel) || mc.rsvpFallbackName}</span>
             <input required name="name" autoComplete="name" />
           </label>
           <label>
-            <span>{asString(section.data.attendanceLabel) || 'Teilnahme'}</span>
+            <span>{asString(section.data.attendanceLabel) || mc.rsvpFallbackAttendance}</span>
             <select required name="attendance" defaultValue="yes">
-              <option value="yes">Ja, ich bin dabei</option>
-              <option value="no">Leider nein</option>
-              <option value="maybe">Ich klaere es noch</option>
+              <option value="yes">{mc.rsvpOptionYes}</option>
+              <option value="no">{mc.rsvpOptionNo}</option>
+              <option value="maybe">{mc.rsvpOptionMaybe}</option>
             </select>
           </label>
           <label>
-            <span>{asString(section.data.guestCountLabel) || 'Anzahl Personen'}</span>
+            <span>{asString(section.data.guestCountLabel) || mc.rsvpFallbackGuestCount}</span>
             <input min={1} name="guestCount" type="number" defaultValue={1} />
           </label>
           <label>
-            <span>{asString(section.data.dietaryLabel) || 'Essen / Allergien'}</span>
-            <input name="dietary" placeholder="z. B. vegetarisch, glutenfrei" />
+            <span>{asString(section.data.dietaryLabel) || mc.rsvpFallbackDietary}</span>
+            <input name="dietary" placeholder={mc.rsvpDietaryPlaceholder} />
           </label>
           <label className="tenant-rsvp-form__wide">
-            <span>{asString(section.data.noteLabel) || 'Nachricht'}</span>
+            <span>{asString(section.data.noteLabel) || mc.rsvpFallbackNote}</span>
             <textarea name="note" rows={4} />
           </label>
           <button className="tenant-button" type="submit">
-            {asString(section.data.submitLabel) || asString(isRecord(section.data.cta) ? section.data.cta.label : '') || 'Antwort senden'}
+            {asString(section.data.submitLabel) || asString(isRecord(section.data.cta) ? section.data.cta.label : '') || mc.rsvpFallbackSubmit}
           </button>
           {submitted ? (
             <p className="tenant-rsvp-form__success" role="status">
-              {asString(section.data.successMessage) || 'Danke, deine Antwort wurde erfasst.'}
+              {asString(section.data.successMessage) || mc.rsvpFallbackSuccess}
             </p>
           ) : null}
         </form>
@@ -1214,6 +1235,7 @@ function ScrollerHighlightsSection({
   seed: SiteSeed;
   domSectionId: string;
 }) {
+  const mc = useMicrocopy();
   const slides = arrayItems(section.data.slides);
   const headline = asSplit(section.data.headline);
   return (
@@ -1224,7 +1246,12 @@ function ScrollerHighlightsSection({
           <SplitHeading plain={headline.plain} accent={headline.accent} />
         </h2>
         {asString(section.data.intro) ? <p className="tenant-section-intro">{asString(section.data.intro)}</p> : null}
-        <div className="tenant-scroller" role="region" aria-label={asString(headline.plain) || 'Highlights'} tabIndex={0}>
+        <div
+          className="tenant-scroller"
+          role="region"
+          aria-label={asString(headline.plain) || mc.scrollerAriaFallback}
+          tabIndex={0}
+        >
           {slides.map((row, i) => {
             const img =
               asString(row.image) ||
@@ -1380,6 +1407,7 @@ function QuoteMarqueeSection({
   styleKey: StyleKey;
   domSectionId: string;
 }) {
+  const mc = useMicrocopy();
   const items = arrayItems(section.data.items);
   const headline = asSplit(section.data.headline);
   const loop = [...items, ...items];
@@ -1391,7 +1419,7 @@ function QuoteMarqueeSection({
           <SplitHeading plain={headline.plain} accent={headline.accent} />
         </h2>
       </div>
-      <div className="tenant-pro-quote__viewport" role="region" aria-label="Zitate">
+      <div className="tenant-pro-quote__viewport" role="region" aria-label={mc.quoteMarqueeAriaLabel}>
         <div className="tenant-pro-quote__track">
           {loop.map((row, i) => (
             <figure key={`${asString(row.quote)}-${i}`} className="tenant-pro-quote__card">
@@ -1684,6 +1712,7 @@ function FeatureCompareSection({
   styleKey: StyleKey;
   domSectionId: string;
 }) {
+  const mc = useMicrocopy();
   const headline = asSplit(section.data.headline);
   const rows = arrayItems(section.data.rows);
   const colUs = asString(section.data.columnUs) || 'Du';
@@ -1699,7 +1728,7 @@ function FeatureCompareSection({
           <table className="tenant-pro-compare__table">
             <thead>
               <tr>
-                <th>Merkmal</th>
+                <th>{mc.featureCompareColumnFeature}</th>
                 <th>{colUs}</th>
                 <th>{colThem}</th>
               </tr>
