@@ -162,6 +162,19 @@ export const globalSections: readonly SectionDefinition[] = [
         field.text('title', 'Titel'),
         field.textarea('body', 'Beschreibung')
       ]),
+      field.repeater(
+        'conversionHighlights',
+        'Conversion-Highlights (über Karte)',
+        [
+          field.text('badge', 'Badge (optional)'),
+          field.text('title', 'Titel', { required: true }),
+          field.textarea('body', 'Text', { required: true })
+        ],
+        {
+          helpText:
+            'Erscheint zwischen Einleitung und Karte — z. B. Reservierungsfenster, Notfallkontakt, Probetraining, Erstgespräch oder RSVP-Hinweis.'
+        }
+      ),
       { key: 'openingHours', label: 'Öffnungszeiten', type: 'openingHours' }
     ]
   },

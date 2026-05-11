@@ -436,6 +436,9 @@ function MapContactSection({
     )
   );
   const arrival = arrayRecords(section.data.arrival);
+  const conversionHighlights = arrayRecords(section.data.conversionHighlights).filter((row) =>
+    Boolean(asString(row.title) || asString(row.body))
+  );
 
   return (
     <section className="tenant-section tenant-soft tenant-contact-pro" id={domSectionId}>
@@ -448,6 +451,17 @@ function MapContactSection({
           </h2>
           {asString(section.data.subline) ? <p className="tenant-section-intro">{asString(section.data.subline)}</p> : null}
         </div>
+        {conversionHighlights.length > 0 ? (
+          <ul className="tenant-contact-conversion" data-stagger-grid>
+            {conversionHighlights.map((row, index) => (
+              <li className="tenant-contact-conversion__card" key={index}>
+                {asString(row.badge) ? <span className="tenant-contact-conversion__badge">{asString(row.badge)}</span> : null}
+                <strong className="tenant-contact-conversion__title">{asString(row.title)}</strong>
+                {asString(row.body) ? <p className="tenant-contact-conversion__body">{asString(row.body)}</p> : null}
+              </li>
+            ))}
+          </ul>
+        ) : null}
         <div className="tenant-contact-pro__grid">
           <TiltHoverCard className="tenant-tilt--card">
             <article className="tenant-contact-card tenant-contact-card--primary">

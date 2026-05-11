@@ -584,6 +584,30 @@ const QUOTE_PACK: Record<IndustryKey, { quote: string; name: string; role: strin
   ]
 };
 
+const QUOTE_MARQUEE_HEADLINE_BY_INDUSTRY: Record<IndustryKey, { plain: string; accent: string }> = {
+  restaurant: { plain: 'Gäste', accent: 'sprechen Klartext.' },
+  hotel: { plain: 'Aufenthalte', accent: 'die überzeugen.' },
+  tourism: { plain: 'Touren', accent: 'die Vertrauen schaffen.' },
+  salon: { plain: 'Looks', accent: 'mit Rückenwind.' },
+  tradesman: { plain: 'Projekte', accent: 'die zählen.' },
+  consulting: { plain: 'Stimmen', accent: 'aus dem Boardroom.' },
+  medical: { plain: 'Vertrauen', accent: 'im Alltag.' },
+  fitness: { plain: 'Community', accent: 'die motiviert.' },
+  wedding: { plain: 'Momente', accent: 'die bleiben.' }
+};
+
+const PREMIUM_MEDIA_CTAS_BY_INDUSTRY: Record<IndustryKey, { primary: string; secondary: string }> = {
+  restaurant: { primary: 'Tisch reservieren', secondary: 'Menü ansehen' },
+  hotel: { primary: 'Zimmer anfragen', secondary: 'Angebot sichern' },
+  tourism: { primary: 'Tour wählen', secondary: 'Frage stellen' },
+  salon: { primary: 'Termin buchen', secondary: 'Leistungen' },
+  tradesman: { primary: 'Anfrage senden', secondary: 'Referenzen' },
+  consulting: { primary: 'Erstgespräch', secondary: 'Cases lesen' },
+  medical: { primary: 'Termin', secondary: 'Leistungen' },
+  fitness: { primary: 'Probetraining', secondary: 'Kurse' },
+  wedding: { primary: 'RSVP', secondary: 'Ablauf' }
+};
+
 const ICON_HIGHLIGHT_INTRO_BY_INDUSTRY: Record<IndustryKey, string> = {
   restaurant: 'Kurz und einladend — was Gäste bei euch sofort spüren.',
   hotel: 'Vom ersten Klick bis zum Check-out: was Aufenthalte leichter macht.',
@@ -739,16 +763,27 @@ function buildPremiumWowSections(
     styleKey
   );
   const mood = styleKey === 'bold' ? 'stark' : 'soft';
+  const mediaCtas = PREMIUM_MEDIA_CTAS_BY_INDUSTRY[industryKey];
+
+  const mediaSection = section(`${idBase}-media`, 'global.mediaSpotlight', 0, {
+    eyebrow: mediaHead.eyebrow,
+    headline: mediaHead.headline,
+    subline: String(bentoHero?.body ?? ''),
+    image: heroImg,
+    mood,
+    primaryCta: { label: mediaCtas.primary, link: { type: 'page' as const, pageKey: 'home', href: '/' } },
+    secondaryCta: { label: mediaCtas.secondary, link: { type: 'page' as const, pageKey: 'home', href: '/' } }
+  });
 
   const quoteHead = adaptTrustHeadlineForStyle(
     {
       eyebrow: withPageEyebrow('Stimmen', ctx),
-      headline: { plain: 'Was man', accent: 'über uns sagt.' }
+      headline: QUOTE_MARQUEE_HEADLINE_BY_INDUSTRY[industryKey]
     },
     styleKey
   );
 
-  const quotes = [...QUOTE_PACK[industryKey], ...QUOTE_PACK[industryKey]];
+  const quotes = [...QUOTE_PACK[industryKey], ...[...QUOTE_PACK[industryKey]].reverse()];
 
   const iconSection = section(`${idBase}-icons`, 'global.iconHighlights', 0, {
     eyebrow: iconHead.eyebrow,
@@ -761,16 +796,6 @@ function buildPremiumWowSections(
     eyebrow: timelineHead.eyebrow,
     headline: timelineHead.headline,
     steps: guestJourney.steps
-  });
-
-  const mediaSection = section(`${idBase}-media`, 'global.mediaSpotlight', 0, {
-    eyebrow: mediaHead.eyebrow,
-    headline: mediaHead.headline,
-    subline: String(bentoHero?.body ?? ''),
-    image: heroImg,
-    mood,
-    primaryCta: { label: 'Mehr erfahren', link: { type: 'page', pageKey: 'home', href: '/' } },
-    secondaryCta: { label: 'Kontakt', link: { type: 'page', pageKey: 'home', href: '/' } }
   });
 
   const quoteSection = section(`${idBase}-quotes`, 'global.quoteMarquee', 0, {
@@ -786,14 +811,15 @@ function buildPremiumWowSections(
   return [iconSection, timelineSection, mediaSection, quoteSection];
 }
 
-/** Unterseiten: nur ein WOW-Block, rotiert nach Seite → weniger Wiederholung, mehr Variation. */
-function subpageWowSlot(pageKey: string): 0 | 1 | 2 {
+/** Unterseiten: deterministische Streuung aus Branche + Seite (andere Reihenfolge als nur pageKey). */
+function subpageLayoutHash(industryKey: IndustryKey, pageKey: string): number {
   let h = 2166136261 >>> 0;
-  for (let i = 0; i < pageKey.length; i++) {
-    h ^= pageKey.charCodeAt(i);
+  const s = `${industryKey}|${pageKey}`;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
     h = Math.imul(h, 16777619) >>> 0;
   }
-  return (h % 3) as 0 | 1 | 2;
+  return h >>> 0;
 }
 
 /** Optional context for Unterseiten / Detailrouten — eigene Section-IDs + leichte Text-Anreicherung. */
@@ -854,11 +880,11 @@ export function buildWowSectionInstances(
     return [...triple, ...premium];
   }
 
-  const slot = subpageWowSlot(page.pageKey);
-  const rotatedTriple = [triple[slot], triple[(slot + 1) % triple.length]];
-  const rotatedPremium =
-    premium.length > 0
-      ? [premium[slot % premium.length], premium[(slot + 1) % premium.length], premium[(slot + 2) % premium.length]]
-      : [];
-  return [...rotatedTriple, ...rotatedPremium].filter(Boolean);
+  const h = subpageLayoutHash(industryKey, page.pageKey);
+  const tStart = h % 3;
+  const rotatedTriple = [triple[tStart], triple[(tStart + 1) % 3]];
+  const pStart = (h >>> 6) % 4;
+  const orderedPremium = premium.length > 0 ? [0, 1, 2, 3].map((i) => premium[(pStart + i) % 4]) : [];
+  const pCount = 2 + ((h >>> 14) % 2);
+  return [...rotatedTriple, ...orderedPremium.slice(0, pCount)].filter(Boolean);
 }

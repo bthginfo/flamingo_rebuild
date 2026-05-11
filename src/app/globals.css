@@ -9197,6 +9197,53 @@ a {
   background: var(--tenant-accent);
 }
 
+.tenant-contact-conversion {
+  list-style: none;
+  margin: clamp(20px, 3.5vw, 36px) 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px 18px;
+}
+
+.tenant-contact-conversion__card {
+  margin: 0;
+  padding: clamp(16px, 2.4vw, 22px);
+  border-radius: var(--tenant-radius-md, 20px);
+  border: 1px solid color-mix(in oklab, var(--tenant-line), transparent 12%);
+  background: color-mix(in oklab, var(--tenant-soft), #fff 35%);
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.06);
+}
+
+.tenant-contact-conversion__badge {
+  display: inline-block;
+  margin-bottom: 8px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--tenant-accent);
+  background: color-mix(in oklab, var(--tenant-accent), transparent 88%);
+}
+
+.tenant-contact-conversion__title {
+  display: block;
+  font-size: 1.05rem;
+  line-height: 1.25;
+  margin: 0 0 8px;
+  color: var(--tenant-fg);
+}
+
+.tenant-contact-conversion__body {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--tenant-muted);
+  white-space: pre-line;
+}
+
 .tenant-contact-pro__grid {
   display: grid;
   grid-template-columns: minmax(0, 0.78fr) minmax(320px, 1fr);

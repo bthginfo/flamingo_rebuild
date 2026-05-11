@@ -90,6 +90,59 @@ function filterAllowedSections(
   return sections.filter((section) => allowedSections.has(section.sectionKey));
 }
 
+function contactConversionDefaults(
+  industry: SiteSeed['industryKey']
+): { badge: string; title: string; body: string }[] {
+  const map: Record<SiteSeed['industryKey'], { badge: string; title: string; body: string }[]> = {
+    restaurant: [
+      { badge: 'Reservierung', title: 'Tisch & Gruppen', body: 'Abendslots und private Tische — kurz Anlass und Personenzahl nennen, wir melden uns mit Vorschlägen.' },
+      { badge: 'Service', title: 'Allergien & Menü', body: 'Vegetarisch, vegan oder Unverträglichkeiten? Wir koordinieren Menü und Küche vorab.' },
+      { badge: 'Notfall', title: 'Kurzfristig vorbeiziehen?', body: 'Bei spontanem Besuch: kurz anrufen — wir prüfen Restkapazität am Tresen.' }
+    ],
+    hotel: [
+      { badge: 'Buchung', title: 'Zimmer & Pakete', body: 'Früh buchen, Zusatzleistungen und Late Check-out — wir halten Optionen frei.' },
+      { badge: 'Anreise', title: 'Parken & Transfer', body: 'Stellplätze sind begrenzt; Shuttle vom Bahnhof auf Anfrage.' },
+      { badge: 'Concierge', title: 'Besondere Anlässe', body: 'Jubiläum oder Firmengruppe? Wir planen Kulinarik und Spa mit.' }
+    ],
+    tourism: [
+      { badge: 'Buchung', title: 'Tour & Wetterfenster', body: 'Wir bestätigen Treffpunkt, Ausrüstung und Schwierigkeitsgrad vorab.' },
+      { badge: 'Sicherheit', title: 'Notfall & Hotline', body: 'Unterwegs erreichbar für Rückfragen und kurzfristige Wetterupdates.' },
+      { badge: 'Gruppe', title: 'Private Führungen', body: 'Familien oder Teams — wir passen Tempo und Pausen an.' }
+    ],
+    salon: [
+      { badge: 'Termin', title: 'Beratung vorab', body: 'Fotos, Wunschlook und Haarhistorie helfen — wir reservieren genug Zeit.' },
+      { badge: 'Vorbereitung', title: 'Vor dem Besuch', body: 'Bitte keine starken Styling-Produkte; wir messen Farbton und Struktur vor Ort.' },
+      { badge: 'Nachsorge', title: 'Pflege zu Hause', body: 'Produkte und Refresh-Termin — damit der Look hält.' }
+    ],
+    tradesman: [
+      { badge: 'Notdienst', title: 'Dringende Schäden', body: 'Wasserschaden oder Leck — kurz anrufen, wir priorisieren Einsatz und Erstmaßnahmen.' },
+      { badge: 'Angebot', title: 'Vor-Ort-Termin', body: 'Fotos und Adresse reichen für eine erste Einschätzung — Aufmaß fixieren wir schnell.' },
+      { badge: 'Projekt', title: 'Koordination', body: 'Wir übernehmen Abstimmung mit Versicherung und Partnergewerken.' }
+    ],
+    consulting: [
+      { badge: 'Erstgespräch', title: '30 Minuten Check', body: 'Klarheit zu Ziel, Budget und Timeline — ohne Pitch-Überlauf.' },
+      { badge: 'Vertraulichkeit', title: 'NDA & Daten', body: 'Auf Wunsch vorab — sensible Kennzahlen geschützt besprechen.' },
+      { badge: 'Workshop', title: 'Deep Dive buchen', body: 'Fokussierte Session zu Produkt, GTM oder Transformation — Termin direkt vorschlagen.' }
+    ],
+    medical: [
+      { badge: 'Termin', title: 'Online & Telefon', body: 'Akut oder geplant — wir koordinieren Fachbereich und Dringlichkeit.' },
+      { badge: 'Notfall', title: 'Außerhalb der Zeiten', body: 'Bitte die veröffentlichten Notfallnummern nutzen — wir leiten weiter.' },
+      { badge: 'Vorbereitung', title: 'Unterlagen mitbringen', body: 'Befunde und Medikationsliste beschleunigen den Ablauf.' }
+    ],
+    fitness: [
+      { badge: 'Probetraining', title: 'Erstbesuch', body: '15 Minuten vorher da sein — kurzer Health-Check, dann Einstieg ins Training.' },
+      { badge: 'Kurse', title: 'Platz sichern', body: 'Beliebte Slots früh buchen — wir melden Alternativen, falls voll.' },
+      { badge: 'Mitgliedschaft', title: 'Beratung', body: 'Ziele und Verfügbarkeit — wir empfehlen passendes Paket ohne Druck.' }
+    ],
+    wedding: [
+      { badge: 'RSVP', title: 'Antwort bis Frist', body: 'Personen, Ernährung, Shuttle — alles zentral, damit ihr feiern könnt.' },
+      { badge: 'Gäste', title: 'Unterkunft & Shuttle', body: 'Kontingente und Abfahrtszeiten — wir halten Infos aktuell.' },
+      { badge: 'Tag X', title: 'Kontakt am Tag', body: 'Für spontane Fragen: Day-of-Koordinator — Nummer folgt mit Einladung.' }
+    ]
+  };
+  return map[industry];
+}
+
 function enrichSections(sections: readonly SectionInstance[], seed: SiteSeed): SectionInstance[] {
   return sections.map((section) => {
     if (section.sectionKey !== 'global.mapContact') return section;
@@ -98,6 +151,10 @@ function enrichSections(sections: readonly SectionInstance[], seed: SiteSeed): S
     const phone = stringValue(section.data.phone) || stringValue(contact.phone);
     const email = stringValue(section.data.email) || stringValue(contact.email);
     const openingHours = stringValue(section.data.openingHours) || stringValue(contact.openingHours);
+    const highlightsRaw = section.data.conversionHighlights;
+    const conversionHighlights =
+      Array.isArray(highlightsRaw) && highlightsRaw.length > 0 ? highlightsRaw : contactConversionDefaults(seed.industryKey);
+
     return {
       ...section,
       data: {
@@ -105,6 +162,7 @@ function enrichSections(sections: readonly SectionInstance[], seed: SiteSeed): S
         primaryActionLabel: contactActions(seed.industryKey).primary,
         secondaryActionLabel: contactActions(seed.industryKey).secondary,
         ...section.data,
+        conversionHighlights,
         mapsUrl: stringValue(section.data.mapsUrl) || stringValue(contact.mapsUrl),
         locations: Array.isArray(section.data.locations) && section.data.locations.length > 0
           ? section.data.locations

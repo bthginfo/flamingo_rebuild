@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { STYLE_KEYS, type FieldDefinition, type PageInstance, type SectionInstance, type StyleKey } from '@/template-engine/model';
 import type { SiteSeed } from '@/template-engine/seeds/model';
 import { cloneSeed, discardDraft, hasDraft, loadDemoContent, publishDraft, resetPublished, saveDraft } from '@/cms/demo-store';
@@ -592,286 +592,296 @@ function FieldEditor({
   seed: SiteSeed;
   tenantSlug: string | null;
 }) {
-  if (field.type === 'number') {
-    return (
-      <TextField
-        label={field.label}
-        value={typeof value === 'number' && !Number.isNaN(value) ? String(value) : text(value)}
-        onChange={(next) => {
-          const parsed = Number(next);
-          onChange(path, Number.isFinite(parsed) ? parsed : 0);
-        }}
-      />
-    );
-  }
-
-  if (
-    field.type === 'textarea' ||
-    field.type === 'richText' ||
-    field.type === 'address' ||
-    field.type === 'openingHours' ||
-    field.type === 'socialLinks'
-  ) {
-    return <TextArea label={field.label} value={text(value)} onChange={(next) => onChange(path, next)} />;
-  }
-
-  if (field.type === 'image') {
-    return (
-      <ImageFieldEditor
-        label={field.label}
-        value={value}
-        tenantSlug={tenantSlug}
-        onChange={(next) => onChange(path, next)}
-      />
-    );
-  }
-
-  if (field.type === 'gallery') {
-    return (
-      <GalleryFieldEditor
-        label={field.label}
-        value={value}
-        tenantSlug={tenantSlug}
-        onChange={(next) => onChange(path, next)}
-      />
-    );
-  }
-
-  if (
-    field.type === 'text' ||
-    field.type === 'url' ||
-    field.type === 'phone' ||
-    field.type === 'email' ||
-    field.type === 'date' ||
-    field.type === 'time'
-  ) {
-    return <TextField label={field.label} value={text(value)} onChange={(next) => onChange(path, next)} />;
-  }
-
-  if (field.type === 'select') {
-    return (
-      <label className="cms-field">
-        <span>{field.label}</span>
-        <select value={text(value)} onChange={(event) => onChange(path, event.target.value)}>
-          <option value="">Bitte wählen</option>
-          {(field.options ?? []).map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
-      </label>
-    );
-  }
-
-  if (field.type === 'multiSelect') {
-    const selected = new Set(arrayText(value));
-    return (
-      <div className="cms-field is-wide">
-        <span>{field.label}</span>
-        <div className="cms-reference-list">
-          {(field.options ?? []).map((option) => (
-            <label className="cms-reference-list__item" key={option}>
-              <input
-                type="checkbox"
-                checked={selected.has(option)}
-                onChange={(event) => {
-                  const current = arrayText(value);
-                  onChange(
-                    path,
-                    event.target.checked
-                      ? [...current, option].filter((v, i, arr) => arr.indexOf(v) === i)
-                      : current.filter((item) => item !== option)
-                  );
-                }}
-              />
-              <span>
-                <strong>{option}</strong>
-              </span>
-            </label>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  if (field.type === 'boolean') {
-    return (
-      <label className="cms-toggle cms-field">
-        <span>{field.label}</span>
-        <input checked={value === true} onChange={(event) => onChange(path, event.target.checked)} type="checkbox" />
-      </label>
-    );
-  }
-
-  if (field.type === 'splitHeading') {
-    const current = split(value);
-    return (
-      <div className="cms-field-split-heading">
-        <TextField label={`${field.label} - Teil 1`} value={current.plain} onChange={(next) => onChange([...path, 'plain'], next)} />
-        <TextField label={`${field.label} - Teil 2`} value={current.accent} onChange={(next) => onChange([...path, 'accent'], next)} />
-      </div>
-    );
-  }
-
-  if (field.type === 'link') {
-    return (
-      <LinkTargetEditor
-        label={field.label}
-        linkValue={value}
-        seed={seed}
-        onLinkChange={(link) => onChange(path, link)}
-      />
-    );
-  }
-
-  if (field.type === 'cta') {
-    const current = cta(value);
-    return (
-      <div className="cms-field-split-heading cms-field-split-heading--stack">
-        <TextField label={`${field.label} Text`} value={current.label} onChange={(next) => onChange([...path, 'label'], next)} />
-        <LinkTargetEditor
-          label={`${field.label} Ziel`}
-          linkValue={isRecord(value) && isRecord(value.link) ? value.link : {}}
-          seed={seed}
-          onLinkChange={(link) => onChange([...path, 'link'], link)}
+  const inner = ((): ReactNode => {
+    if (field.type === 'number') {
+      return (
+        <TextField
+          label={field.label}
+          value={typeof value === 'number' && !Number.isNaN(value) ? String(value) : text(value)}
+          onChange={(next) => {
+            const parsed = Number(next);
+            onChange(path, Number.isFinite(parsed) ? parsed : 0);
+          }}
         />
-      </div>
-    );
-  }
+      );
+    }
 
-  if (field.type === 'collectionReferenceList') {
-    const selectedIds = arrayText(value);
-    const collectionKey = field.collectionKey ?? '';
-    const options = seed.collections.filter((item) => item.collectionKey === collectionKey);
-    return (
-      <CollectionReferenceEditor
-        label={field.label}
-        selectedIds={selectedIds}
-        options={options}
-        onChange={(next) => onChange(path, next)}
-      />
-    );
-  }
+    if (
+      field.type === 'textarea' ||
+      field.type === 'richText' ||
+      field.type === 'address' ||
+      field.type === 'openingHours' ||
+      field.type === 'socialLinks'
+    ) {
+      return <TextArea label={field.label} value={text(value)} onChange={(next) => onChange(path, next)} />;
+    }
 
-  if (field.type === 'collectionReference') {
-    const collectionKey = field.collectionKey ?? '';
-    const options = seed.collections.filter((item) => item.collectionKey === collectionKey);
-    return (
-      <label className="cms-field">
-        <span>{field.label}</span>
-        <select value={text(value)} onChange={(event) => onChange(path, event.target.value)}>
-          <option value="">Kein Eintrag</option>
-          {options.map((item) => (
-            <option key={item.id} value={item.id}>
-              {item.title}
-            </option>
-          ))}
-        </select>
-      </label>
-    );
-  }
+    if (field.type === 'image') {
+      return (
+        <ImageFieldEditor
+          label={field.label}
+          value={value}
+          tenantSlug={tenantSlug}
+          onChange={(next) => onChange(path, next)}
+        />
+      );
+    }
 
-  if (field.type === 'group') {
-    const current = isRecord(value) ? value : {};
-    return (
-      <div className="cms-list is-wide">
-        <span>{field.label}</span>
-        <div className="cms-field-grid">
-          {(field.fields ?? []).map((child) => (
-            <FieldEditor
-              key={child.key}
-              field={child}
-              path={[...path, child.key]}
-              value={current[child.key]}
-              onChange={onChange}
-              seed={seed}
-              tenantSlug={tenantSlug}
-            />
-          ))}
+    if (field.type === 'gallery') {
+      return (
+        <GalleryFieldEditor
+          label={field.label}
+          value={value}
+          tenantSlug={tenantSlug}
+          onChange={(next) => onChange(path, next)}
+        />
+      );
+    }
+
+    if (
+      field.type === 'text' ||
+      field.type === 'url' ||
+      field.type === 'phone' ||
+      field.type === 'email' ||
+      field.type === 'date' ||
+      field.type === 'time'
+    ) {
+      return <TextField label={field.label} value={text(value)} onChange={(next) => onChange(path, next)} />;
+    }
+
+    if (field.type === 'select') {
+      return (
+        <label className="cms-field">
+          <span>{field.label}</span>
+          <select value={text(value)} onChange={(event) => onChange(path, event.target.value)}>
+            <option value="">Bitte wählen</option>
+            {(field.options ?? []).map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        </label>
+      );
+    }
+
+    if (field.type === 'multiSelect') {
+      const selected = new Set(arrayText(value));
+      return (
+        <div className="cms-field is-wide">
+          <span>{field.label}</span>
+          <div className="cms-reference-list">
+            {(field.options ?? []).map((option) => (
+              <label className="cms-reference-list__item" key={option}>
+                <input
+                  type="checkbox"
+                  checked={selected.has(option)}
+                  onChange={(event) => {
+                    const current = arrayText(value);
+                    onChange(
+                      path,
+                      event.target.checked
+                        ? [...current, option].filter((v, i, arr) => arr.indexOf(v) === i)
+                        : current.filter((item) => item !== option)
+                    );
+                  }}
+                />
+                <span>
+                  <strong>{option}</strong>
+                </span>
+              </label>
+            ))}
+          </div>
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
-  if (field.type === 'repeater') {
-    const items = arrayRecords(value);
-    return (
-      <div className="cms-list is-wide">
-        <span>{field.label}</span>
-        {items.map((item, index) => (
-          <div className="cms-repeat-item" key={index}>
-            <div className="cms-repeat-toolbar">
-              <button
-                type="button"
-                className="button secondary"
-                onClick={() => {
-                  const cloned = items.filter((_, i) => i !== index);
-                  onChange(path, cloned);
-                }}
-              >
-                Eintrag entfernen
-              </button>
-            </div>
-            {(field.itemFields ?? []).map((itemField) => {
-              if (itemField.type === 'splitHeading') {
-                const cur = split(item[itemField.key]);
-                return (
-                  <div className="cms-field-grid" key={itemField.key}>
-                    <TextField
-                      label={`${field.label} ${index + 1} — ${itemField.label} (Teil 1)`}
-                      value={cur.plain}
-                      onChange={(next) => {
-                        const cloned = items.map((entry) => ({ ...entry }));
-                        cloned[index] = { ...cloned[index], [itemField.key]: { ...cur, plain: next } };
-                        onChange(path, cloned);
-                      }}
-                    />
-                    <TextField
-                      label={`${field.label} ${index + 1} — ${itemField.label} (Teil 2)`}
-                      value={cur.accent}
-                      onChange={(next) => {
-                        const cloned = items.map((entry) => ({ ...entry }));
-                        cloned[index] = { ...cloned[index], [itemField.key]: { ...cur, accent: next } };
-                        onChange(path, cloned);
-                      }}
-                    />
-                  </div>
-                );
-              }
-              return (
-                <FieldEditor
-                  field={itemField}
-                  key={`${index}-${itemField.key}`}
-                  path={[]}
-                  value={item[itemField.key]}
-                  onChange={(_subPath, val) => {
-                    const cloned = items.map((entry) => ({ ...entry }));
-                    cloned[index] = { ...cloned[index], [itemField.key]: val };
+    if (field.type === 'boolean') {
+      return (
+        <label className="cms-toggle cms-field">
+          <span>{field.label}</span>
+          <input checked={value === true} onChange={(event) => onChange(path, event.target.checked)} type="checkbox" />
+        </label>
+      );
+    }
+
+    if (field.type === 'splitHeading') {
+      const current = split(value);
+      return (
+        <div className="cms-field-split-heading">
+          <TextField label={`${field.label} - Teil 1`} value={current.plain} onChange={(next) => onChange([...path, 'plain'], next)} />
+          <TextField label={`${field.label} - Teil 2`} value={current.accent} onChange={(next) => onChange([...path, 'accent'], next)} />
+        </div>
+      );
+    }
+
+    if (field.type === 'link') {
+      return (
+        <LinkTargetEditor
+          label={field.label}
+          linkValue={value}
+          seed={seed}
+          onLinkChange={(link) => onChange(path, link)}
+        />
+      );
+    }
+
+    if (field.type === 'cta') {
+      const current = cta(value);
+      return (
+        <div className="cms-field-split-heading cms-field-split-heading--stack">
+          <TextField label={`${field.label} Text`} value={current.label} onChange={(next) => onChange([...path, 'label'], next)} />
+          <LinkTargetEditor
+            label={`${field.label} Ziel`}
+            linkValue={isRecord(value) && isRecord(value.link) ? value.link : {}}
+            seed={seed}
+            onLinkChange={(link) => onChange([...path, 'link'], link)}
+          />
+        </div>
+      );
+    }
+
+    if (field.type === 'collectionReferenceList') {
+      const selectedIds = arrayText(value);
+      const collectionKey = field.collectionKey ?? '';
+      const options = seed.collections.filter((item) => item.collectionKey === collectionKey);
+      return (
+        <CollectionReferenceEditor
+          label={field.label}
+          selectedIds={selectedIds}
+          options={options}
+          onChange={(next) => onChange(path, next)}
+        />
+      );
+    }
+
+    if (field.type === 'collectionReference') {
+      const collectionKey = field.collectionKey ?? '';
+      const options = seed.collections.filter((item) => item.collectionKey === collectionKey);
+      return (
+        <label className="cms-field">
+          <span>{field.label}</span>
+          <select value={text(value)} onChange={(event) => onChange(path, event.target.value)}>
+            <option value="">Kein Eintrag</option>
+            {options.map((item) => (
+              <option key={item.id} value={item.id}>
+                {item.title}
+              </option>
+            ))}
+          </select>
+        </label>
+      );
+    }
+
+    if (field.type === 'group') {
+      const current = isRecord(value) ? value : {};
+      return (
+        <div className="cms-list is-wide">
+          <span>{field.label}</span>
+          <div className="cms-field-grid">
+            {(field.fields ?? []).map((child) => (
+              <FieldEditor
+                key={child.key}
+                field={child}
+                path={[...path, child.key]}
+                value={current[child.key]}
+                onChange={onChange}
+                seed={seed}
+                tenantSlug={tenantSlug}
+              />
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    if (field.type === 'repeater') {
+      const items = arrayRecords(value);
+      return (
+        <div className="cms-list is-wide">
+          <span>{field.label}</span>
+          {items.map((item, index) => (
+            <div className="cms-repeat-item" key={index}>
+              <div className="cms-repeat-toolbar">
+                <button
+                  type="button"
+                  className="button secondary"
+                  onClick={() => {
+                    const cloned = items.filter((_, i) => i !== index);
                     onChange(path, cloned);
                   }}
-                  seed={seed}
-                  tenantSlug={tenantSlug}
-                />
-              );
-            })}
-          </div>
-        ))}
-        <button
-          type="button"
-          className="button secondary"
-          onClick={() => {
-            const row = createDefaultData(field.itemFields ?? []);
-            onChange(path, [...items, row]);
-          }}
-        >
-          Eintrag hinzufügen
-        </button>
-      </div>
-    );
-  }
+                >
+                  Eintrag entfernen
+                </button>
+              </div>
+              {(field.itemFields ?? []).map((itemField) => {
+                if (itemField.type === 'splitHeading') {
+                  const cur = split(item[itemField.key]);
+                  return (
+                    <div className="cms-field-grid" key={itemField.key}>
+                      <TextField
+                        label={`${field.label} ${index + 1} — ${itemField.label} (Teil 1)`}
+                        value={cur.plain}
+                        onChange={(next) => {
+                          const cloned = items.map((entry) => ({ ...entry }));
+                          cloned[index] = { ...cloned[index], [itemField.key]: { ...cur, plain: next } };
+                          onChange(path, cloned);
+                        }}
+                      />
+                      <TextField
+                        label={`${field.label} ${index + 1} — ${itemField.label} (Teil 2)`}
+                        value={cur.accent}
+                        onChange={(next) => {
+                          const cloned = items.map((entry) => ({ ...entry }));
+                          cloned[index] = { ...cloned[index], [itemField.key]: { ...cur, accent: next } };
+                          onChange(path, cloned);
+                        }}
+                      />
+                    </div>
+                  );
+                }
+                return (
+                  <FieldEditor
+                    field={itemField}
+                    key={`${index}-${itemField.key}`}
+                    path={[]}
+                    value={item[itemField.key]}
+                    onChange={(_subPath, val) => {
+                      const cloned = items.map((entry) => ({ ...entry }));
+                      cloned[index] = { ...cloned[index], [itemField.key]: val };
+                      onChange(path, cloned);
+                    }}
+                    seed={seed}
+                    tenantSlug={tenantSlug}
+                  />
+                );
+              })}
+            </div>
+          ))}
+          <button
+            type="button"
+            className="button secondary"
+            onClick={() => {
+              const row = createDefaultData(field.itemFields ?? []);
+              onChange(path, [...items, row]);
+            }}
+          >
+            Eintrag hinzufügen
+          </button>
+        </div>
+      );
+    }
 
-  return <ReadOnlyList label={`${field.label} (${field.type})`} values={[JSON.stringify(value ?? '')]} />;
+    return <ReadOnlyList label={`${field.label} (${field.type})`} values={[JSON.stringify(value ?? '')]} />;
+  })();
+
+  if (!field.helpText) return inner;
+  return (
+    <>
+      {inner}
+      <p className="cms-field-hint">{field.helpText}</p>
+    </>
+  );
 }
 
 function TextField({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
