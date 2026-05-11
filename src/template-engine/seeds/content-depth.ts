@@ -83,30 +83,6 @@ const TITLE_BANK: Record<string, readonly string[]> = {
   newsArticle: ['Neu im Fruehjahr', 'Blick hinter die Kulissen', 'Terminfenster mit Mehrwert', 'Was Kunden jetzt fragen', 'Saison-Update aus dem Team', 'Vor Ort besser geplant']
 };
 
-const DEEP_SECTION_BY_INDUSTRY: Record<IndustryKey, string> = {
-  restaurant: 'restaurant.deepDives',
-  hotel: 'hotel.deepDives',
-  tourism: 'tourism.deepDives',
-  salon: 'salon.deepDives',
-  tradesman: 'tradesman.deepDives',
-  consulting: 'consulting.deepDives',
-  medical: 'medical.deepDives',
-  fitness: 'fitness.deepDives',
-  wedding: 'wedding.deepDives'
-};
-
-const DEEP_COLLECTION_BY_INDUSTRY: Record<IndustryKey, string> = {
-  restaurant: 'restaurantInsight',
-  hotel: 'hotelInsight',
-  tourism: 'tourismInsight',
-  salon: 'salonInsight',
-  tradesman: 'tradesmanInsight',
-  consulting: 'consultingInsight',
-  medical: 'medicalInsight',
-  fitness: 'fitnessInsight',
-  wedding: 'weddingInsight'
-};
-
 const SECTION_COLLECTION = new Map(
   sections.flatMap((section) =>
     section.fields
@@ -134,9 +110,6 @@ export function deepenDemoSeed(seed: SiteSeed): SiteSeed {
     ...seed,
     collections: enrichedCollections,
     pages: seed.pages.map((page) => {
-      const deepCollection = DEEP_COLLECTION_BY_INDUSTRY[seed.industryKey];
-      const deepSection = DEEP_SECTION_BY_INDUSTRY[seed.industryKey];
-      const deepIds = idsByCollection.get(deepCollection) ?? [];
       const newsIds = latestNewsIds(enrichedCollections);
       const sections = page.sections.map((section) => {
         const collectionKey = SECTION_COLLECTION.get(section.sectionKey);
@@ -154,25 +127,10 @@ export function deepenDemoSeed(seed: SiteSeed): SiteSeed {
         page.key === 'contact'
           ? sections.filter((section) => ['global.pageHeader', 'global.mapContact', 'global.contactCta'].includes(section.sectionKey))
           : sections;
-      const withDeepDive =
-        page.key === 'home' || page.key === 'contact' || pageSections.some((section) => section.sectionKey === deepSection) || deepIds.length === 0
-          ? pageSections
-          : insertAfterHeader(pageSections, {
-              id: `depth-${page.key}-deep-dive`,
-              sectionKey: deepSection,
-              visible: true,
-              sortOrder: 0,
-              data: {
-                eyebrow: deepEyebrow(seed.industryKey, page.title),
-                headline: deepHeadline(seed.industryKey),
-                intro: deepIntro(seed.industryKey, page.title),
-                items: deepIds
-              }
-            });
       const withNews =
-        page.key !== 'home' || withDeepDive.some((section) => section.sectionKey === 'global.newsTeaser') || newsIds.length === 0
-          ? withDeepDive
-          : insertBeforeContact(withDeepDive, {
+        page.key !== 'home' || pageSections.some((section) => section.sectionKey === 'global.newsTeaser') || newsIds.length === 0
+          ? pageSections
+          : insertBeforeContact(pageSections, {
               id: 'home-news-teaser',
               sectionKey: 'global.newsTeaser',
               visible: true,
@@ -217,12 +175,6 @@ function enrichCollectionItems(
     }
     return { ...item, data };
   });
-}
-
-function insertAfterHeader(sections: readonly SiteSeed['pages'][number]['sections'][number][], insert: SiteSeed['pages'][number]['sections'][number]) {
-  const idx = sections.findIndex((section) => section.sectionKey === 'global.pageHeader');
-  const at = idx >= 0 ? idx + 1 : Math.min(1, sections.length);
-  return [...sections.slice(0, at), insert, ...sections.slice(at)];
 }
 
 function insertBeforeContact(sections: readonly SiteSeed['pages'][number]['sections'][number][], insert: SiteSeed['pages'][number]['sections'][number]) {
@@ -410,10 +362,6 @@ function aftercareFor(collectionKey: string): string {
   return 'Nach dem Termin bekommst du die wichtigsten Hinweise kompakt zusammengefasst.';
 }
 
-function deepEyebrow(industry: IndustryKey, pageTitle: string): string {
-  return `${pageTitle} · Wissenswertes`;
-}
-
 function newsEyebrow(industry: IndustryKey): string {
   const map: Record<IndustryKey, string> = {
     restaurant: 'Aus Kueche & Gastraum',
@@ -457,36 +405,6 @@ function newsIntro(industry: IndustryKey): string {
     wedding: 'Planungsupdates, Gaesteinfos und kleine Details, die vor dem Fest Ruhe schaffen.'
   };
   return map[industry];
-}
-
-function deepHeadline(industry: IndustryKey): { plain: string; accent: string } {
-  const map: Record<IndustryKey, { plain: string; accent: string }> = {
-    restaurant: { plain: 'Mehr als', accent: 'eine Karte.' },
-    hotel: { plain: 'Details, die', accent: 'Aufenthalt machen.' },
-    tourism: { plain: 'Gut geplant', accent: 'besser erlebt.' },
-    salon: { plain: 'Beratung mit', accent: 'echtem Plan.' },
-    tradesman: { plain: 'Qualität beginnt', accent: 'vor dem Termin.' },
-    consulting: { plain: 'Methodik, die', accent: 'Entscheidungen trägt.' },
-    medical: { plain: 'Orientierung vor', accent: 'dem Termin.' },
-    fitness: { plain: 'Training, das', accent: 'dranbleiben lässt.' },
-    wedding: { plain: 'Details für', accent: 'entspannte Gäste.' }
-  };
-  return map[industry];
-}
-
-function deepIntro(industry: IndustryKey, pageTitle: string): string {
-  const map: Record<IndustryKey, string> = {
-    restaurant: 'Produzenten, Pairings, Reservierungsdetails und kleine Hinweise, die aus einem Besuch einen Abend machen.',
-    hotel: 'Alles, was Gäste wissen wollen, bevor sie buchen: Komfort, Timing, Services und die kleinen Extras.',
-    tourism: 'Praktische Vorbereitung mit Guide-Wissen, Sicherheitsgefühl und Insider-Tipps für unterwegs.',
-    salon: 'Von Beratung bis Pflege danach: klare Erwartungen, bessere Ergebnisse, weniger Unsicherheit.',
-    tradesman: 'Ablauf, Material, Qualität und Notfallwege so erklärt, dass Anfragen direkt besser werden.',
-    consulting: 'Playbooks, Entscheidungswege und Deliverables, damit Beratung greifbar statt abstrakt wird.',
-    medical: 'Patientenfreundliche Orientierung: Vorbereitung, Diagnostik, Nachsorge und Terminlogik.',
-    fitness: 'Mehr Kontext zu Start, Ziel, Community und Trainingsrhythmus, damit Probetrainings leichter fallen.',
-    wedding: 'Gäste lesen hier die Details, die am Hochzeitstag Ruhe schaffen: Plan B, Shuttle, Dresscode und Timing.'
-  };
-  return `${pageTitle}: ${map[industry]}`;
 }
 
 function titleFor(collectionKey: string, index: number): string {

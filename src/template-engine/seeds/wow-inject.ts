@@ -27,12 +27,7 @@ function pickHomeMarker(sections: readonly SectionInstance[]): string {
   return 'global.hero';
 }
 
-/** Erste Section als Anker, falls kein Page-Header (z. B. experimentelle Seeds). */
-function pickSubpageMarker(sections: readonly SectionInstance[]): string {
-  if (sections.some((s) => s.sectionKey === 'global.pageHeader')) return 'global.pageHeader';
-  return sections[0]?.sectionKey ?? '';
-}
-
+/** WOW nur auf der Startseite; alle anderen Seiten = nur `page.sections` aus dem Seed (CMS). */
 export function applyWowToSeed(seed: SiteSeed): SiteSeed {
   const { industryKey, styleKey } = seed;
   const preset = THEME_PRESETS[industryKey]?.[styleKey === 'bold' ? 1 : styleKey === 'modern' ? 2 : 0] ?? THEME_PRESETS[industryKey]?.[0];
@@ -40,24 +35,12 @@ export function applyWowToSeed(seed: SiteSeed): SiteSeed {
 
   const pages = seed.pages.map((page) => {
     const allowedSections = pageAllowedSections.get(page.key);
-    if (page.key === 'contact') {
-      return { ...page, sections: enrichSections(renumber(page.sections), seed) };
-    }
     if (page.key === 'home') {
       const marker = pickHomeMarker(page.sections);
       const wow = filterAllowedSections(buildWowSectionInstances(industryKey, styleKey), allowedSections);
       return { ...page, sections: enrichSections(insertAfterMarker(page.sections, marker, wow), seed) };
     }
-
-    const marker = pickSubpageMarker(page.sections);
-    const inserts = filterAllowedSections(
-      buildWowSectionInstances(industryKey, styleKey, { pageKey: page.key, pageTitle: page.title }),
-      allowedSections
-    );
-    if (!marker) {
-      return { ...page, sections: enrichSections(renumber([...inserts, ...page.sections]), seed) };
-    }
-    return { ...page, sections: enrichSections(insertAfterMarker(page.sections, marker, inserts), seed) };
+    return { ...page, sections: enrichSections(renumber(page.sections), seed) };
   });
 
   return {
