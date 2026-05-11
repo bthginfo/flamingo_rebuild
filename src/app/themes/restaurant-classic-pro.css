@@ -1,0 +1,490 @@
+/**
+ * Restaurant · klassisch — eigenständiges Preview-/Site-Skin (2026).
+ * Nur unter .tenant-site-wrap[data-industry='restaurant'][data-style='classic'].
+ * Nutzt --font-rc-display / --font-rc-sans aus Root-Layout (next/font).
+ */
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] {
+  --rc-display: var(--font-rc-display), 'Cormorant Garamond', 'Iowan Old Style', 'Palatino Linotype', serif;
+  --rc-sans: var(--font-rc-sans), 'DM Sans', system-ui, sans-serif;
+  --rc-ink: color-mix(in oklab, var(--tenant-fg), #0a0604 12%);
+  --rc-paper: color-mix(in oklab, var(--tenant-bg), #f4ebe2 18%);
+  --rc-line: color-mix(in oklab, var(--tenant-line), var(--tenant-accent) 22%);
+  --rc-radius-lg: 26px;
+  --rc-radius-md: 16px;
+  --rc-shadow: 0 24px 70px rgba(12, 8, 6, 0.08);
+  --rc-shadow-soft: 0 12px 40px rgba(12, 8, 6, 0.06);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-preview {
+  font-family: var(--rc-sans);
+  color: var(--rc-ink);
+  background: var(--rc-paper);
+  letter-spacing: 0.01em;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] h1,
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-section-title,
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-page-hero__title,
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-wow-stats__title,
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-wow-trust__title,
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-wow-bento__title,
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-pro-media__title {
+  font-family: var(--rc-display);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.06;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-pro-icon__card h3 {
+  font-family: var(--rc-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .eyebrow {
+  font-family: var(--rc-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--tenant-accent), var(--rc-ink) 35%);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-nav {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  border-bottom: 1px solid color-mix(in oklab, var(--rc-line), transparent 35%);
+  background: color-mix(in oklab, var(--rc-paper), transparent 8%);
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-nav-inner {
+  min-height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-nav strong {
+  font-family: var(--rc-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-nav nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.25rem;
+  justify-content: flex-end;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-nav a {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: color-mix(in oklab, var(--rc-ink), transparent 18%);
+  text-decoration: none;
+  padding: 0.35rem 0;
+  border-bottom: 2px solid transparent;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-nav a:hover {
+  color: var(--tenant-accent);
+  border-bottom-color: color-mix(in oklab, var(--tenant-accent), transparent 45%);
+}
+
+/* Hero */
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-hero {
+  padding-block: clamp(3.25rem, 9vw, 6.5rem);
+  position: relative;
+  background:
+    radial-gradient(120% 80% at 10% 0%, color-mix(in oklab, var(--tenant-accent), transparent 88%), transparent 55%),
+    linear-gradient(180deg, color-mix(in oklab, var(--tenant-bg), #fff 6%) 0%, var(--rc-paper) 100%);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-hero-grid {
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: center;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-hero h1 {
+  font-size: clamp(2.6rem, 5.5vw, 4.1rem);
+  max-width: 14ch;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-hero h1 em {
+  font-style: italic;
+  color: color-mix(in oklab, var(--tenant-accent), #2a1810 8%);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-lead {
+  font-size: clamp(1.08rem, 1.9vw, 1.28rem);
+  line-height: 1.55;
+  color: color-mix(in oklab, var(--rc-ink), transparent 22%);
+  max-width: 42ch;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-body {
+  font-size: 1rem;
+  line-height: 1.65;
+  color: color-mix(in oklab, var(--rc-ink), transparent 28%);
+  max-width: 52ch;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-hero-image-frame {
+  border-radius: var(--rc-radius-lg);
+  border: 1px solid color-mix(in oklab, var(--rc-line), transparent 20%);
+  box-shadow: var(--rc-shadow);
+  overflow: hidden;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 1.75rem;
+}
+
+/* Buttons */
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-button {
+  font-family: var(--rc-sans);
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  padding: 0.85rem 1.55rem;
+  border: 1px solid color-mix(in oklab, var(--tenant-primary), #000 8%);
+  background: linear-gradient(
+    165deg,
+    color-mix(in oklab, var(--tenant-primary), #fff 8%) 0%,
+    var(--tenant-primary) 100%
+  );
+  color: var(--tenant-primary-fg, #fffaf5);
+  box-shadow: 0 10px 28px color-mix(in oklab, var(--tenant-primary), transparent 72%);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-button.secondary {
+  background: transparent;
+  color: var(--rc-ink);
+  border-color: color-mix(in oklab, var(--rc-line), transparent 15%);
+  box-shadow: none;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.03);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-button.secondary:hover {
+  border-color: color-mix(in oklab, var(--tenant-accent), transparent 40%);
+  color: var(--tenant-accent);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-button.compact {
+  padding: 0.55rem 1.1rem;
+  font-size: 0.78rem;
+}
+
+/* Action bar */
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-actionbar {
+  border-block: 1px solid color-mix(in oklab, var(--rc-line), transparent 25%);
+  background: color-mix(in oklab, var(--tenant-bg), var(--tenant-accent) 6%);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-actionbar-inner {
+  min-height: 56px;
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-actionbar b {
+  background: color-mix(in oklab, var(--tenant-accent), #fff 55%);
+}
+
+/* Generic sections */
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-section {
+  padding-block: clamp(2.75rem, 7vw, 5.25rem);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-section-title {
+  font-size: clamp(1.85rem, 3.5vw, 2.75rem);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-section-title em {
+  font-style: italic;
+  color: color-mix(in oklab, var(--tenant-accent), #1a0f0a 5%);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-section-intro {
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: color-mix(in oklab, var(--rc-ink), transparent 28%);
+  max-width: 60ch;
+}
+
+/* Text + image */
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-split {
+  gap: clamp(2rem, 5vw, 3.5rem);
+  align-items: center;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-split__visual-frame {
+  border-radius: var(--rc-radius-lg);
+  border: 1px solid color-mix(in oklab, var(--rc-line), transparent 25%);
+  box-shadow: var(--rc-shadow-soft);
+  overflow: hidden;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-body-text {
+  font-size: 1.02rem;
+  line-height: 1.7;
+  color: color-mix(in oklab, var(--rc-ink), transparent 22%);
+}
+
+/* WOW stats */
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-wow-stats {
+  border-radius: var(--rc-radius-lg);
+  border: 1px solid color-mix(in oklab, var(--rc-line), transparent 30%);
+  background: color-mix(in oklab, var(--tenant-bg), #fff 40%);
+  box-shadow: var(--rc-shadow-soft);
+  overflow: clip;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-wow-stats__glow {
+  opacity: 0.35;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-wow-stats__grid {
+  gap: 14px;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-wow-stats__card {
+  border-radius: var(--rc-radius-md);
+  border: 1px solid color-mix(in oklab, var(--rc-line), transparent 40%);
+  background: color-mix(in oklab, var(--rc-paper), #fff 25%);
+  padding: 1.25rem 1.1rem;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-wow-stats__value {
+  font-family: var(--rc-display);
+  font-size: clamp(1.75rem, 3vw, 2.35rem);
+  color: var(--tenant-accent);
+}
+
+/* WOW trust */
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-wow-trust__row {
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-wow-trust__cell {
+  border-radius: var(--rc-radius-md);
+  border: 1px dashed color-mix(in oklab, var(--rc-line), transparent 35%);
+  background: color-mix(in oklab, var(--tenant-bg), transparent 5%);
+  padding: 0.75rem 1rem;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-trust-img {
+  filter: grayscale(1) contrast(1.05);
+  opacity: 0.88;
+  mix-blend-mode: multiply;
+}
+
+/* WOW bento */
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-wow-bento__tile {
+  border-radius: var(--rc-radius-lg);
+  border: 1px solid color-mix(in oklab, var(--rc-line), transparent 25%);
+  overflow: hidden;
+  box-shadow: var(--rc-shadow-soft);
+  background: var(--tenant-bg);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-wow-bento__body h3 {
+  font-family: var(--rc-display);
+  font-size: 1.45rem;
+}
+
+/* Flatten tilt for calmer “editorial” cards */
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .fm-tilt-wrap,
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .fm-tilt-wrap.tenant-tilt--card > a,
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .fm-tilt-wrap.tenant-tilt--card > article,
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .fm-tilt-wrap.tenant-tilt--bento > article {
+  transform: none !important;
+}
+
+/* Collection cards */
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-card,
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] a.tenant-card {
+  border-radius: var(--rc-radius-lg);
+  border: 1px solid color-mix(in oklab, var(--rc-line), transparent 30%);
+  background: color-mix(in oklab, var(--tenant-bg), #fff 35%);
+  box-shadow: var(--rc-shadow-soft);
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-card:hover,
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] a.tenant-card:hover {
+  border-color: color-mix(in oklab, var(--tenant-accent), transparent 55%);
+  box-shadow: var(--rc-shadow);
+  transform: translateY(-4px);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-card h3 {
+  font-family: var(--rc-display);
+  font-size: 1.35rem;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-card__media {
+  border-radius: calc(var(--rc-radius-lg) - 6px);
+  overflow: hidden;
+}
+
+/* Testimonials */
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-testimonials__card,
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-quote {
+  border-radius: var(--rc-radius-lg);
+  border: 1px solid color-mix(in oklab, var(--rc-line), transparent 35%);
+  background: color-mix(in oklab, var(--tenant-bg), var(--tenant-accent) 4%);
+  padding: 1.5rem 1.35rem;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-testimonials__stars {
+  color: color-mix(in oklab, var(--tenant-accent), #3b2a1a 10%);
+}
+
+/* CTA band */
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-cta {
+  text-align: center;
+  border-radius: var(--rc-radius-lg);
+  margin-inline: 0;
+  padding: clamp(2.5rem, 6vw, 4rem) 1.5rem;
+  border: 1px solid color-mix(in oklab, var(--rc-line), transparent 30%);
+  background:
+    radial-gradient(80% 120% at 50% 0%, color-mix(in oklab, var(--tenant-accent), transparent 86%), transparent 60%),
+    color-mix(in oklab, var(--tenant-bg), #fff 20%);
+  box-shadow: var(--rc-shadow-soft);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-cta .tenant-section-intro {
+  margin-inline: auto;
+}
+
+/* Page hero (subpages) */
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-page-hero__title {
+  font-size: clamp(2.2rem, 4.5vw, 3.4rem);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-page-hero__media-frame {
+  border-radius: 0 0 var(--rc-radius-lg) var(--rc-radius-lg);
+  overflow: hidden;
+}
+
+/* Intro block */
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-intro-block {
+  border-radius: var(--rc-radius-lg);
+  border: 1px solid color-mix(in oklab, var(--rc-line), transparent 35%);
+  background: color-mix(in oklab, var(--tenant-bg), #fff 25%);
+  padding: clamp(1.75rem, 4vw, 2.75rem);
+  box-shadow: var(--rc-shadow-soft);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-intro-facts dt {
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--tenant-accent), var(--rc-ink) 30%);
+}
+
+/* Premium pro sections */
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-pro-icon__card {
+  border-radius: var(--rc-radius-md);
+  border: 1px solid color-mix(in oklab, var(--rc-line), transparent 35%);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-pro-timeline__item {
+  border-left: 1px solid color-mix(in oklab, var(--rc-line), transparent 40%);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-pro-media__title {
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-pro-quote__card {
+  border-radius: var(--rc-radius-md);
+  border: 1px solid color-mix(in oklab, var(--rc-line), transparent 40%);
+}
+
+/* Footer */
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-footer {
+  border-top: 1px solid color-mix(in oklab, var(--rc-line), transparent 25%);
+  background: color-mix(in oklab, #120c0a, var(--tenant-primary) 55%);
+  color: color-mix(in oklab, #fffaf5, transparent 8%);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-footer strong {
+  font-family: var(--rc-display);
+  font-size: 1.25rem;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-footer a {
+  color: color-mix(in oklab, #fffaf5, transparent 18%);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-footer a:hover {
+  color: color-mix(in oklab, var(--tenant-accent), #fff 35%);
+}
+
+/* FAQ */
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-faq-accordion__item {
+  border-radius: var(--rc-radius-md);
+  border: 1px solid color-mix(in oklab, var(--rc-line), transparent 35%);
+  background: color-mix(in oklab, var(--tenant-bg), #fff 18%);
+  margin-bottom: 10px;
+}
+
+/* Scroller */
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-scroller-section .tenant-scroller {
+  border-radius: var(--rc-radius-md);
+  border: 1px solid color-mix(in oklab, var(--rc-line), transparent 28%);
+  background: color-mix(in oklab, var(--tenant-bg), #fff 28%);
+}
+
+/* Deep dives + gallery */
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-deep-dive-section {
+  border-radius: var(--rc-radius-lg);
+  border: 1px dashed color-mix(in oklab, var(--rc-line), transparent 25%);
+  background: color-mix(in oklab, var(--rc-paper), transparent 4%);
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-gallery-cell {
+  border-radius: var(--rc-radius-md);
+  overflow: hidden;
+}
+
+.tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-news-section .tenant-card {
+  border-radius: var(--rc-radius-md);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-button:hover,
+  .tenant-site-wrap[data-industry='restaurant'][data-style='classic'] .tenant-card:hover,
+  .tenant-site-wrap[data-industry='restaurant'][data-style='classic'] a.tenant-card:hover {
+    transform: none;
+  }
+}
