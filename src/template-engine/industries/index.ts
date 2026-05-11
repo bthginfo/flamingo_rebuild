@@ -1,6 +1,7 @@
 import type { IndustryDefinition } from '../model';
 import { field } from '../fields';
 import { newsArticleCollection, page, premiumContentCollection, standardServiceCollection } from './helpers';
+import { RESTAURANT_CLASSIC_SECTION_KEYS } from '../sections/restaurant-classic';
 
 const globalAllowed = [
   'global.hero',
@@ -45,22 +46,118 @@ const globalAllowed = [
   'wedding.deepDives'
 ] as const;
 
+const restaurantClassicAllowed = [...RESTAURANT_CLASSIC_SECTION_KEYS] as readonly string[];
+const restaurantPagePool = [...restaurantClassicAllowed, ...(globalAllowed as readonly string[])];
+
 export const industries: readonly IndustryDefinition[] = [
   {
     key: 'restaurant',
     label: 'Restaurants',
     positioning: 'Reservierungen, Speisekarte, Atmosphäre und Vertrauen für Gastronomie.',
     corePages: [
-      page('home', 'Startseite', '/', ['global.hero', 'global.actionBar', 'restaurant.menuHighlights', 'restaurant.diningExperiences', 'global.testimonials', 'global.contactCta'], [...globalAllowed, 'restaurant.menuHighlights', 'restaurant.diningExperiences']),
-      page('menu', 'Speisekarte', '/speisekarte', ['global.pageHeader', 'restaurant.menuHighlights', 'global.contactCta'], [...globalAllowed, 'restaurant.menuHighlights', 'restaurant.diningExperiences']),
-      page('experiences', 'Erlebnisse', '/erlebnisse', ['global.pageHeader', 'restaurant.diningExperiences', 'global.contactCta'], [...globalAllowed, 'restaurant.menuHighlights', 'restaurant.diningExperiences']),
-      page('gallery', 'Galerie', '/galerie', ['global.pageHeader', 'global.galleryGrid', 'global.contactCta'], globalAllowed),
-      page('about', 'Über uns', '/ueber-uns', ['global.pageHeader', 'global.textImage', 'global.testimonials'], globalAllowed),
-      page('contact', 'Kontakt', '/kontakt', ['global.pageHeader', 'global.mapContact', 'global.contactCta'], [...globalAllowed, 'global.mapContact'])
+      page(
+        'home',
+        'Startseite',
+        '/',
+        [
+          'restaurantClassic.announcementBar',
+          'restaurantClassic.hero',
+          'restaurantClassic.trustStrip',
+          'restaurantClassic.brandPhilosophy',
+          'restaurantClassic.uspGrid',
+          'restaurantClassic.menuTeaser',
+          'restaurantClassic.signatureDishes',
+          'restaurantClassic.chefSpotlight',
+          'restaurantClassic.pairingBeverages',
+          'restaurantClassic.reservation',
+          'restaurantClassic.hoursContact',
+          'restaurantClassic.locationMap',
+          'restaurantClassic.testimonials',
+          'restaurantClassic.privateDining',
+          'restaurantClassic.socialGallery',
+          'restaurantClassic.newsletter',
+          'restaurantClassic.faq'
+        ],
+        restaurantPagePool
+      ),
+      page(
+        'menu',
+        'Speisekarte',
+        '/speisekarte',
+        [
+          'restaurantClassic.menuPageHero',
+          'restaurantClassic.menuCategoryNav',
+          'restaurantClassic.menuCategoryBlock',
+          'restaurantClassic.menuAddendum',
+          'restaurantClassic.menuFooterCta'
+        ],
+        restaurantPagePool
+      ),
+      page(
+        'booking',
+        'Reservierung',
+        '/reservierung',
+        [
+          'restaurantClassic.bookingHero',
+          'restaurantClassic.bookingChannels',
+          'restaurantClassic.bookingPolicy',
+          'restaurantClassic.bookingFaqMini',
+          'restaurantClassic.bookingAlternateContact'
+        ],
+        restaurantPagePool
+      ),
+      page(
+        'about',
+        'Über uns',
+        '/ueber-uns',
+        [
+          'restaurantClassic.aboutHero',
+          'restaurantClassic.aboutTimeline',
+          'restaurantClassic.aboutValues',
+          'restaurantClassic.teamGrid',
+          'restaurantClassic.pressLogos',
+          'restaurantClassic.aboutCta'
+        ],
+        restaurantPagePool
+      ),
+      page(
+        'events',
+        'Events',
+        '/events',
+        [
+          'restaurantClassic.eventsHero',
+          'restaurantClassic.eventsSpaces',
+          'restaurantClassic.eventsPackages',
+          'restaurantClassic.eventsGallery',
+          'restaurantClassic.eventsInquiryForm',
+          'restaurantClassic.eventsFaq'
+        ],
+        restaurantPagePool
+      ),
+      page(
+        'contact',
+        'Kontakt',
+        '/kontakt',
+        [
+          'restaurantClassic.contactHero',
+          'restaurantClassic.contactDetails',
+          'restaurantClassic.contactMap',
+          'restaurantClassic.contactForm',
+          'restaurantClassic.contactAccessibility'
+        ],
+        restaurantPagePool
+      ),
+      page(
+        'news',
+        'Aktuelles',
+        '/aktuelles',
+        ['restaurantClassic.newsIndexHero', 'restaurantClassic.newsFeatured', 'restaurantClassic.newsList'],
+        restaurantPagePool
+      )
     ],
     collections: [
       standardServiceCollection('restaurant', 'menuItem', 'Gerichte', '/speisekarte'),
-      standardServiceCollection('restaurant', 'diningExperience', 'Erlebnisse', '/erlebnisse'),
+      standardServiceCollection('restaurant', 'diningExperience', 'Events & Private Dining', '/events'),
       premiumContentCollection('restaurant', 'restaurantInsight', 'Storys & Pairings', '/insights'),
       newsArticleCollection('restaurant')
     ]

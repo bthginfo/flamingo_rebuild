@@ -133,9 +133,14 @@ export function deepenDemoSeed(seed: SiteSeed): SiteSeed {
         'global.faq'
       ]);
       const pageSections =
-        page.key === 'contact' ? sections.filter((section) => contactAllowed.has(section.sectionKey)) : sections;
+        page.key === 'contact' && seed.industryKey !== 'restaurant'
+          ? sections.filter((section) => contactAllowed.has(section.sectionKey))
+          : sections;
       const withNews =
-        page.key !== 'home' || pageSections.some((section) => section.sectionKey === 'global.newsTeaser') || newsIds.length === 0
+        page.key !== 'home' ||
+        seed.industryKey === 'restaurant' ||
+        pageSections.some((section) => section.sectionKey === 'global.newsTeaser') ||
+        newsIds.length === 0
           ? pageSections
           : insertBeforeContact(pageSections, {
               id: 'home-news-teaser',

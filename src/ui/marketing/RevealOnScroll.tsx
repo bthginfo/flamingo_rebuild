@@ -8,13 +8,22 @@ type RevealOnScrollProps = {
   as?: 'div' | 'section';
   id?: string;
   style?: CSSProperties;
+  /** Optional data attribute for CMS block targeting (e.g. restaurant classic preview). */
+  'data-rc-slug'?: string;
 };
 
 /**
  * Adds `is-revealed` when the block enters the viewport (once).
  * Uses `fm-reveal--armed` after mount so SSR shows content; motion only after arm + intersect.
  */
-export function RevealOnScroll({ children, className = '', as: tag = 'div', id, style }: RevealOnScrollProps) {
+export function RevealOnScroll({
+  children,
+  className = '',
+  as: tag = 'div',
+  id,
+  style,
+  'data-rc-slug': dataRcSlug
+}: RevealOnScrollProps) {
   const ref = useRef<HTMLElement | null>(null);
 
   useLayoutEffect(() => {
@@ -48,5 +57,15 @@ export function RevealOnScroll({ children, className = '', as: tag = 'div', id, 
 
   const merged = ['fm-reveal', className].filter(Boolean).join(' ');
 
-  return createElement(tag, { ref, className: merged, style, ...(id ? { id } : {}) }, children);
+  return createElement(
+    tag,
+    {
+      ref,
+      className: merged,
+      style,
+      ...(id ? { id } : {}),
+      ...(dataRcSlug !== undefined ? { 'data-rc-slug': dataRcSlug } : {})
+    },
+    children
+  );
 }

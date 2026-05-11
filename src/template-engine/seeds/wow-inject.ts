@@ -24,6 +24,7 @@ function insertAfterMarker(
 
 function pickHomeMarker(sections: readonly SectionInstance[]): string {
   if (sections.some((s) => s.sectionKey === 'global.actionBar')) return 'global.actionBar';
+  if (sections.some((s) => s.sectionKey === 'restaurantClassic.hero')) return 'restaurantClassic.hero';
   return 'global.hero';
 }
 
@@ -35,7 +36,7 @@ export function applyWowToSeed(seed: SiteSeed): SiteSeed {
 
   const pages = seed.pages.map((page) => {
     const allowedSections = pageAllowedSections.get(page.key);
-    if (page.key === 'home') {
+    if (page.key === 'home' && seed.industryKey !== 'restaurant') {
       const marker = pickHomeMarker(page.sections);
       const wow = filterAllowedSections(buildWowSectionInstances(industryKey, styleKey), allowedSections);
       return { ...page, sections: enrichSections(insertAfterMarker(page.sections, marker, wow), seed) };

@@ -91,7 +91,7 @@ export function resolvePreviewPage(seed: SiteSeed, segments: string[] | undefine
     if (item) return buildMenuItemDetailPage(item, seed.industryKey, seed.styleKey);
   }
 
-  if (seed.industryKey === 'restaurant' && parts.length === 2 && parts[0] === 'erlebnisse') {
+  if (seed.industryKey === 'restaurant' && parts.length === 2 && (parts[0] === 'events' || parts[0] === 'erlebnisse')) {
     const item = seed.collections.find((c) => c.collectionKey === 'diningExperience' && c.slug === parts[1]);
     if (item) return buildDiningExperienceDetailPage(item, seed.industryKey, seed.styleKey);
   }
@@ -564,8 +564,8 @@ function buildDiningExperienceDetailPage(
   const summary = typeof item.data.summary === 'string' ? item.data.summary : '';
   const image = typeof item.data.image === 'string' ? item.data.image : '';
   const narratives = collectionDetailNarrativeSections(item, industryKey, `exp-${item.id}`, 3, {
-    label: 'Alle Erlebnisse',
-    href: '/erlebnisse'
+    label: 'Alle Formate',
+    href: '/events'
   });
 
   const sections: SectionInstance[] = [
@@ -575,7 +575,7 @@ function buildDiningExperienceDetailPage(
       visible: true,
       sortOrder: 1,
       data: {
-        eyebrow: 'Erlebnisse',
+        eyebrow: 'Events',
         headline: { plain: item.title, accent: '' },
         subline: summary,
         image
@@ -591,7 +591,7 @@ function buildDiningExperienceDetailPage(
         headline: { plain: 'So wird der', accent: 'Abend rund.' },
         body: asString(item.data.description) || summary,
         image,
-        cta: { label: 'Alle Erlebnisse', link: { type: 'page', href: '/erlebnisse' } }
+        cta: { label: 'Alle Formate', link: { type: 'page', pageKey: 'events', href: '/events' } }
       }
     },
     ...narratives,
@@ -615,8 +615,8 @@ function buildDiningExperienceDetailPage(
     key: 'dining-experience-detail',
     kind: 'collectionDetail',
     title: item.title,
-    slug: `/erlebnisse/${item.slug}`,
-    seo: collectionSeo(item, `${item.title} · Erlebnisse`, summary),
+    slug: `/events/${item.slug}`,
+    seo: collectionSeo(item, `${item.title} · Events`, summary),
     sections: withWowAfterPageHeader(
       industryKey,
       styleKey,

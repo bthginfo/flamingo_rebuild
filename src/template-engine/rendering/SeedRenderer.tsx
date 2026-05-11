@@ -13,6 +13,7 @@ import { resolveTenantTheme } from '../theme-presets';
 import { resolveActionBarStatusLine } from './opening-hours-status';
 import { resolveSiteMicrocopy } from '../site-microcopy';
 import { MicrocopyProvider, useMicrocopy } from './microcopy-context';
+import { RestaurantClassicPreview } from './RestaurantClassicPreview';
 
 function SplitHeading({ plain, accent }: { plain: string; accent: string }) {
   if (!accent) return plain;
@@ -61,7 +62,14 @@ export function SeedPageRenderer({
 
   return (
     <MicrocopyProvider value={microcopy}>
-      <div className="tenant-site-wrap" data-industry={seed.industryKey} data-style={styleKey} style={accentStyle}>
+      <div
+        className={['tenant-site-wrap', seed.industryKey === 'restaurant' && styleKey === 'classic' ? 'tenant-rc-shell' : '']
+          .filter(Boolean)
+          .join(' ')}
+        data-industry={seed.industryKey}
+        data-style={styleKey}
+        style={accentStyle}
+      >
         <main className={`tenant-preview tenant-preview--${styleKey}`} style={accentStyle}>
           <PreviewNav seed={seed} previewBasePath={previewBasePath} />
           {sortedSections.map((section) => (
@@ -309,6 +317,17 @@ function SectionRenderer({
     case 'global.featureCompare':
       return <FeatureCompareSection section={section} styleKey={styleKey} domSectionId={domSectionId} />;
     default:
+      if (section.sectionKey.startsWith('restaurantClassic.')) {
+        return (
+          <RestaurantClassicPreview
+            section={section}
+            seed={seed}
+            styleKey={styleKey}
+            previewBasePath={previewBasePath}
+            domSectionId={domSectionId}
+          />
+        );
+      }
       return (
         <section className="tenant-section" id={domSectionId}>
           <div className="shell card">
@@ -1107,7 +1126,7 @@ function ActionBar({
 function collectionDetailPrefix(sectionKey: string): string | null {
   const map: Record<string, string> = {
     'restaurant.menuHighlights': '/speisekarte',
-    'restaurant.diningExperiences': '/erlebnisse',
+    'restaurant.diningExperiences': '/events',
     'restaurant.deepDives': '/insights',
     'hotel.roomHighlights': '/zimmer',
     'hotel.offers': '/angebote',
