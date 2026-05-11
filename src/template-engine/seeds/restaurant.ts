@@ -38,7 +38,8 @@ export function restaurantSeed(styleKey: StyleKey): SiteSeed {
       contact: {
         phone: '+43 512 123 4567',
         email: 'ciao@trattoria-flamingo.test',
-        address: 'Maria-Theresien-Straße 12, 6020 Innsbruck'
+        address: 'Maria-Theresien-Straße 12, 6020 Innsbruck',
+        openingHours: 'Täglich 11:30–22:30'
       }
     },
     collections: [
@@ -382,7 +383,8 @@ export function restaurantSeed(styleKey: StyleKey): SiteSeed {
           section('contact-map', 'global.mapContact', 3, {
             eyebrow: 'Anfahrt',
             headline: { plain: 'Mitten', accent: 'in Innsbruck.' },
-            subline: ''
+            subline: '',
+            openingHours: 'Täglich 11:30–22:30'
           }),
           section('contact-cta', 'global.contactCta', 4, {
             eyebrow: 'Reservierung',

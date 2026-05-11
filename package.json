@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "audit:cms-surface": "tsx scripts/audit-cms-surface.ts",
+    "audit:industry-demo": "tsx scripts/audit-industry-demo-differentiation.ts",
     "check:provisioning": "tsx scripts/check-provisioning-preflight.ts",
     "check:templates": "tsx scripts/check-template-health.ts",
     "validate:registry": "tsx scripts/validate-registry.ts",

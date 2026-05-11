@@ -9,6 +9,7 @@ import { sectionAnchorId } from '../section-anchor';
 import type { CollectionSeedItem, SiteSeed } from '../seeds/model';
 import { TiltHoverCard } from '@/ui/marketing/TiltHoverCard';
 import { resolveTenantTheme } from '../theme-presets';
+import { resolveActionBarStatusLine } from './opening-hours-status';
 
 function SplitHeading({ plain, accent }: { plain: string; accent: string }) {
   if (!accent) return plain;
@@ -615,6 +616,20 @@ function HeroSection({
   );
 }
 
+function openingHoursTextForActionBar(seed: SiteSeed): string {
+  const fromContact = asString(seed.global.contact.openingHours);
+  if (fromContact) return fromContact;
+  for (const page of seed.pages) {
+    for (const s of page.sections) {
+      if (s.sectionKey === 'global.mapContact') {
+        const h = asString(s.data.openingHours);
+        if (h) return h;
+      }
+    }
+  }
+  return '';
+}
+
 function ActionBar({
   section,
   previewBasePath,
@@ -626,12 +641,19 @@ function ActionBar({
   seed: SiteSeed;
   domSectionId: string;
 }) {
+  const useOpeningHours = section.data.useOpeningHours === true;
+  const statusLine = resolveActionBarStatusLine({
+    useOpeningHours,
+    statusOverride: asString(section.data.statusOverride),
+    openingHoursText: openingHoursTextForActionBar(seed)
+  });
+
   return (
     <section className="tenant-actionbar" id={domSectionId}>
       <div className="shell tenant-actionbar-inner">
         <span>
           <b />
-          {asString(section.data.statusOverride)}
+          {statusLine}
         </span>
         <div>
           <CtaButton value={section.data.primaryCta} previewBasePath={previewBasePath} seed={seed} compact />
