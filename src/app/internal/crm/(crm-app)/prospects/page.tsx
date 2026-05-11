@@ -4,6 +4,7 @@ import { listProspects } from '@/db/crm-repository';
 import { industries } from '@/template-engine/industries';
 import { styles } from '@/template-engine/styles';
 import { CreateProspectForm, ProspectsBoard, type SerializableProspect } from '@/app/internal/crm/crm-forms';
+import { getProvisioningReadiness } from '@/platform/crm/provisioning-readiness';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -40,6 +41,7 @@ export default async function InternalCrmProspectsPage() {
 
   const industryOptions = industries.map((industry) => ({ key: industry.key, label: industry.label }));
   const styleOptions = styles.map((style) => ({ key: style.key, label: style.label }));
+  const readiness = getProvisioningReadiness(schemaMissing);
 
   return (
     <div className="admin-surface section">
@@ -85,7 +87,7 @@ export default async function InternalCrmProspectsPage() {
 
             <div className="card" style={{ marginTop: 24 }}>
               <h2>Prospects ({serializable.length})</h2>
-              <ProspectsBoard prospects={serializable} industries={industryOptions} styles={styleOptions} />
+              <ProspectsBoard prospects={serializable} industries={industryOptions} styles={styleOptions} readiness={readiness} />
             </div>
           </>
         )}

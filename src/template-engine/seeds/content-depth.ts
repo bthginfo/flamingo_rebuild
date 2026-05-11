@@ -230,7 +230,7 @@ function ensureCollectionItems(items: CollectionSeedItem[], collection: Collecti
       data: dataFor(collection, industry, title, index),
       seo: {
         title,
-        description: summaryFor(collection.label, title, index)
+        description: summaryFor(collection.key, collection.label, title, index)
       }
     });
   }
@@ -252,7 +252,7 @@ function valueForField(
   title: string,
   index: number
 ): unknown {
-  if (field.key === 'summary') return summaryFor(collection.label, title, index);
+  if (field.key === 'summary') return summaryFor(collection.key, collection.label, title, index);
   if (field.key === 'description') {
     return descriptionFor(collection.key, title);
   }
@@ -358,32 +358,87 @@ function titleFor(collectionKey: string, index: number): string {
   return bank[index] ?? `${humanize(collectionKey)} ${index + 1}`;
 }
 
-function summaryFor(label: string, title: string, index: number): string {
+const PREMIUM_SUMMARY_BY_COLLECTION: Record<string, readonly string[]> = {
+  restaurantInsight: [
+    'Wie wir Timing, Herkunft und Service so verbinden, dass der Abend entspannt beginnt und am Tisch leicht wirkt.',
+    'Ein Blick hinter die Kulissen fuer Gaeste, die Genuss lieben, aber keine Inszenierung brauchen.',
+    'Konkrete Empfehlungen aus Kueche und Service, damit Reservierung, Anlass und Erwartung sauber zusammenpassen.'
+  ],
+  hotelInsight: [
+    'Alles, was Gaeste vor der Buchung wissen wollen: Anreise, Komfort, Rhythmus und die kleinen Extras im Haus.',
+    'Praktische Orientierung aus dem Hotelalltag, damit der Aufenthalt schon vor dem Check-in stressfrei startet.',
+    'Mehr Kontext zu Schlaf, Spa, Fruehstueck und Services, die aus einer Uebernachtung echte Erholung machen.'
+  ],
+  tourismInsight: [
+    'Guide-Wissen fuer bessere Vorbereitung: Route, Wetter, Sicherheit und die Momente, die unterwegs zaehlen.',
+    'Klar erklaert, damit Besucher nicht nur buchen, sondern mit einem guten Gefuehl losziehen.',
+    'Lokale Erfahrung als kompakter Planungshelfer fuer Menschen, die Natur und Ablauf ernst nehmen.'
+  ],
+  salonInsight: [
+    'Beratung, Pflege und Ergebnis realistisch eingeordnet, damit der Termin sichtbar mehr Vertrauen bekommt.',
+    'Professionelles Studio-Wissen fuer Kundinnen und Kunden, die Look, Haltbarkeit und Pflege verstehen wollen.',
+    'Vom Wunschbild zur tragbaren Loesung: klare Erwartungen, weniger Unsicherheit und bessere Ergebnisse.'
+  ],
+  tradesmanInsight: [
+    'So wird aus einer Anfrage ein sauberer Ablauf: Material, Termin, Baustelle und Ergebnis transparent erklaert.',
+    'Praktische Orientierung fuer Hausbesitzer, die Qualitaet erkennen und Entscheidungen sicher treffen wollen.',
+    'Ein ehrlicher Blick auf Planung, Aufwand und Wartung, bevor Kosten oder Rueckfragen unnoetig wachsen.'
+  ],
+  consultingInsight: [
+    'Einordnung aus der Projektpraxis: Was wirklich hilft, wenn Entscheidungen schneller und belastbarer werden sollen.',
+    'Methodik ohne Buzzwords, mit Fokus auf Klarheit, Prioritaeten und naechste Schritte, die Teams umsetzen koennen.',
+    'Strategische Tiefe als greifbarer Leitfaden fuer Fuehrungsteams, die nicht noch ein loses Konzept brauchen.'
+  ],
+  medicalInsight: [
+    'Patientenfreundlich erklaert, damit Vorbereitung, Ablauf und Nachsorge schon vor dem Termin klar sind.',
+    'Praxiswissen in ruhiger Sprache fuer Menschen, die Orientierung statt medizinischer Floskeln suchen.',
+    'Konkrete Hinweise zu Organisation, Diagnostik und Entscheidung, damit Termine sicherer genutzt werden.'
+  ],
+  fitnessInsight: [
+    'Training verstaendlich gemacht: Einstieg, Ziel, Rhythmus und Regeneration so geplant, dass Menschen dranbleiben.',
+    'Studio-Wissen fuer bessere Entscheidungen vor Probetraining, Mitgliedschaft oder Kursauswahl.',
+    'Mehr Kontext zu Coaching, Community und Progression, damit Motivation nicht vom Zufall abhaengt.'
+  ],
+  weddingInsight: [
+    'Liebevoll praktische Gaesteinfos, die Timing, Anreise, Dresscode und Plan B ohne Nachfragen klaeren.',
+    'Alles, was den Hochzeitstag leichter macht: freundlich formuliert, konkret geplant und sofort hilfreich.',
+    'Kleine Details mit grosser Wirkung, damit Gaeste ankommen, mitfeiern und nicht improvisieren muessen.'
+  ],
+  newsArticle: [
+    'Aktuell, nuetzlich und konkret: ein kurzer Beitrag, der Besuchern vor Anfrage oder Buchung echten Kontext gibt.',
+    'Ein saisonaler Einblick aus dem Betrieb mit klarer Empfehlung und einem naheliegenden naechsten Schritt.',
+    'Relevant fuer Menschen, die planen, vergleichen oder einfach wissen wollen, was sich vor Ort gerade lohnt.'
+  ]
+};
+
+function summaryFor(collectionKey: string, label: string, title: string, index: number): string {
+  const premium = PREMIUM_SUMMARY_BY_COLLECTION[collectionKey];
+  if (premium?.length) return premium[index % premium.length];
   const angles = [
-    'kurz erklaert, damit Interessenten schneller verstehen, ob es zu ihrem Anlass passt',
-    'mit konkretem Nutzen, ehrlicher Einordnung und einem klaren naechsten Schritt',
-    'fuer Menschen, die vor der Anfrage erst Sicherheit und Orientierung suchen',
-    'als hilfreicher Einblick aus dem Alltag des Betriebs'
+    'klar beschrieben, damit Interessenten schneller verstehen, ob es zu ihrem Anlass passt',
+    'mit konkretem Nutzen, ehrlicher Einordnung und einem naheliegenden naechsten Schritt',
+    'fuer Menschen, die vor der Anfrage Orientierung und Sicherheit suchen',
+    'als wertvoller Einblick aus dem Alltag des Betriebs'
   ];
-  return `${title}: ${angles[index % angles.length]}.`;
+  return `${title} aus ${label}: ${angles[index % angles.length]}.`;
 }
 
 function descriptionFor(collectionKey: string, title: string): string {
   if (collectionKey === 'newsArticle') {
-    return `${title} zeigt, was Kundinnen und Kunden vor einer Anfrage wissen sollten: konkrete Hinweise, praktische Einordnung und ein naechster Schritt ohne Umwege.`;
+    return `${title} ordnet ein, was Kundinnen und Kunden gerade wirklich wissen wollen: aktuelle Hinweise, klare Empfehlung und ein naechster Schritt ohne Umwege.`;
   }
   if (collectionKey.endsWith('Insight')) {
-    return `${title} gibt Besuchern einen ehrlichen Blick hinter die Kulissen und beantwortet typische Fragen, bevor sie Kontakt aufnehmen.`;
+    return `${title} gibt Besuchern einen fundierten Blick hinter die Kulissen und beantwortet typische Fragen, bevor sie Kontakt aufnehmen.`;
   }
-  return `${title} ist als eigenstaendiger CMS-Inhalt gepflegt und kann im Admin mit Text, Bild, CTA und SEO weiter verfeinert werden.`;
+  return `${title} ist so beschrieben, dass Nutzen, Atmosphaere und naechster Schritt ohne langes Nachfragen sichtbar werden.`;
 }
 
 function detailFor(collectionKey: string, title: string, index: number): string {
   const lines = [
-    'Hilft bei der Entscheidung vor der Anfrage.',
-    'Schafft Orientierung ohne lange Rueckfragen.',
-    'Macht Ablauf und Erwartung klar.',
-    'Gibt dem Angebot mehr Substanz.'
+    'Hilft Interessenten, den naechsten Schritt mit gutem Gefuehl zu machen.',
+    'Schafft Orientierung ohne lange Rueckfragen oder vage Versprechen.',
+    'Macht Ablauf, Erwartung und Nutzen auf einen Blick klar.',
+    'Gibt dem Angebot mehr Substanz und macht die Entscheidung leichter.'
   ];
   if (collectionKey.endsWith('Insight')) return lines[index % lines.length];
   return title;

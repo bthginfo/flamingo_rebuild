@@ -12,6 +12,17 @@ import { slugifyTenantSlug } from '@/lib/tenant-slug';
 
 export type IndustryOption = { key: string; label: string };
 export type StyleOption = { key: string; label: string };
+export type ProvisioningReadinessUi = {
+  dbConfigured: boolean;
+  schemaReady: boolean;
+  authSecretReady: boolean;
+  blobReady: boolean;
+  vercelProvisioningEnabled: boolean;
+  vercelReady: boolean;
+  missingVercelKeys: string[];
+  canCreateTenant: boolean;
+  canCreateVercelProject: boolean;
+};
 
 export type ProspectStatusUi = 'new' | 'contacted' | 'won' | 'lost' | 'provisioned';
 
@@ -115,9 +126,11 @@ export function ProspectsBoard(props: {
   prospects: readonly SerializableProspect[];
   industries: readonly IndustryOption[];
   styles: readonly StyleOption[];
+  readiness: ProvisioningReadinessUi;
 }) {
   return (
     <div className="crm-board">
+      <ProvisioningReadinessPanel readiness={props.readiness} />
       {props.prospects.length === 0 ? (
         <p style={{ color: 'var(--muted)' }}>Noch keine Prospects. Lege oben den ersten Datensatz an.</p>
       ) : (
@@ -139,6 +152,7 @@ export function ProspectsBoard(props: {
                   prospect={prospect}
                   industries={props.industries}
                   styles={props.styles}
+                  readiness={props.readiness}
                 />
               ))}
             </tbody>
@@ -153,8 +167,9 @@ function ProspectRow(props: {
   prospect: SerializableProspect;
   industries: readonly IndustryOption[];
   styles: readonly StyleOption[];
+  readiness: ProvisioningReadinessUi;
 }) {
-  const { prospect, industries, styles } = props;
+  const { prospect, industries, styles, readiness } = props;
   return (
     <tr>
       <td>
@@ -181,6 +196,7 @@ function ProspectRow(props: {
               styles={styles}
               defaultIndustry={prospect.preferredIndustry ?? 'restaurant'}
               defaultStyle={prospect.preferredStyle ?? 'classic'}
+              readiness={readiness}
             />
           ) : (
             <span style={{ color: 'var(--muted)', fontSize: 13 }}>Tenant provisioniert</span>
@@ -222,6 +238,7 @@ function ProvisionTenantDialog(props: {
   styles: readonly StyleOption[];
   defaultIndustry: string;
   defaultStyle: string;
+  readiness: ProvisioningReadinessUi;
 }) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
@@ -276,6 +293,7 @@ function ProvisionTenantDialog(props: {
             <h2 id="internal-crm-provision-title" style={{ fontFamily: 'Georgia, serif', marginTop: 0 }}>
               Tenant für {props.companyName} anlegen
             </h2>
+            <ProvisioningReadinessPanel readiness={props.readiness} compact />
             <form onSubmit={handleSubmit} className="crm-form" style={{ marginTop: 12 }}>
               <input type="hidden" name="prospectId" value={props.prospectId} />
               <label>
@@ -352,8 +370,8 @@ function ProvisionTenantDialog(props: {
                 <button type="button" className="button secondary" disabled={pending} onClick={() => setOpen(false)}>
                   Schließen
                 </button>
-                <button className="button" type="submit" disabled={pending}>
-                  {pending ? 'Provisioniere …' : 'Tenant anlegen'}
+                <button className="button" type="submit" disabled={pending || !props.readiness.canCreateTenant}>
+                  {pending ? 'Provisioniere …' : props.readiness.canCreateTenant ? 'Tenant anlegen' : 'Konfiguration unvollstaendig'}
                 </button>
               </div>
             </form>
@@ -361,6 +379,49 @@ function ProvisionTenantDialog(props: {
         </div>
       ) : null}
     </>
+  );
+}
+
+function ProvisioningReadinessPanel(props: { readiness: ProvisioningReadinessUi; compact?: boolean }) {
+  const readiness = props.readiness;
+  const missingVercel = readiness.missingVercelKeys.join(', ');
+  return (
+    <div className={props.compact ? 'crm-readiness crm-readiness--compact' : 'crm-readiness'}>
+      <div>
+        <strong>Provisioning-Check</strong>
+        <p>
+          {readiness.canCreateTenant
+            ? 'Tenant-Erstellung ist bereit.'
+            : 'Tenant-Erstellung ist blockiert, bis Datenbank, Schema und AUTH_SECRET bereit sind.'}{' '}
+          {readiness.vercelProvisioningEnabled
+            ? readiness.vercelReady
+              ? 'Vercel-Projektanlage ist aktiv und bereit.'
+              : `Vercel-Projektanlage ist aktiv, aber es fehlen: ${missingVercel}.`
+            : 'Vercel-Projektanlage ist deaktiviert; es wird ein Plattform-Tenant angelegt.'}
+        </p>
+      </div>
+      <div className="crm-readiness__chips" aria-label="Provisioning-Konfiguration">
+        <ReadinessChip ok={readiness.dbConfigured} label="DB" />
+        <ReadinessChip ok={readiness.schemaReady} label="Schema" />
+        <ReadinessChip ok={readiness.authSecretReady} label="AUTH_SECRET" />
+        <ReadinessChip ok={!readiness.vercelProvisioningEnabled || readiness.vercelReady} label="Vercel" optional={!readiness.vercelProvisioningEnabled} />
+        <ReadinessChip ok={readiness.blobReady} label="Blob" optional />
+      </div>
+    </div>
+  );
+}
+
+function ReadinessChip(props: { ok: boolean; label: string; optional?: boolean }) {
+  const label = props.optional && !props.ok ? `${props.label} optional` : props.label;
+  const className = props.ok
+    ? 'crm-readiness__chip crm-readiness__chip--ok'
+    : props.optional
+      ? 'crm-readiness__chip crm-readiness__chip--warn'
+      : 'crm-readiness__chip crm-readiness__chip--bad';
+  return (
+    <span className={className}>
+      {props.ok ? 'Bereit' : props.optional ? 'Hinweis' : 'Fehlt'} · {label}
+    </span>
   );
 }
 

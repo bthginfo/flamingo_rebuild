@@ -13,7 +13,7 @@ export default function AdminMediaPage() {
           </a>{' '}
           laden. Uploads sind auf 1&nbsp;MB pro Bild begrenzt. Alternativ traegst du weiterhin eine Bild-URL in den
           Seiten- und Collection-Editoren ein. Ungenutzte Blob-Bilder, die seit 14 Tagen in keiner Draft- oder
-          Live-Version referenziert werden, kannst du unten bereinigen.
+          Live-Version referenziert werden, werden per Cron bereinigt, sobald CRON_SECRET in Vercel gesetzt ist.
         </p>
         <MediaUploadPanel />
       </div>

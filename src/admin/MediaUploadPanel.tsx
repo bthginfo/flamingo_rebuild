@@ -163,7 +163,8 @@ export function MediaUploadPanel() {
         <p className="eyebrow">Speicherplatz-Regel</p>
         <p>
           Ungenutzte Blob-Bilder, die in keiner Draft- oder Live-Version referenziert sind und aelter als 14 Tage sind,
-          koennen hier sicher entfernt werden. Aktive Frontend-Bilder bleiben erhalten.
+          koennen hier sicher entfernt werden. In Vercel laeuft derselbe Check automatisch jede Nacht, wenn CRON_SECRET
+          gesetzt ist. Aktive Frontend-Bilder bleiben erhalten.
         </p>
         <button className="button secondary" type="button" disabled={cleanupBusy} onClick={() => void cleanupUnusedMedia()}>
           {cleanupBusy ? 'Bereinigt ...' : 'Ungenutzte Bilder bereinigen'}
