@@ -55,7 +55,7 @@ export function SeedPageRenderer({
 
   return (
     <div className="tenant-site-wrap" data-industry={seed.industryKey} data-style={styleKey} style={accentStyle}>
-      <main className={`tenant-preview tenant-preview--${styleKey}`}>
+      <main className={`tenant-preview tenant-preview--${styleKey}`} style={accentStyle}>
         <PreviewNav seed={seed} previewBasePath={previewBasePath} />
         {sortedSections.map((section) => (
           <SectionRenderer
@@ -772,8 +772,7 @@ function collectionMetaItems(item: CollectionSeedItem): string[] {
     asString(item.data.time),
     asString(item.data.weekday),
     asString(item.data.level),
-    asString(item.data.trainer),
-    asString(item.data.detail)
+    asString(item.data.trainer)
   ].filter(Boolean).slice(0, 3);
 }
 

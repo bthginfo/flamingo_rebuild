@@ -80,7 +80,7 @@ const TITLE_BANK: Record<string, readonly string[]> = {
   fitnessInsight: ['Probetraining ohne Druck', 'Trainingsziel in 30 Tagen', 'Peak-Zeiten clever nutzen', 'Community statt Anonymität', 'Regeneration zählt', 'Startplan für Wiedereinsteiger'],
   accommodation: ['Hotel Rheinblick', 'Pension Marktgasse', 'Boutique Loft', 'Winzerhof Gästehaus', 'Apartment Hafen', 'Shuttle Treffpunkt'],
   weddingInsight: ['Plan B bei Wetter', 'Dresscode ohne Rätsel', 'Kinder & Ruhezone', 'Geschenke & Beiträge', 'Shuttle nach Mitternacht', 'Fotos ohne Zeitdruck'],
-  newsArticle: ['Neu im Fruehjahr', 'Blick hinter die Kulissen', 'Terminfenster mit Mehrwert', 'Das fragen Kund:innen gerade', 'Saison-Update aus dem Team', 'Vor Ort besser geplant']
+  newsArticle: ['Neu im Fruehjahr', 'Blick hinter die Kulissen', 'Terminfenster mit Mehrwert', 'Was Kunden jetzt fragen', 'Saison-Update aus dem Team', 'Vor Ort besser geplant']
 };
 
 const DEEP_SECTION_BY_INDUSTRY: Record<IndustryKey, string> = {
@@ -149,10 +149,14 @@ export function deepenDemoSeed(seed: SiteSeed): SiteSeed {
           }
         };
       });
+      const pageSections =
+        page.key === 'contact'
+          ? sections.filter((section) => ['global.pageHeader', 'global.mapContact', 'global.contactCta'].includes(section.sectionKey))
+          : sections;
       const withDeepDive =
-        page.key === 'home' || sections.some((section) => section.sectionKey === deepSection) || deepIds.length === 0
-          ? sections
-          : insertAfterHeader(sections, {
+        page.key === 'home' || page.key === 'contact' || pageSections.some((section) => section.sectionKey === deepSection) || deepIds.length === 0
+          ? pageSections
+          : insertAfterHeader(pageSections, {
               id: `depth-${page.key}-deep-dive`,
               sectionKey: deepSection,
               visible: true,
@@ -250,12 +254,12 @@ function valueForField(
 ): unknown {
   if (field.key === 'summary') return summaryFor(collection.label, title, index);
   if (field.key === 'description') {
-    return `${title} ist als echtes Demo-CMS-Item gepflegt: mit Nutzen, Kontext, Ablauf und klarer Erwartung. So wirken Unterseiten nicht leer, sondern wie ein belastbarer Kundenauftritt.`;
+    return descriptionFor(collection.key, title);
   }
   if (field.key === 'image') return IMAGE_BY_INDUSTRY[industry][index % IMAGE_BY_INDUSTRY[industry].length];
   if (field.key === 'kicker') return ['Insider', 'Gut zu wissen', 'Ablauf', 'Empfehlung', 'Detail', 'Service'][index % 6];
   if (field.key === 'metric') return ['3 Min.', 'Premium', 'Planbar', 'Vor Ort', 'Sicher', 'Direkt'][index % 6];
-  if (field.key === 'detail') return `${title} macht die Entscheidung leichter, weil Erwartung, Timing und naechster Schritt klar sind.`;
+  if (field.key === 'detail') return detailFor(collection.key, title, index);
   if (field.key === 'category') return ['Update', 'Einblick', 'Ratgeber', 'Saison'][index % 4];
   if (field.key === 'publishedAt') return `2026-0${(index % 6) + 1}-15`;
   if (field.key === 'author') return 'Flamingo Redaktion';
@@ -271,7 +275,7 @@ function valueForField(
 }
 
 function deepEyebrow(industry: IndustryKey, pageTitle: string): string {
-  return `${pageTitle} · Deep Dive`;
+  return `${pageTitle} · Wissenswertes`;
 }
 
 function newsEyebrow(industry: IndustryKey): string {
@@ -309,7 +313,7 @@ function newsIntro(industry: IndustryKey): string {
     restaurant: 'Saisonkarte, Produzenten, Events und kleine Geschichten, die den naechsten Besuch greifbar machen.',
     hotel: 'Arrangements, Hausgeschichten und praktische Hinweise fuer Gaeste, die genauer planen wollen.',
     tourism: 'Wetter, Routen, Ausruestung und neue Erlebnisse kompakt aus Sicht des Guide-Teams.',
-    salon: 'Farbtrends, Pflegewissen und Terminfenster, die Kund:innen vor dem Besuch wirklich helfen.',
+    salon: 'Farbtrends, Pflegewissen und Terminfenster, die vor dem Besuch wirklich helfen.',
     tradesman: 'Material, Wartung, Ablauf und regionale Projekte mit konkretem Nutzen fuer Anfragen.',
     consulting: 'Perspektiven aus Strategie, Wachstum und Umsetzung, die direkt in bessere Entscheidungen fuehren.',
     medical: 'Patientenfreundliche Updates zu Ablauf, Vorsorge, Diagnostik und Organisation.',
@@ -356,12 +360,33 @@ function titleFor(collectionKey: string, index: number): string {
 
 function summaryFor(label: string, title: string, index: number): string {
   const angles = [
-    'mit klarer Empfehlung, schneller Orientierung und einem starken Grund zur Anfrage',
-    'als hochwertiger Detailpunkt mit konkretem Nutzen und sauberem Erwartungsmanagement',
-    'für Besucher, die vergleichen, planen und direkt den nächsten Schritt machen wollen',
-    'mit genug Kontext, damit die Demo wie ein echter Kundenauftritt wirkt'
+    'kurz erklaert, damit Interessenten schneller verstehen, ob es zu ihrem Anlass passt',
+    'mit konkretem Nutzen, ehrlicher Einordnung und einem klaren naechsten Schritt',
+    'fuer Menschen, die vor der Anfrage erst Sicherheit und Orientierung suchen',
+    'als hilfreicher Einblick aus dem Alltag des Betriebs'
   ];
-  return `${title}: ${label} ${angles[index % angles.length]}.`;
+  return `${title}: ${angles[index % angles.length]}.`;
+}
+
+function descriptionFor(collectionKey: string, title: string): string {
+  if (collectionKey === 'newsArticle') {
+    return `${title} zeigt, was Kundinnen und Kunden vor einer Anfrage wissen sollten: konkrete Hinweise, praktische Einordnung und ein naechster Schritt ohne Umwege.`;
+  }
+  if (collectionKey.endsWith('Insight')) {
+    return `${title} gibt Besuchern einen ehrlichen Blick hinter die Kulissen und beantwortet typische Fragen, bevor sie Kontakt aufnehmen.`;
+  }
+  return `${title} ist als eigenstaendiger CMS-Inhalt gepflegt und kann im Admin mit Text, Bild, CTA und SEO weiter verfeinert werden.`;
+}
+
+function detailFor(collectionKey: string, title: string, index: number): string {
+  const lines = [
+    'Hilft bei der Entscheidung vor der Anfrage.',
+    'Schafft Orientierung ohne lange Rueckfragen.',
+    'Macht Ablauf und Erwartung klar.',
+    'Gibt dem Angebot mehr Substanz.'
+  ];
+  if (collectionKey.endsWith('Insight')) return lines[index % lines.length];
+  return title;
 }
 
 function humanize(value: string): string {

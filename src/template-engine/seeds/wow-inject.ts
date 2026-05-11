@@ -40,6 +40,9 @@ export function applyWowToSeed(seed: SiteSeed): SiteSeed {
 
   const pages = seed.pages.map((page) => {
     const allowedSections = pageAllowedSections.get(page.key);
+    if (page.key === 'contact') {
+      return { ...page, sections: enrichSections(renumber(page.sections), seed) };
+    }
     if (page.key === 'home') {
       const marker = pickHomeMarker(page.sections);
       const wow = filterAllowedSections(buildWowSectionInstances(industryKey, styleKey), allowedSections);

@@ -55,13 +55,14 @@ for (const industry of INDUSTRY_KEYS) {
       const visible = page.sections.filter((section) => section.visible);
       const premiumCount = visible.filter((section) => premiumSections.has(section.sectionKey)).length;
 
-      if (visible.length < 3) {
+      const minVisibleSections = page.key === 'contact' ? 2 : 3;
+      if (visible.length < minVisibleSections) {
         issues.push({ scope: pageScope, message: 'Page has fewer than three visible sections.' });
       }
-      if (page.key !== 'home' && visible.length < 4) {
+      if (page.key !== 'home' && page.key !== 'contact' && visible.length < 4) {
         issues.push({ scope: pageScope, message: 'Subpage has fewer than four visible sections.' });
       }
-      if (page.key !== 'home' && !visible.some((section) => section.sectionKey === deepDiveSectionByIndustry[industry])) {
+      if (page.key !== 'home' && page.key !== 'contact' && !visible.some((section) => section.sectionKey === deepDiveSectionByIndustry[industry])) {
         issues.push({ scope: pageScope, message: 'Subpage is missing its industry deep-dive CMS section.' });
       }
       if (page.key === 'home' && premiumCount < 2) {

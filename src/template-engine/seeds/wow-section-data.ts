@@ -149,8 +149,8 @@ const STATS_BY_INDUSTRY: Record<
     ]
   },
   tourism: {
-    eyebrow: 'Erlebnis-Kennzahlen',
-    headline: { plain: 'Touren mit', accent: 'Herz.' },
+    eyebrow: 'Was unsere Gaeste schaetzen',
+    headline: { plain: 'Sicher geplant,', accent: 'intensiv erlebt.' },
     items: [
       { value: '120+', label: 'Touren', hint: 'pro Saison' },
       { value: '4.8', label: 'Sterne', hint: 'Ø Bewertung' },
@@ -227,7 +227,7 @@ function adaptStatsForStyle(
   if (styleKey === 'classic') return block;
   if (styleKey === 'modern') {
     return {
-      eyebrow: `${block.eyebrow} · KPI-fokussiert`,
+      eyebrow: block.eyebrow,
       headline: block.headline,
       items: block.items
     };
@@ -252,12 +252,12 @@ function adaptTrustHeadlineForStyle(
   if (styleKey === 'modern') {
     return {
       eyebrow: block.eyebrow,
-      headline: { plain: block.headline.plain, accent: `${block.headline.accent.replace(/\.$/, '')} · sachlich` }
+      headline: block.headline
     };
   }
   return {
     eyebrow: block.eyebrow,
-    headline: { plain: block.headline.plain, accent: `${block.headline.accent.replace(/\.$/, '')} — jetzt.` }
+    headline: block.headline
   };
 }
 
@@ -269,7 +269,7 @@ function adaptBentoForStyle(
   if (styleKey === 'modern') {
     return {
       eyebrow: bento.eyebrow,
-      headline: { plain: bento.headline.plain, accent: `${bento.headline.accent.replace(/\.$/, '')} · modular` },
+      headline: bento.headline,
       items: bento.items
     };
   }
@@ -553,7 +553,7 @@ const QUOTE_PACK: Record<IndustryKey, { quote: string; name: string; role: strin
     { quote: '„Mobile Nutzung ist endlich first-class.“', name: 'Ops', role: 'Logistik' }
   ],
   salon: [
-    { quote: '„Kund:innen verstehen unsere Treatments sofort.“', name: 'Salon Lead', role: 'Styling' },
+    { quote: '„Unsere Beratung beginnt jetzt schon vor dem Termin.“', name: 'Salon Lead', role: 'Styling' },
     { quote: '„Looks wirken hochwertig — wie im Editorial.“', name: 'Color', role: 'Creative' },
     { quote: '„Termin-CTA ist klar, ohne Druck.“', name: 'Owner', role: 'Studio' }
   ],
