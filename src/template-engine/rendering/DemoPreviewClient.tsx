@@ -46,7 +46,9 @@ export function DemoPreviewClient({
         }
       }
 
-      if (active) setSeed(loadDemoContent(initialSeed, mode));
+      if (active) {
+        setSeed(mode === 'draft' ? loadDemoContent(initialSeed, 'draft') : initialSeed);
+      }
     }
 
     void load();
