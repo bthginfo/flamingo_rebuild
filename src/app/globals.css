@@ -8080,52 +8080,65 @@ a {
 }
 
 .tenant-card__facts {
-  display: grid;
-  gap: 8px;
-  margin: 16px 0 0;
-  padding-top: 14px;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+  margin: 10px 0 0;
+  padding: 8px 0 0;
   border-top: 1px solid color-mix(in oklab, var(--tenant-line), transparent 18%);
 }
 
-.tenant-card__facts div {
-  display: grid;
-  grid-template-columns: minmax(76px, 0.8fr) minmax(0, 1.2fr);
-  gap: 12px;
-  align-items: baseline;
-}
-
-.tenant-card__facts dt,
-.tenant-card__facts dd {
-  min-width: 0;
+.tenant-card__fact {
   margin: 0;
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 5px 8px;
+  max-width: 100%;
+  padding: 5px 10px 6px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--tenant-line), transparent 22%);
+  background: color-mix(in oklab, var(--tenant-soft, var(--tenant-bg)), #fff 52%);
+  line-height: 1.2;
 }
 
-.tenant-card__facts dt {
+.tenant-card__fact-label {
+  flex-shrink: 0;
   color: var(--tenant-muted);
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   font-weight: 850;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
-.tenant-card__facts dd {
-  color: var(--tenant-text);
-  font-size: 0.86rem;
-  font-weight: 820;
-  line-height: 1.32;
-  text-align: right;
+.tenant-card__fact-value {
+  min-width: 0;
+  max-width: 100%;
+  color: var(--tenant-fg);
+  font-size: 0.78rem;
+  font-weight: 750;
   overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 
 .tenant-preview--bold .tenant-card__facts {
   border-top-color: rgba(255, 255, 255, 0.16);
 }
 
-.tenant-preview--bold .tenant-card__facts dt {
+.tenant-preview--bold .tenant-card__fact {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.tenant-preview--bold .tenant-card__fact-label {
   color: rgba(255, 255, 255, 0.72);
 }
 
-.tenant-preview--bold .tenant-card__facts dd {
+.tenant-preview--bold .tenant-card__fact-value {
   color: #fff;
 }
 

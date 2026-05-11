@@ -781,14 +781,14 @@ function CollectionGrid({
                   <h3>{item.title}</h3>
                   <p>{asString(item.data.summary)}</p>
                   {facts.length > 0 ? (
-                    <dl className="tenant-card__facts" aria-label={mc.collectionCardFactsAria}>
+                    <ul className="tenant-card__facts" aria-label={mc.collectionCardFactsAria}>
                       {facts.map((fact) => (
-                        <div key={`${fact.label}-${fact.value}`}>
-                          <dt>{fact.label}</dt>
-                          <dd>{fact.value}</dd>
-                        </div>
+                        <li key={`${fact.label}-${fact.value}`} className="tenant-card__fact">
+                          <span className="tenant-card__fact-label">{fact.label}</span>
+                          <span className="tenant-card__fact-value">{fact.value}</span>
+                        </li>
                       ))}
-                    </dl>
+                    </ul>
                   ) : null}
                   <span className="tenant-card__more" aria-hidden>
                     {mc.collectionCardMoreHint}
