@@ -31,7 +31,8 @@ export function weddingSeed(styleKey: StyleKey): SiteSeed {
       contact: {
         phone: '+49 171 000 77 88',
         email: 'wedding@lena-jonas.test',
-        address: 'Weingut Flamingo, Rheinstraße 2, 55411 Bingen am Rhein'
+        address: 'Weingut Flamingo, Rheinstraße 2, 55411 Bingen am Rhein',
+        mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Weingut%20Bingen%20am%20Rhein'
       }
     },
     collections: [
@@ -211,6 +212,19 @@ export function weddingSeed(styleKey: StyleKey): SiteSeed {
             headline: { plain: 'Zwei', accent: 'Optionen.' },
             intro: 'Kontingente — bitte rechtzeitig buchen.',
             items: ['acc-hotel', 'acc-pension']
+          }),
+          section('loc-map', 'global.mapContact', 4, {
+            eyebrow: 'Ankommen',
+            headline: { plain: 'Adresse, Route', accent: 'und Zeiten.' },
+            subline:
+              'Alle wichtigen Informationen fÃ¼r Anreise, Parken und RÃ¼ckfahrt an einem Ort.',
+            primaryActionLabel: 'Anrufen',
+            secondaryActionLabel: 'E-Mail schreiben',
+            arrival: [
+              { title: 'Bahn', body: 'Bingen Hauptbahnhof ist etwa 12 Minuten zu FuÃŸ entfernt.' },
+              { title: 'Parken', body: 'Direkt am Weingut gibt es wenige PlÃ¤tze. Bitte bildet Fahrgemeinschaften.' },
+              { title: 'Taxi', body: 'Wir teilen am Abend lokale Taxi-Kontakte am Empfang.' }
+            ]
           })
         ]
       },
