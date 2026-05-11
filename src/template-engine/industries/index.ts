@@ -5,6 +5,8 @@ import { newsArticleCollection, page, premiumContentCollection, standardServiceC
 const globalAllowed = [
   'global.hero',
   'global.pageHeader',
+  'global.introBlock',
+  'global.richArticle',
   'global.actionBar',
   'global.textImage',
   'global.galleryGrid',

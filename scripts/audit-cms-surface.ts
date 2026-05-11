@@ -13,6 +13,8 @@ const industryDefs = new Map(industries.map((industry) => [industry.key, industr
 const rendererSectionFields: Record<string, readonly string[]> = {
   'global.hero': ['eyebrow', 'headline', 'subline', 'body', 'image', 'primaryCta', 'secondaryCta'],
   'global.pageHeader': ['eyebrow', 'headline', 'subline', 'image'],
+  'global.introBlock': ['eyebrow', 'headline', 'body', 'facts'],
+  'global.richArticle': ['eyebrow', 'headline', 'content'],
   'global.textImage': ['eyebrow', 'headline', 'body', 'image', 'cta'],
   'global.mapContact': [
     'eyebrow',

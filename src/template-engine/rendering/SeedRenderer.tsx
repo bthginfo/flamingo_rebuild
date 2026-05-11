@@ -160,6 +160,10 @@ function SectionRenderer({
       );
     case 'global.pageHeader':
       return <PageHeaderSection section={section} styleKey={styleKey} domSectionId={domSectionId} />;
+    case 'global.introBlock':
+      return <IntroBlockSection section={section} domSectionId={domSectionId} />;
+    case 'global.richArticle':
+      return <RichArticleSection section={section} domSectionId={domSectionId} />;
     case 'global.textImage':
       return (
         <TextImageSection section={section} previewBasePath={previewBasePath} seed={seed} domSectionId={domSectionId} />
@@ -329,6 +333,57 @@ function PageHeaderSection({
           <SplitHeading plain={headline.plain} accent={headline.accent} />
         </h1>
         {asString(section.data.subline) ? <p className="tenant-page-hero__sub">{asString(section.data.subline)}</p> : null}
+      </div>
+    </section>
+  );
+}
+
+function IntroBlockSection({ section, domSectionId }: { section: SectionInstance; domSectionId: string }) {
+  const headline = asSplit(section.data.headline);
+  const body = asString(section.data.body);
+  const facts = arrayItems(section.data.facts);
+  return (
+    <section className="tenant-section tenant-intro-block" id={domSectionId}>
+      <div className="shell tenant-intro-block__inner">
+        <p className="eyebrow">{asString(section.data.eyebrow)}</p>
+        <h2 className="tenant-section-title">
+          <SplitHeading plain={headline.plain} accent={headline.accent} />
+        </h2>
+        {body ? <div className="tenant-body-text tenant-intro-block__body">{body}</div> : null}
+        {facts.length > 0 ? (
+          <dl className="tenant-intro-facts" aria-label="Kurzinfos">
+            {facts.map((row, i) => {
+              const label = asString(row.label);
+              const value = asString(row.value);
+              if (!label && !value) return null;
+              return (
+                <div className="tenant-intro-fact-wrap" key={i}>
+                  <dt>{label}</dt>
+                  <dd>{value}</dd>
+                </div>
+              );
+            })}
+          </dl>
+        ) : null}
+      </div>
+    </section>
+  );
+}
+
+function RichArticleSection({ section, domSectionId }: { section: SectionInstance; domSectionId: string }) {
+  const headline = asSplit(section.data.headline);
+  const content = asString(section.data.content);
+  const hasHeadline = Boolean(headline.plain || headline.accent);
+  return (
+    <section className="tenant-section tenant-rich-article" id={domSectionId}>
+      <div className="shell tenant-rich-article__inner">
+        {asString(section.data.eyebrow) ? <p className="eyebrow">{asString(section.data.eyebrow)}</p> : null}
+        {hasHeadline ? (
+          <h2 className="tenant-section-title">
+            <SplitHeading plain={headline.plain} accent={headline.accent} />
+          </h2>
+        ) : null}
+        <div className="tenant-body-text tenant-rich-article__content">{content}</div>
       </div>
     </section>
   );

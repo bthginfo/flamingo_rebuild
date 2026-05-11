@@ -123,10 +123,17 @@ export function deepenDemoSeed(seed: SiteSeed): SiteSeed {
           }
         };
       });
+      const contactAllowed = new Set([
+        'global.pageHeader',
+        'global.introBlock',
+        'global.richArticle',
+        'global.textImage',
+        'global.mapContact',
+        'global.contactCta',
+        'global.faq'
+      ]);
       const pageSections =
-        page.key === 'contact'
-          ? sections.filter((section) => ['global.pageHeader', 'global.mapContact', 'global.contactCta'].includes(section.sectionKey))
-          : sections;
+        page.key === 'contact' ? sections.filter((section) => contactAllowed.has(section.sectionKey)) : sections;
       const withNews =
         page.key !== 'home' || pageSections.some((section) => section.sectionKey === 'global.newsTeaser') || newsIds.length === 0
           ? pageSections

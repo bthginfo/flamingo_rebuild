@@ -170,13 +170,24 @@ export function restaurantSeed(styleKey: StyleKey): SiteSeed {
             subline: 'Hausgemachte Pasta, Holzofenpizza und Antipasti — täglich frisch.',
             image: heroImages[styleKey]
           }),
-          section('menu-grid', 'restaurant.menuHighlights', 2, {
+          section('menu-intro', 'global.introBlock', 2, {
+            eyebrow: 'Philosophie',
+            headline: { plain: 'Was auf dem', accent: 'Teller landet.' },
+            body:
+              'Unsere Karte folgt dem Rhythmus der Jahreszeiten: kurze Wege, klare Zutaten, viel Handarbeit. Die folgenden Gerichte sind eine Auswahl — im Restaurant finden Sie die volle Karte inklusive Tagesangeboten.',
+            facts: [
+              { label: 'Manufaktur', value: 'Pasta täglich frisch' },
+              { label: 'Ofen', value: 'Neapel · 485 °C' },
+              { label: 'Weinkeller', value: '120+ Positionen' }
+            ]
+          }),
+          section('menu-grid', 'restaurant.menuHighlights', 3, {
             eyebrow: 'Gerichte',
             headline: { plain: 'Aus der', accent: 'Küche.' },
             intro: 'Alle Signature-Gerichte mit Preisen und Bildern — klicken Sie für Details.',
             items: ['dish-tagliatelle', 'dish-margherita', 'dish-branzino']
           }),
-          section('menu-scroller', 'global.scrollerHighlights', 3, {
+          section('menu-scroller', 'global.scrollerHighlights', 4, {
             eyebrow: 'Besonderheiten',
             headline: { plain: 'Drei Gründe', accent: 'vorbeizukommen.' },
             intro: 'Kurz & knackig: was uns von anderen unterscheidet.',
@@ -201,7 +212,7 @@ export function restaurantSeed(styleKey: StyleKey): SiteSeed {
               }
             ]
           }),
-          section('menu-faq', 'global.faq', 4, {
+          section('menu-faq', 'global.faq', 5, {
             eyebrow: 'Gastronomie',
             headline: { plain: 'Häufige', accent: 'Fragen.' },
             items: [
@@ -244,13 +255,24 @@ export function restaurantSeed(styleKey: StyleKey): SiteSeed {
             subline: 'Wein, Familie, langer Tisch — unsere Formate mit Charakter.',
             image: heroImages[styleKey]
           }),
-          section('exp-grid', 'restaurant.diningExperiences', 2, {
+          section('exp-intro', 'global.introBlock', 2, {
+            eyebrow: 'Erlebnisse',
+            headline: { plain: 'Formate mit', accent: 'Persönlichkeit.' },
+            body:
+              'Jedes Event hat eine eigene Dramaturgie: Weinbegleitung, Menüverlauf und Raum — abgestimmt auf Ihre Gruppe. Unten finden Sie unsere festen Formate; für Firmen und Feiern planen wir gern individuell.',
+            facts: [
+              { label: 'Kapazität', value: 'bis 48 Gäste' },
+              { label: 'Planung', value: '4–8 Wochen Vorlauf' },
+              { label: 'Menü', value: 'vegetarisch möglich' }
+            ]
+          }),
+          section('exp-grid', 'restaurant.diningExperiences', 3, {
             eyebrow: 'Kalender',
             headline: { plain: 'Unsere', accent: 'Erlebnisse.' },
             intro: 'Klicken Sie für Details und Buchungsweg.',
             items: ['experience-wine', 'experience-family']
           }),
-          section('exp-cta', 'global.contactCta', 3, {
+          section('exp-cta', 'global.contactCta', 4, {
             eyebrow: 'Planung',
             headline: { plain: 'Privat oder', accent: 'geschlossene Gesellschaft?' },
             subline: 'Wir beraten Sie gern zu Kapazität, Menü und Timing.',
@@ -275,7 +297,18 @@ export function restaurantSeed(styleKey: StyleKey): SiteSeed {
             subline: 'Ein Blick in unsere Küche, den Saal und die Details, die den Abend ausmachen.',
             image: heroImages[styleKey]
           }),
-          section('gallery-grid', 'global.galleryGrid', 2, {
+          section('gallery-intro', 'global.introBlock', 2, {
+            eyebrow: 'Raum',
+            headline: { plain: 'Ein Haus', accent: 'für lange Abende.' },
+            body:
+              'Zwischen Holzofen, Bar und Saal entsteht ein fließender Raum — mal laut und festlich, mal leise und intim. Die Galerie zeigt Momente aus dem Alltag der Trattoria, nicht nur inszenierte Shots.',
+            facts: [
+              { label: 'Saal', value: '52 Plätze' },
+              { label: 'Bar', value: 'Walk-in' },
+              { label: 'Terrasse', value: 'Saisonal' }
+            ]
+          }),
+          section('gallery-grid', 'global.galleryGrid', 3, {
             eyebrow: 'Rundgang',
             headline: { plain: 'Momente', accent: 'am Tisch.' },
             images: [
@@ -287,7 +320,7 @@ export function restaurantSeed(styleKey: StyleKey): SiteSeed {
               { url: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?auto=format&fit=crop&w=1200&q=80', alt: 'Pasta' }
             ]
           }),
-          section('gallery-scroller', 'global.scrollerHighlights', 3, {
+          section('gallery-scroller', 'global.scrollerHighlights', 4, {
             eyebrow: 'Küche & Saal',
             headline: { plain: 'Hinter den', accent: 'Kulissen.' },
             intro: 'Wo gekocht, gegossen und gelacht wird — ein Blick in unsere Räume.',
@@ -312,7 +345,7 @@ export function restaurantSeed(styleKey: StyleKey): SiteSeed {
               }
             ]
           }),
-          section('gallery-cta', 'global.contactCta', 4, {
+          section('gallery-cta', 'global.contactCta', 5, {
             eyebrow: 'Reservierung',
             headline: { plain: 'Selbst', accent: 'vorbeischauen?' },
             subline: 'Wir freuen uns, wenn Sie live statt nur auf Fotos neugierig werden.',
@@ -337,15 +370,38 @@ export function restaurantSeed(styleKey: StyleKey): SiteSeed {
             subline: 'Was als kleine Osteria begann, ist heute ein Haus voller Stimmen, Düfte und langen Abenden.',
             image: ''
           }),
-          section('about-story', 'global.textImage', 2, {
+          section('about-intro', 'global.introBlock', 2, {
+            eyebrow: 'Über uns',
+            headline: { plain: 'Zwei Generationen', accent: 'ein Tisch.' },
+            body:
+              'Giulia und Marco führen die Trattoria in zweiter Generation. Wir glauben an Handarbeit, ehrliche Preise und Gäste, die wiederkommen — nicht wegen eines Trends, sondern weil es sich wie Zuhause anfühlt.',
+            facts: [
+              { label: 'Seit', value: '1998' },
+              { label: 'Team', value: '28 Menschen' },
+              { label: 'Lieferanten', value: 'regional' }
+            ]
+          }),
+          section('about-story', 'global.textImage', 3, {
             eyebrow: 'Team',
             headline: { plain: 'Küche mit', accent: 'Herz.' },
             body:
-              'Giulia und Marco führen die Trattoria in zweiter Generation. Wir arbeiten mit kleinen Manufakturen, backen täglich frisch und lassen Gäste teilhaben — ob am Tresen, am langen Tisch oder beim Weinabend.',
+              'Unsere Manufaktur arbeitet in kleinen Chargen: Teigruhe über Nacht, Saucen aus dem Sud, Kräuter aus dem eigenen Hochbeet. Gäste schauen gern in die offene Küche — wir erklären Schritte am Tresen und lassen probieren, wenn es passt.',
             image: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80',
             cta: { label: 'Stellen & Praktika', link: { type: 'page', href: '/kontakt' } }
           }),
-          section('about-voices', 'global.testimonials', 3, {
+          section('about-film', 'global.richArticle', 4, {
+            eyebrow: 'Ein Blick hinein',
+            headline: { plain: 'Küche,', accent: 'die man hört.' },
+            content:
+              'Wenn der Ofen auf Temperatur ist und der Teig ruht, riecht der ganze Block nach Basilikum und Hefe. In diesem kurzen Film begleiten Sie unser Team durch den Pass — von der ersten Rolle bis zum letzten Teller am Fenster.'
+          }),
+          section('about-video', 'global.videoEmbed', 5, {
+            eyebrow: 'Film',
+            headline: { plain: 'Hinter', accent: 'den Kulissen.' },
+            embedUrl: 'https://www.youtube.com/watch?v=1IszT_guI08',
+            caption: 'Impressionen aus Küche und Service — kein kommerzieller Trailer, sondern echte Arbeit.'
+          }),
+          section('about-voices', 'global.testimonials', 6, {
             eyebrow: 'Teamstimmen',
             headline: { plain: 'Warum wir', accent: 'hier sind.' },
             items: [
@@ -353,6 +409,26 @@ export function restaurantSeed(styleKey: StyleKey): SiteSeed {
               { quote: 'Wenn der Ofen warm ist und der Teig ruht, fühlt sich der Tag richtig an.', name: 'Lorenzo, Pizza' },
               { quote: 'Wir kochen, was wir selbst essen würden. Punkt.', name: 'Marco, Küche' }
             ]
+          }),
+          section('about-faq', 'global.faq', 7, {
+            eyebrow: 'Gastgeber',
+            headline: { plain: 'Das wollen', accent: 'wir sein.' },
+            items: [
+              {
+                question: 'Was bedeutet „Trattoria“ für euch?',
+                answer: 'Ein Ort, an dem man nicht perfekt sein muss — aber gut essen und laut lachen darf. Familien willkommen, Hunde auf der Terrasse, kein Dresscode.'
+              },
+              {
+                question: 'Wie unterstützt ihr regionale Produzenten?',
+                answer: 'Wir kaufen Gemüse, Käse und Wein überwiegend aus Tirol und Südtirol; für Spezialitäten aus Italien arbeiten wir mit Importeuren, die kleine Betriebe kennen.'
+              }
+            ]
+          }),
+          section('about-cta', 'global.contactCta', 8, {
+            eyebrow: 'Besuch',
+            headline: { plain: 'Kommen Sie', accent: 'vorbei.' },
+            subline: 'Reservierung, Feier oder Frage — wir freuen uns auf Ihre Nachricht.',
+            cta: { label: 'Kontakt & Anfahrt', link: { type: 'page', href: '/kontakt' } }
           })
         ]
       },
@@ -386,7 +462,21 @@ export function restaurantSeed(styleKey: StyleKey): SiteSeed {
             subline: '',
             openingHours: 'Täglich 11:30–22:30'
           }),
-          section('contact-cta', 'global.contactCta', 4, {
+          section('contact-faq', 'global.faq', 4, {
+            eyebrow: 'Kontakt',
+            headline: { plain: 'Häufige', accent: 'Fragen.' },
+            items: [
+              {
+                question: 'Wie reserviere ich am schnellsten?',
+                answer: 'Telefonisch oder per E-Mail — wir bestätigen den Tisch und halten bei Bedarf einen Hinweis zu Allergien fest.'
+              },
+              {
+                question: 'Kann ich mit dem Auto vorfahren?',
+                answer: 'Ja; öffentliche Parkhäuser sind fußläufig erreichbar. Details finden Sie in der Karte unten.'
+              }
+            ]
+          }),
+          section('contact-cta', 'global.contactCta', 5, {
             eyebrow: 'Reservierung',
             headline: { plain: 'Schreiben Sie', accent: 'uns.' },
             subline: 'Wir antworten schnell und unkompliziert.',

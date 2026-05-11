@@ -32,6 +32,41 @@ export const globalSections: readonly SectionDefinition[] = [
     ]
   },
   {
+    key: 'global.introBlock',
+    label: 'Einleitung mit Fakten',
+    industries: 'all',
+    styles: 'all',
+    allowedPageKinds: ['core', 'custom', 'collectionDetail'],
+    repeatable: true,
+    fields: [
+      field.text('eyebrow', 'Eyebrow'),
+      field.splitHeading('headline', 'Überschrift', { required: true }),
+      field.richText('body', 'Fließtext'),
+      field.repeater(
+        'facts',
+        'Fakten / Kennzahlen',
+        [
+          field.text('label', 'Label', { required: true }),
+          field.text('value', 'Wert', { required: true })
+        ],
+        { helpText: 'Kurze Kennzahlen unter dem Text — z. B. Öffnungszeiten, Kapazität, Standort.' }
+      )
+    ]
+  },
+  {
+    key: 'global.richArticle',
+    label: 'Langtext-Abschnitt',
+    industries: 'all',
+    styles: 'all',
+    allowedPageKinds: ['core', 'custom', 'collectionDetail'],
+    repeatable: true,
+    fields: [
+      field.text('eyebrow', 'Eyebrow'),
+      field.splitHeading('headline', 'Überschrift'),
+      field.richText('content', 'Inhalt', { required: true })
+    ]
+  },
+  {
     key: 'global.textImage',
     label: 'Text mit Bild',
     industries: 'all',
