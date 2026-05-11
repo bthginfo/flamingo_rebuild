@@ -1,6 +1,6 @@
 'use client';
 
-import type { CSSProperties } from 'react';
+import { useState, type CSSProperties } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { PageInstance, SectionInstance, StyleKey } from '../model';
@@ -204,9 +204,7 @@ function SectionRenderer({
     case 'global.faq':
       return <FaqSection section={section} domSectionId={domSectionId} />;
     case 'wedding.rsvp':
-      return (
-        <RsvpSection section={section} previewBasePath={previewBasePath} seed={seed} domSectionId={domSectionId} />
-      );
+      return <RsvpSection section={section} domSectionId={domSectionId} />;
     case 'global.contactCta':
       return (
         <ContactCta section={section} previewBasePath={previewBasePath} seed={seed} domSectionId={domSectionId} />
@@ -812,33 +810,69 @@ function FaqSection({ section, domSectionId }: { section: SectionInstance; domSe
 
 function RsvpSection({
   section,
-  previewBasePath,
-  seed,
   domSectionId
 }: {
   section: SectionInstance;
-  previewBasePath: string;
-  seed: SiteSeed;
   domSectionId: string;
 }) {
   const headline = asSplit(section.data.headline);
+  const [submitted, setSubmitted] = useState(false);
 
   return (
-    <section className="tenant-section" id={domSectionId}>
-      <div className="shell">
-        <p className="eyebrow">{asString(section.data.eyebrow)}</p>
-        <h2 className="tenant-section-title">
-          <SplitHeading plain={headline.plain} accent={headline.accent} />
-        </h2>
-        <p className="tenant-section-intro">{asString(section.data.intro)}</p>
-        {asString(section.data.deadlineLabel) ? (
-          <p className="eyebrow" style={{ marginTop: 16 }}>
-            {asString(section.data.deadlineLabel)}
-          </p>
-        ) : null}
-        <div style={{ marginTop: 20 }}>
-          <CtaButton value={section.data.cta} previewBasePath={previewBasePath} seed={seed} />
+    <section className="tenant-section tenant-rsvp-section" id={domSectionId}>
+      <div className="shell tenant-rsvp-grid">
+        <div>
+          <p className="eyebrow">{asString(section.data.eyebrow)}</p>
+          <h2 className="tenant-section-title">
+            <SplitHeading plain={headline.plain} accent={headline.accent} />
+          </h2>
+          <p className="tenant-section-intro">{asString(section.data.intro)}</p>
+          {asString(section.data.deadlineLabel) ? (
+            <p className="eyebrow" style={{ marginTop: 16 }}>
+              {asString(section.data.deadlineLabel)}
+            </p>
+          ) : null}
         </div>
+        <form
+          className="tenant-rsvp-form"
+          onSubmit={(event) => {
+            event.preventDefault();
+            setSubmitted(true);
+          }}
+        >
+          <label>
+            <span>{asString(section.data.nameLabel) || 'Name'}</span>
+            <input required name="name" autoComplete="name" />
+          </label>
+          <label>
+            <span>{asString(section.data.attendanceLabel) || 'Teilnahme'}</span>
+            <select required name="attendance" defaultValue="yes">
+              <option value="yes">Ja, ich bin dabei</option>
+              <option value="no">Leider nein</option>
+              <option value="maybe">Ich klaere es noch</option>
+            </select>
+          </label>
+          <label>
+            <span>{asString(section.data.guestCountLabel) || 'Anzahl Personen'}</span>
+            <input min={1} name="guestCount" type="number" defaultValue={1} />
+          </label>
+          <label>
+            <span>{asString(section.data.dietaryLabel) || 'Essen / Allergien'}</span>
+            <input name="dietary" placeholder="z. B. vegetarisch, glutenfrei" />
+          </label>
+          <label className="tenant-rsvp-form__wide">
+            <span>{asString(section.data.noteLabel) || 'Nachricht'}</span>
+            <textarea name="note" rows={4} />
+          </label>
+          <button className="tenant-button" type="submit">
+            {asString(section.data.submitLabel) || asString(isRecord(section.data.cta) ? section.data.cta.label : '') || 'Antwort senden'}
+          </button>
+          {submitted ? (
+            <p className="tenant-rsvp-form__success" role="status">
+              {asString(section.data.successMessage) || 'Danke, deine Antwort wurde erfasst.'}
+            </p>
+          ) : null}
+        </form>
       </div>
     </section>
   );

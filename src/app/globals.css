@@ -3089,8 +3089,16 @@ a {
   border: 1px solid var(--tenant-line);
 }
 
+.tenant-button.secondary,
+.tenant-button.secondary:visited {
+  color: var(--tenant-fg) !important;
+  background: color-mix(in oklab, var(--tenant-bg), #fff 44%);
+}
+
 .tenant-preview--bold .tenant-button.secondary {
-  color: #fff;
+  color: var(--tenant-fg) !important;
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.32);
 }
 
 .tenant-button.compact {
@@ -8985,6 +8993,10 @@ a {
     filter 0.22s ease;
 }
 
+.tenant-button.secondary {
+  color: var(--tenant-fg) !important;
+}
+
 .tenant-button:hover {
   transform: translateY(-2px);
   filter: saturate(1.08);
@@ -9042,6 +9054,79 @@ a {
   background: radial-gradient(circle, color-mix(in oklab, var(--tenant-accent), transparent 68%), transparent 70%);
   filter: blur(34px);
   pointer-events: none;
+}
+
+.tenant-rsvp-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(320px, 1fr);
+  gap: clamp(24px, 5vw, 72px);
+  align-items: start;
+}
+
+.tenant-rsvp-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  padding: clamp(18px, 3vw, 30px);
+  border: 1px solid color-mix(in oklab, var(--tenant-accent), var(--tenant-line) 62%);
+  border-radius: var(--tenant-radius-lg, 22px);
+  background:
+    radial-gradient(circle at 0 0, color-mix(in oklab, var(--tenant-accent), transparent 86%), transparent 36%),
+    color-mix(in oklab, var(--tenant-bg), #fff 58%);
+  box-shadow: 0 28px 70px -46px color-mix(in oklab, var(--tenant-accent), #000 40%);
+}
+
+.tenant-rsvp-form label {
+  display: grid;
+  gap: 8px;
+  color: var(--tenant-fg);
+  font-size: 0.84rem;
+  font-weight: 850;
+}
+
+.tenant-rsvp-form__wide {
+  grid-column: 1 / -1;
+}
+
+.tenant-rsvp-form input,
+.tenant-rsvp-form select,
+.tenant-rsvp-form textarea {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid color-mix(in oklab, var(--tenant-fg), transparent 82%);
+  border-radius: 14px;
+  padding: 0 13px;
+  background: color-mix(in oklab, var(--tenant-bg), #fff 78%);
+  color: var(--tenant-fg);
+  font: inherit;
+}
+
+.tenant-rsvp-form textarea {
+  min-height: 116px;
+  padding-block: 12px;
+  resize: vertical;
+}
+
+.tenant-rsvp-form .tenant-button {
+  border: 0;
+  cursor: pointer;
+}
+
+.tenant-rsvp-form__success {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: color-mix(in oklab, var(--tenant-accent), #fff 86%);
+  color: var(--tenant-fg);
+  font-weight: 750;
+}
+
+@media (max-width: 860px) {
+  .tenant-rsvp-grid,
+  .tenant-rsvp-form {
+    grid-template-columns: 1fr;
+  }
 }
 
 .tenant-contact-pro__shell {
@@ -9128,6 +9213,13 @@ a {
 
 .tenant-button:visited {
   color: var(--tenant-button-fg, #fff);
+}
+
+.tenant-button.secondary,
+.tenant-button.secondary:visited {
+  color: var(--tenant-fg) !important;
+  background: color-mix(in oklab, var(--tenant-bg), #fff 44%);
+  border-color: color-mix(in oklab, var(--tenant-fg), transparent 74%);
 }
 
 .tenant-contact-map__inner {

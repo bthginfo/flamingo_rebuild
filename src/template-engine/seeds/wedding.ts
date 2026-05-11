@@ -118,6 +118,13 @@ export function weddingSeed(styleKey: StyleKey): SiteSeed {
             headline: { plain: 'Seid', accent: 'dabei?' },
             intro: 'Bitte bis 1. Juli 2026 Bescheid sagen — auch bei Plus-one und Ernährung.',
             deadlineLabel: 'Antwortfrist: 1. Juli 2026',
+            nameLabel: 'Euer Name',
+            attendanceLabel: 'Seid ihr dabei?',
+            guestCountLabel: 'Anzahl Personen',
+            dietaryLabel: 'Essen, Allergien oder Kinder',
+            noteLabel: 'Nachricht an uns',
+            submitLabel: 'Antwort senden',
+            successMessage: 'Danke, eure Demo-Antwort wurde erfasst.',
             cta: { label: 'Zur RSVP-Seite', link: { type: 'page', href: '/rsvp' } }
           }),
           section('home-gallery', 'global.galleryGrid', 4, {
@@ -224,8 +231,15 @@ export function weddingSeed(styleKey: StyleKey): SiteSeed {
           section('rsvp-block', 'wedding.rsvp', 2, {
             eyebrow: 'Formular',
             headline: { plain: 'Online', accent: 'antworten.' },
-            intro: 'In der finalen Version kommt hier ein Formular — für die Demo reicht der Button.',
+            intro: 'Gebt uns kurz Bescheid, ob ihr dabei seid, mit wie vielen Personen ihr kommt und ob wir beim Essen etwas beachten sollen.',
             deadlineLabel: 'Bitte bis 1. Juli 2026 antworten.',
+            nameLabel: 'Euer Name',
+            attendanceLabel: 'Seid ihr dabei?',
+            guestCountLabel: 'Anzahl Personen',
+            dietaryLabel: 'Essen, Allergien oder Kinder',
+            noteLabel: 'Nachricht an uns',
+            submitLabel: 'Antwort senden',
+            successMessage: 'Danke, eure Demo-Antwort wurde erfasst. In einem echten Kundenprojekt geht sie an das hinterlegte Postfach.',
             cta: { label: 'Demo: Antwort senden', link: { type: 'page', href: '/faq' } }
           })
         ]

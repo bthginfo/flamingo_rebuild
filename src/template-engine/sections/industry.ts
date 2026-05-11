@@ -65,6 +65,13 @@ export const industrySections: readonly SectionDefinition[] = [
       field.splitHeading('headline', 'Ueberschrift'),
       field.textarea('intro', 'Einleitung'),
       field.text('deadlineLabel', 'Antwortfrist'),
+      field.text('nameLabel', 'Feld: Name'),
+      field.text('attendanceLabel', 'Feld: Teilnahme'),
+      field.text('guestCountLabel', 'Feld: Anzahl Personen'),
+      field.text('dietaryLabel', 'Feld: Essen / Allergien'),
+      field.text('noteLabel', 'Feld: Nachricht'),
+      field.text('submitLabel', 'Button: Absenden'),
+      field.textarea('successMessage', 'Erfolgsmeldung'),
       field.cta('cta', 'RSVP Button')
     ]
   }
