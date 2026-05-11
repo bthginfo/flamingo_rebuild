@@ -212,7 +212,12 @@ export function restaurantSeed(styleKey: StyleKey): SiteSeed {
               }
             ]
           }),
-          section('menu-faq', 'global.faq', 5, {
+          section('menu-deep', 'restaurant.deepDives', 5, {
+            eyebrow: 'Küche & Herkunft',
+            headline: { plain: 'Storys', accent: 'vom Teller.' },
+            intro: 'Produzenten, Pairings und Hintergründe — alles im CMS als eigene Storys gepflegt.'
+          }),
+          section('menu-faq', 'global.faq', 6, {
             eyebrow: 'Gastronomie',
             headline: { plain: 'Häufige', accent: 'Fragen.' },
             items: [
@@ -230,7 +235,7 @@ export function restaurantSeed(styleKey: StyleKey): SiteSeed {
               }
             ]
           }),
-          section('menu-cta', 'global.contactCta', 5, {
+          section('menu-cta', 'global.contactCta', 7, {
             eyebrow: 'Reservierung',
             headline: { plain: 'Tisch', accent: 'für heute?' },
             subline: 'Wir halten Ihnen gern einen Platz frei.',
@@ -272,7 +277,21 @@ export function restaurantSeed(styleKey: StyleKey): SiteSeed {
             intro: 'Klicken Sie für Details und Buchungsweg.',
             items: ['experience-wine', 'experience-family']
           }),
-          section('exp-cta', 'global.contactCta', 4, {
+          section('exp-steps', 'global.stepsStrip', 4, {
+            eyebrow: 'Buchung',
+            headline: { plain: 'So läuft', accent: 'Ihre Anfrage.' },
+            steps: [
+              { label: '1', title: 'Kurz beschreiben', body: 'Anlass, Personenzahl, Wunschdatum und Budgetrahmen per Mail oder Telefon.' },
+              { label: '2', title: 'Menü & Raum', body: 'Wir schlagen Menüfolge, Getränke und Tischformation vor — bis alles passt.' },
+              { label: '3', title: 'Fixierung', body: 'Schriftliche Bestätigung mit Anzahlung — danach blocken wir Küche und Personal.' }
+            ]
+          }),
+          section('exp-deep', 'restaurant.deepDives', 5, {
+            eyebrow: 'Hintergrund',
+            headline: { plain: 'Mehr', accent: 'zum Erlebnis.' },
+            intro: 'Wein, Menülogik und Abläufe — als kurze Storys für Gäste und Planer:innen.'
+          }),
+          section('exp-cta', 'global.contactCta', 6, {
             eyebrow: 'Planung',
             headline: { plain: 'Privat oder', accent: 'geschlossene Gesellschaft?' },
             subline: 'Wir beraten Sie gern zu Kapazität, Menü und Timing.',
@@ -345,7 +364,12 @@ export function restaurantSeed(styleKey: StyleKey): SiteSeed {
               }
             ]
           }),
-          section('gallery-cta', 'global.contactCta', 5, {
+          section('gallery-deep', 'restaurant.deepDives', 5, {
+            eyebrow: 'Kulinarik',
+            headline: { plain: 'Details', accent: 'die zählen.' },
+            intro: 'Produzenten, Saison und Pairings — tiefer als die reine Galerie.'
+          }),
+          section('gallery-cta', 'global.contactCta', 6, {
             eyebrow: 'Reservierung',
             headline: { plain: 'Selbst', accent: 'vorbeischauen?' },
             subline: 'Wir freuen uns, wenn Sie live statt nur auf Fotos neugierig werden.',
@@ -401,7 +425,12 @@ export function restaurantSeed(styleKey: StyleKey): SiteSeed {
             embedUrl: 'https://www.youtube.com/watch?v=1IszT_guI08',
             caption: 'Impressionen aus Küche und Service — kein kommerzieller Trailer, sondern echte Arbeit.'
           }),
-          section('about-voices', 'global.testimonials', 6, {
+          section('about-deep', 'restaurant.deepDives', 6, {
+            eyebrow: 'Transparenz',
+            headline: { plain: 'Was wir', accent: 'erzählen.' },
+            intro: 'Herkunft, Produzenten und Entscheidungen aus der Küche — für Gäste, die mehr wissen wollen.'
+          }),
+          section('about-voices', 'global.testimonials', 7, {
             eyebrow: 'Teamstimmen',
             headline: { plain: 'Warum wir', accent: 'hier sind.' },
             items: [
@@ -410,7 +439,7 @@ export function restaurantSeed(styleKey: StyleKey): SiteSeed {
               { quote: 'Wir kochen, was wir selbst essen würden. Punkt.', name: 'Marco, Küche' }
             ]
           }),
-          section('about-faq', 'global.faq', 7, {
+          section('about-faq', 'global.faq', 8, {
             eyebrow: 'Gastgeber',
             headline: { plain: 'Das wollen', accent: 'wir sein.' },
             items: [
@@ -424,7 +453,7 @@ export function restaurantSeed(styleKey: StyleKey): SiteSeed {
               }
             ]
           }),
-          section('about-cta', 'global.contactCta', 8, {
+          section('about-cta', 'global.contactCta', 9, {
             eyebrow: 'Besuch',
             headline: { plain: 'Kommen Sie', accent: 'vorbei.' },
             subline: 'Reservierung, Feier oder Frage — wir freuen uns auf Ihre Nachricht.',

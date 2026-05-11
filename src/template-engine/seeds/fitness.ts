@@ -137,25 +137,31 @@ export function fitnessSeed(styleKey: StyleKey): SiteSeed {
             primaryCta: { label: 'Kurse', link: { type: 'page', href: '/kurse' } },
             secondaryCta: { label: 'Trainer:innen', link: { type: 'page', href: '/trainer' } }
           }),
-          section('home-classes', 'fitness.classOverview', 2, {
+          section('home-action', 'global.actionBar', 2, {
+            useOpeningHours: false,
+            statusOverride: 'Heute: HIIT 18:00 · noch 4 Plätze',
+            primaryCta: { label: 'Probetraining', link: { type: 'page', href: '/kontakt' } },
+            secondaryCta: { label: 'Wochenplan', link: { type: 'page', href: '/kurse' } }
+          }),
+          section('home-classes', 'fitness.classOverview', 3, {
             eyebrow: 'Kurse',
             headline: { plain: 'Unsere', accent: 'Hits.' },
             intro: 'Buchbar über die App oder an der Rezeption.',
             items: ['class-hiit', 'class-yoga', 'class-cycle']
           }),
-          section('home-plan', 'fitness.trainingPlan', 3, {
+          section('home-plan', 'fitness.trainingPlan', 4, {
             eyebrow: 'Woche',
             headline: { plain: 'Ausschnitt', accent: 'Plan.' },
             intro: 'Vollständiger Plan hängt im Studio und in der App.',
             items: ['plan-mo-yoga', 'plan-di-hiit', 'plan-mi-cycle']
           }),
-          section('home-trainers', 'fitness.trainerTeam', 4, {
+          section('home-trainers', 'fitness.trainerTeam', 5, {
             eyebrow: 'Team',
             headline: { plain: 'Coach', accent: 'Faces.' },
             intro: 'Klick für Kurzprofil.',
             items: ['tr-lena', 'tr-marco']
           }),
-          section('home-cta', 'global.contactCta', 5, {
+          section('home-cta', 'global.contactCta', 6, {
             eyebrow: 'Probetraining',
             headline: { plain: 'Erst', accent: 'reinschnuppern.' },
             subline: 'Wir zeigen Studio, Umkleide und einen Kurs nach Wahl.',
@@ -177,13 +183,23 @@ export function fitnessSeed(styleKey: StyleKey): SiteSeed {
             subline: 'Kursbeschreibungen und Wochenhighlights.',
             image: heroImages[styleKey]
           }),
-          section('cls-grid', 'fitness.classOverview', 2, {
+          section('cls-intro', 'global.introBlock', 2, {
+            eyebrow: 'Buchung',
+            headline: { plain: 'App,', accent: 'Rezeption, Warteliste.' },
+            body: 'Slots sind begrenzt — wir halten Wartelisten fair und informieren euch per Push, wenn Plätze frei werden.',
+            facts: [
+              { label: 'Probetraining', value: 'kostenlos' },
+              { label: 'Sauna', value: 'inkl.' },
+              { label: 'Parken', value: 'hinten' }
+            ]
+          }),
+          section('cls-grid', 'fitness.classOverview', 3, {
             eyebrow: 'Buchung',
             headline: { plain: 'Kurs', accent: 'wählen.' },
             intro: 'Details und Kapazität auf der Kursseite.',
             items: ['class-hiit', 'class-yoga', 'class-cycle']
           }),
-          section('cls-scroll', 'global.scrollerHighlights', 3, {
+          section('cls-scroll', 'global.scrollerHighlights', 4, {
             eyebrow: 'Studio',
             headline: { plain: 'Drei Gründe', accent: 'für unser Training.' },
             intro: 'Community, Coaching und klare Programme — auf einen Blick.',
@@ -208,11 +224,36 @@ export function fitnessSeed(styleKey: StyleKey): SiteSeed {
               }
             ]
           }),
-          section('cls-plan', 'fitness.trainingPlan', 4, {
+          section('cls-plan', 'fitness.trainingPlan', 5, {
             eyebrow: 'Wochenplan',
             headline: { plain: 'Drei', accent: 'Slots.' },
             intro: 'Gleicher Slug-Pfad wie Kurse — Detailseite unterscheidet Inhalt.',
             items: ['plan-mo-yoga', 'plan-di-hiit', 'plan-mi-cycle']
+          }),
+          section('cls-faq', 'global.faq', 6, {
+            eyebrow: 'Studio',
+            headline: { plain: 'Kurse', accent: 'und Levels.' },
+            items: [
+              {
+                question: 'Kann ich als Einsteiger zu HIIT?',
+                answer: 'Ja — unsere Coaches skalieren Intensität. Bitte im Probetraining kurz Bescheid sagen.'
+              },
+              {
+                question: 'Was ist, wenn ein Kurs ausfällt?',
+                answer: 'Ihr bekommt App-Push und Ersatzslot — Guthaben bleibt erhalten.'
+              }
+            ]
+          }),
+          section('cls-deep', 'fitness.deepDives', 7, {
+            eyebrow: 'Training',
+            headline: { plain: 'Community', accent: '& Ziele.' },
+            intro: 'Ernährung, Regeneration, Mindset — Artikel im CMS.'
+          }),
+          section('cls-cta', 'global.contactCta', 8, {
+            eyebrow: 'Probetraining',
+            headline: { plain: 'Slot', accent: 'sichern.' },
+            subline: 'Schreibt uns euren Wunschtag — wir melden uns mit Uhrzeit.',
+            cta: { label: 'Kontakt', link: { type: 'page', href: '/kontakt' } }
           })
         ]
       },
@@ -230,11 +271,38 @@ export function fitnessSeed(styleKey: StyleKey): SiteSeed {
             subline: 'Qualifikationen und Schwerpunkte.',
             image: heroImages[styleKey]
           }),
-          section('tr-grid', 'fitness.trainerTeam', 2, {
+          section('tr-intro', 'global.introBlock', 2, {
+            eyebrow: 'Coaching',
+            headline: { plain: 'Technik,', accent: 'Motivation, Sicherheit.' },
+            body: 'Unsere Trainer:innen moderieren Intensität, korrigieren Haltung und kennen die nächsten Schritte für eure Ziele.',
+            facts: [
+              { label: 'Ausbildung', value: '500h+' },
+              { label: 'Kurse', value: 'HIIT/Yoga' },
+              { label: 'Feedback', value: 'jede Session' }
+            ]
+          }),
+          section('tr-grid', 'fitness.trainerTeam', 3, {
             eyebrow: 'Trainer:innen',
             headline: { plain: 'Zwei', accent: 'Gesichter.' },
             intro: 'Persönliche Nachricht über die Rezeption.',
             items: ['tr-lena', 'tr-marco']
+          }),
+          section('tr-video', 'global.videoEmbed', 4, {
+            eyebrow: 'Studio',
+            headline: { plain: 'Ein', accent: 'Blick ins Training.' },
+            embedUrl: 'https://www.youtube.com/watch?v=419glzkLwBA',
+            caption: 'Kurzclip aus dem HIIT-Raum — echtes Studio, echte Athlet:innen.'
+          }),
+          section('tr-deep', 'fitness.deepDives', 5, {
+            eyebrow: 'Journal',
+            headline: { plain: 'Training', accent: 'im Detail.' },
+            intro: 'Technik, Regeneration, Community — Artikel im CMS.'
+          }),
+          section('tr-cta', 'global.contactCta', 6, {
+            eyebrow: 'Probetraining',
+            headline: { plain: 'Coach', accent: 'wählen.' },
+            subline: 'Wir reservieren euch einen Slot mit eurer Wunschperson.',
+            cta: { label: 'Kontakt', link: { type: 'page', href: '/kontakt' } }
           })
         ]
       },
@@ -252,12 +320,42 @@ export function fitnessSeed(styleKey: StyleKey): SiteSeed {
             subline: 'Zwei Trainingszonen, Cycle Room, Freihantelbereich.',
             image: ''
           }),
-          section('about-story', 'global.textImage', 2, {
+          section('about-intro', 'global.introBlock', 2, {
             eyebrow: 'Community',
+            headline: { plain: 'Kein', accent: 'Elitismus.' },
+            body: 'Wir mischen Niveaus bewusst, moderieren intensiv und feiern Fortschritt statt Instagram-Perfektion — alles Wortlaut im CMS anpassbar.',
+            facts: [
+              { label: 'Mitglieder', value: '800+' },
+              { label: 'Kurse', value: '45/Woche' },
+              { label: 'Sauna', value: 'inkl.' }
+            ]
+          }),
+          section('about-story', 'global.textImage', 3, {
+            eyebrow: 'Kultur',
             headline: { plain: 'Kein', accent: 'Elitismus.' },
             body: 'Wir mischen Niveaus bewusst, moderieren intensiv und feiern Fortschritt statt Instagram-Perfektion.',
             image: 'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?auto=format&fit=crop&w=1200&q=80',
             cta: { label: 'Probetraining', link: { type: 'page', href: '/kontakt' } }
+          }),
+          section('about-deep', 'fitness.deepDives', 4, {
+            eyebrow: 'Studio',
+            headline: { plain: 'Training', accent: 'smart aufbauen.' },
+            intro: 'Einstieg, Regeneration, Ernährung — Artikel im CMS.'
+          }),
+          section('about-stats', 'global.statsBand', 5, {
+            eyebrow: 'Zahlen',
+            headline: { plain: 'Was', accent: 'zählt.' },
+            items: [
+              { value: '45', label: 'Kurse / Woche', hint: 'live' },
+              { value: '92%', label: 'Weiterempfehlung', hint: 'Umfrage' },
+              { value: '24/7', label: 'Zugang', hint: 'Mitglieder' }
+            ]
+          }),
+          section('about-cta', 'global.contactCta', 6, {
+            eyebrow: 'Probetraining',
+            headline: { plain: 'Vorbei', accent: 'kommen.' },
+            subline: 'Wir zeigen Umkleide, Sauna und einen Kurs nach Wahl.',
+            cta: { label: 'Kontakt', link: { type: 'page', href: '/kontakt' } }
           })
         ]
       },
@@ -275,10 +373,58 @@ export function fitnessSeed(styleKey: StyleKey): SiteSeed {
             subline: 'Schreibt uns euren Wunschtermin fürs Probetraining.',
             image: ''
           }),
-          section('contact-map', 'global.mapContact', 2, {
+          section('contact-intro', 'global.introBlock', 2, {
+            eyebrow: 'Probetraining',
+            headline: { plain: 'Was wir', accent: 'von euch brauchen.' },
+            body: 'Aktuelles Trainingslevel, Verletzungen und Wunschkurs — dann reservieren wir passend.',
+            facts: [
+              { label: 'Dauer', value: '60 min' },
+              { label: 'Kosten', value: '0 €' },
+              { label: 'Mitbringen', value: 'Handtuch' }
+            ]
+          }),
+          section('contact-map', 'global.mapContact', 3, {
             eyebrow: 'Studio',
             headline: { plain: 'Aachener Str.', accent: '55.' },
-            subline: ''
+            subline: 'Köln Ehrenfeld — Anfahrt und Parken im CMS gepflegt.',
+            openingHours: 'Mo–Fr 6:00–22:00, Sa 8–18',
+            conversionHighlights: [
+              { badge: 'Neu', title: 'Probetraining', body: 'Wir blocken 60 Minuten inklusive Studio-Rundgang.' },
+              { badge: 'App', title: 'Buchung', body: 'Mitgliedschaft und Zehnerkarten digital verfügbar.' }
+            ],
+            arrival: [
+              { title: 'ÖPNV', body: 'Bahnhof Ehrenfeld — 6 Minuten Fussweg.' },
+              { title: 'Fahrrad', body: 'Stellplätze vor dem Eingang — bitte nicht blockieren.' }
+            ]
+          }),
+          section('contact-steps', 'global.stepsStrip', 4, {
+            eyebrow: 'Ablauf',
+            headline: { plain: 'Probetraining', accent: 'in 3 Schritten.' },
+            steps: [
+              { label: '1', title: 'Anfrage', body: 'Wunschtag und Kurs nennen — wir bestätigen Slot.' },
+              { label: '2', title: 'Check-in', body: 'Ausweis, kurze Gesundheitsfrage, Umkleide-Tour.' },
+              { label: '3', title: 'Session', body: 'Coach erklärt Technik — danach Angebot für Mitgliedschaft.' }
+            ]
+          }),
+          section('contact-faq', 'global.faq', 5, {
+            eyebrow: 'Studio',
+            headline: { plain: 'Mitgliedschaft', accent: 'FAQ.' },
+            items: [
+              {
+                question: 'Kann ich pausieren?',
+                answer: 'Ja — bis zu 8 Wochen pro Jahr kostenfrei, wenn ihr vorher Bescheid sagt.'
+              },
+              {
+                question: 'Gibt es Studentenpreise?',
+                answer: 'Ja — bitte gültigen Nachweis an der Rezeption vorlegen.'
+              }
+            ]
+          }),
+          section('contact-cta', 'global.contactCta', 6, {
+            eyebrow: 'Hotline',
+            headline: { plain: 'Kurz', accent: 'anrufen.' },
+            subline: 'Rezeption hilft bei Buchung und Probetraining.',
+            cta: { label: 'Anrufen', link: { type: 'phone', href: '+49221887730' } }
           })
         ]
       }

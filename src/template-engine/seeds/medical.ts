@@ -107,19 +107,35 @@ export function medicalSeed(styleKey: StyleKey): SiteSeed {
             primaryCta: { label: 'Leistungen', link: { type: 'page', href: '/leistungen' } },
             secondaryCta: { label: 'Team', link: { type: 'page', href: '/team' } }
           }),
-          section('home-tx', 'medical.treatmentOverview', 2, {
+          section('home-action', 'global.actionBar', 2, {
+            useOpeningHours: false,
+            statusOverride: 'Akutsprechstunde: heute 11:00–12:00 · bitte anrufen',
+            primaryCta: { label: 'Termin', link: { type: 'page', href: '/kontakt' } },
+            secondaryCta: { label: 'Leistungen', link: { type: 'page', href: '/leistungen' } }
+          }),
+          section('home-intro', 'global.introBlock', 3, {
+            eyebrow: 'Patientinnen',
+            headline: { plain: 'Kasse,', accent: 'Privat, Akut.' },
+            body: 'Wir klären vorab, welche Leistungen übernommen werden und welche Selbstzahler-Optionen sinnvoll sind — transparent und ohne Druck.',
+            facts: [
+              { label: 'Kasse', value: 'nach Indikation' },
+              { label: 'Videosprechstunde', value: 'Di/Do' },
+              { label: 'Akut', value: 'Same day' }
+            ]
+          }),
+          section('home-tx', 'medical.treatmentOverview', 4, {
             eyebrow: 'Leistungen',
             headline: { plain: 'Schwerpunkte', accent: 'unserer Praxis.' },
             intro: 'Auszug — Details auf den Folgeseiten.',
             items: ['tx-prevention', 'tx-chronic', 'tx-travel']
           }),
-          section('home-team', 'medical.doctorTeam', 3, {
+          section('home-team', 'medical.doctorTeam', 5, {
             eyebrow: 'Team',
             headline: { plain: 'Ihre', accent: 'Ansprechpartner:innen.' },
             intro: 'Klick für Kurzvita und Sprechzeiten.',
             items: ['doc-meyer', 'doc-schulz']
           }),
-          section('home-cta', 'global.contactCta', 4, {
+          section('home-cta', 'global.contactCta', 6, {
             eyebrow: 'Termin',
             headline: { plain: 'Online oder', accent: 'telefonisch.' },
             subline: 'Wir rufen zurück, wenn alle Leitungen besetzt sind.',
@@ -141,13 +157,23 @@ export function medicalSeed(styleKey: StyleKey): SiteSeed {
             subline: 'Evidence-basiert, verständlich erklärt.',
             image: heroImages[styleKey]
           }),
-          section('svc-grid', 'medical.treatmentOverview', 2, {
+          section('svc-intro', 'global.introBlock', 2, {
+            eyebrow: 'Versorgung',
+            headline: { plain: 'Vorsorge,', accent: 'Chronik, Reise.' },
+            body: 'Unsere Schwerpunkte decken den Alltag ab — von Check-ups bis Reisemedizin. Details und Grenzen besprechen wir im Termin.',
+            facts: [
+              { label: 'Labor', value: 'vor Ort' },
+              { label: 'EKG', value: 'kurzfristig' },
+              { label: 'Telefon', value: 'Akut-Slot' }
+            ]
+          }),
+          section('svc-grid', 'medical.treatmentOverview', 3, {
             eyebrow: 'Überblick',
             headline: { plain: 'Behandlungen', accent: 'im Detail.' },
             intro: 'Fachliche Informationen auf den Detailseiten.',
             items: ['tx-prevention', 'tx-chronic', 'tx-travel']
           }),
-          section('svc-scroll', 'global.scrollerHighlights', 3, {
+          section('svc-scroll', 'global.scrollerHighlights', 4, {
             eyebrow: 'Praxis',
             headline: { plain: 'Drei Schwerpunkte', accent: 'unserer Arbeit.' },
             intro: 'Prävention, chronische Versorgung und Reisemedizin — kurz erklärt.',
@@ -171,6 +197,31 @@ export function medicalSeed(styleKey: StyleKey): SiteSeed {
                 cta: { label: 'Kontakt', link: { type: 'page', href: '/kontakt' } }
               }
             ]
+          }),
+          section('svc-faq', 'global.faq', 5, {
+            eyebrow: 'Patientinnen',
+            headline: { plain: 'Häufige', accent: 'Fragen.' },
+            items: [
+              {
+                question: 'Wie bekomme ich ein Akut-Ticket?',
+                answer: 'Bitte morgens telefonisch melden — wir geben Same-Day-Slots frei, sobald der Plan es erlaubt.'
+              },
+              {
+                question: 'Kann ich Rezepte online anfordern?',
+                answer: 'Ja, wenn eine Videosprechstunde oder ein Vor-Ort-Termin nicht nötig ist — bitte Portal nutzen.'
+              }
+            ]
+          }),
+          section('svc-deep', 'medical.deepDives', 6, {
+            eyebrow: 'Wissen',
+            headline: { plain: 'Patienteninfos', accent: 'und Abläufe.' },
+            intro: 'Leitlinien, Vorbereitung, Diagnostik — Artikel im CMS.'
+          }),
+          section('svc-cta', 'global.contactCta', 7, {
+            eyebrow: 'Termin',
+            headline: { plain: 'Online oder', accent: 'telefonisch.' },
+            subline: 'Wir rufen zurück, wenn alle Leitungen besetzt sind.',
+            cta: { label: 'Kontakt', link: { type: 'page', href: '/kontakt' } }
           })
         ]
       },
@@ -188,11 +239,46 @@ export function medicalSeed(styleKey: StyleKey): SiteSeed {
             subline: 'Gemeinschaftspraxis mit festen Vertretungsregeln.',
             image: heroImages[styleKey]
           }),
-          section('team-grid', 'medical.doctorTeam', 2, {
+          section('team-intro', 'global.introBlock', 2, {
+            eyebrow: 'Vertretung',
+            headline: { plain: 'Immer', accent: 'jemand da.' },
+            body: 'Dr. Meyer und Dr. Schulz vertreten sich gegenseitig — für Akutfälle ist tagsüber immer eine Fachärztin / ein Facharzt erreichbar.',
+            facts: [
+              { label: 'Sprechzeit', value: 'Mo–Fr' },
+              { label: 'Akut', value: 'gleicher Tag' },
+              { label: 'Videosprechstunde', value: 'Di/Do' }
+            ]
+          }),
+          section('team-grid', 'medical.doctorTeam', 3, {
             eyebrow: 'Ärztinnen',
             headline: { plain: 'Zwei', accent: 'Profile.' },
             intro: 'Mehr Teammitglieder in der Praxis — hier die Klick-Profile.',
             items: ['doc-meyer', 'doc-schulz']
+          }),
+          section('team-faq', 'global.faq', 4, {
+            eyebrow: 'Team',
+            headline: { plain: 'Wen', accent: 'wann?' },
+            items: [
+              {
+                question: 'Welche Sprachen sprecht ihr?',
+                answer: 'Deutsch und Englisch — Dolmetscher organisieren wir auf Anfrage.'
+              },
+              {
+                question: 'Gibt es eine feste Vertretung im Urlaub?',
+                answer: 'Ja — Vertretungsärztinnen sind in der Mail-Signatur und im Portal hinterlegt.'
+              }
+            ]
+          }),
+          section('team-deep', 'medical.deepDives', 5, {
+            eyebrow: 'Praxiswissen',
+            headline: { plain: 'Diagnostik', accent: 'verständlich.' },
+            intro: 'Patienteninfos, Vorbereitung, Abläufe — Artikel im CMS.'
+          }),
+          section('team-cta', 'global.contactCta', 6, {
+            eyebrow: 'Termin',
+            headline: { plain: 'Passende', accent: 'Ärztin?' },
+            subline: 'Wir helfen bei der Wahl — kurz anrufen oder Portal nutzen.',
+            cta: { label: 'Kontakt', link: { type: 'page', href: '/kontakt' } }
           })
         ]
       },
@@ -210,12 +296,42 @@ export function medicalSeed(styleKey: StyleKey): SiteSeed {
             subline: 'Lift, Kinderwagenparkplätze, ruhige Wartezone.',
             image: ''
           }),
-          section('about-story', 'global.textImage', 2, {
+          section('about-intro', 'global.introBlock', 2, {
             eyebrow: 'Konzept',
+            headline: { plain: 'Prävention', accent: 'ohne Druck.' },
+            body: 'Wir kombinieren klassische Hausarztmedizin mit moderner Diagnostik — und erklären, wann weniger mehr ist.',
+            facts: [
+              { label: 'Wartezone', value: 'ruhig' },
+              { label: 'Lift', value: 'ja' },
+              { label: 'Online', value: 'Rezepte' }
+            ]
+          }),
+          section('about-story', 'global.textImage', 3, {
+            eyebrow: 'Räume',
             headline: { plain: 'Prävention', accent: 'zuerst.' },
             body: 'Wir kombinieren klassische Hausarztmedizin mit moderner Diagnostik — ohne Übermedikalisierung.',
             image: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1200&q=80',
             cta: { label: 'Termin', link: { type: 'page', href: '/kontakt' } }
+          }),
+          section('about-deep', 'medical.deepDives', 4, {
+            eyebrow: 'Infos',
+            headline: { plain: 'Vor dem', accent: 'Termin.' },
+            intro: 'Vorbereitung, Befunde, häufige Fragen — Artikel im CMS.'
+          }),
+          section('about-stats', 'global.statsBand', 5, {
+            eyebrow: 'Praxis',
+            headline: { plain: 'Kurz', accent: 'zur Einordnung.' },
+            items: [
+              { value: '12', label: 'Behandlungsräume', hint: 'tageslicht' },
+              { value: '25 min', label: 'Slot Ø', hint: 'Akut kürzer' },
+              { value: '98%', label: 'Weiterempfehlung', hint: 'interne Umfrage' }
+            ]
+          }),
+          section('about-cta', 'global.contactCta', 6, {
+            eyebrow: 'Termin',
+            headline: { plain: 'Wir freuen', accent: 'uns auf Sie.' },
+            subline: 'Online, telefonisch oder vor Ort — wie es Ihnen passt.',
+            cta: { label: 'Kontakt', link: { type: 'page', href: '/kontakt' } }
           })
         ]
       },
@@ -233,10 +349,58 @@ export function medicalSeed(styleKey: StyleKey): SiteSeed {
             subline: 'Torstrasse 49, Aufgang B, 2. OG',
             image: ''
           }),
-          section('contact-map', 'global.mapContact', 2, {
+          section('contact-intro', 'global.introBlock', 2, {
+            eyebrow: 'Termin',
+            headline: { plain: 'Akut,', accent: 'Routine, Vorsorge.' },
+            body: 'Bitte nennt Symptomdauer und Medikamente — so können wir den richtigen Slot zuweisen. Alle Felder sind im CMS editierbar.',
+            facts: [
+              { label: 'Telefon', value: '8–18' },
+              { label: 'Portal', value: '24/7' },
+              { label: 'Barrierefrei', value: 'Lift' }
+            ]
+          }),
+          section('contact-map', 'global.mapContact', 3, {
             eyebrow: 'Anfahrt',
             headline: { plain: 'Mitte', accent: 'Berlin.' },
-            subline: ''
+            subline: 'ÖPNV, Parken, barrierefreier Zugang — Details im CMS.',
+            openingHours: 'Mo–Fr 8:00–18:00',
+            conversionHighlights: [
+              { badge: 'Akut', title: 'Same day', body: 'Bitte morgens anrufen — wir geben freie Slots bekannt.' },
+              { badge: 'Rezept', title: 'Online', body: 'Wenn medizinisch möglich, ohne Praxisbesuch.' }
+            ],
+            arrival: [
+              { title: 'ÖPNV', body: 'U8 Rosenthaler Platz — Aufgang Torstrasse, 3 Minuten Fussweg.' },
+              { title: 'Parken', body: 'Parkhaus Hackescher Markt — Kurzparkzonen eingeschränkt.' }
+            ]
+          }),
+          section('contact-steps', 'global.stepsStrip', 4, {
+            eyebrow: 'Ersttermin',
+            headline: { plain: 'So läuft', accent: 'der Ablauf.' },
+            steps: [
+              { label: '1', title: 'Anmeldung', body: 'Versichertenstatus und Kontaktdaten — online oder vor Ort.' },
+              { label: '2', title: 'Anamnese', body: 'Zeit für Fragen — wir dokumentieren Medikation und Vorgeschichte.' },
+              { label: '3', title: 'Plan', body: 'Gemeinsam nächste Schritte — inklusive Proben oder Überweisung.' }
+            ]
+          }),
+          section('contact-faq', 'global.faq', 5, {
+            eyebrow: 'Formalien',
+            headline: { plain: 'Karte,', accent: 'Überweisung, Gebühren.' },
+            items: [
+              {
+                question: 'Brauche ich eine Überweisung?',
+                answer: 'Für spezialisierte Diagnostik ja — für hausärztliche Leistungen meist nicht. Wir beraten im Termin.'
+              },
+              {
+                question: 'Wie läuft die Videosprechstunde?',
+                answer: 'Link kommt per Mail — bitte ruhigen Raum und stabiles WLAN wählen.'
+              }
+            ]
+          }),
+          section('contact-cta', 'global.contactCta', 6, {
+            eyebrow: 'Hotline',
+            headline: { plain: 'Akut', accent: 'heute?' },
+            subline: 'Kurz anrufen — wir ordnen ein.',
+            cta: { label: 'Jetzt anrufen', link: { type: 'phone', href: '+49302108840' } }
           })
         ]
       }
