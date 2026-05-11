@@ -196,7 +196,10 @@ export const industries: readonly IndustryDefinition[] = [
           field.text('weekday', 'Wochentag', { required: true }),
           field.text('time', 'Uhrzeit', { required: true }),
           field.text('level', 'Level'),
-          field.text('trainer', 'Trainer:in')
+          field.text('trainer', 'Trainer:in'),
+          field.text('duration', 'Dauer'),
+          field.textarea('goals', 'Trainingsziel'),
+          field.url('videoUrl', 'Video-URL')
         ],
         detailPage: {
           pathPattern: '/kurse/[slug]',
@@ -206,7 +209,9 @@ export const industries: readonly IndustryDefinition[] = [
             'global.contactCta',
             'global.statsBand',
             'global.trustLogos',
-            'global.bentoHighlights'
+            'global.bentoHighlights',
+            'global.keyFactsGrid',
+            'global.videoEmbed'
           ],
           defaultSections: ['global.pageHeader', 'global.textImage', 'global.contactCta']
         }

@@ -257,17 +257,20 @@ function buildStandardCollectionDetailPage(
         eyebrow: 'Details',
         headline: { plain: 'Mehr', accent: 'Infos.' },
         body:
+          asString(item.data.description) ||
+          asString(item.data.description) ||
           summary ||
           'Alle weiteren Informationen und Buchungswege besprechen wir gern persönlich oder über das Kontaktformular.',
         image: image || '',
         cta: { label: config.listLabel, link: { type: 'page', href: config.listHref } }
       }
     },
+    ...collectionDetailEnhancementSections(item, `std-${item.id}`, 3),
     {
       id: `std-${item.id}-cta`,
       sectionKey: 'global.contactCta',
       visible: true,
-      sortOrder: 3,
+      sortOrder: 20,
       data: {
         eyebrow: 'Nächster Schritt',
         headline: { plain: 'Fragen', accent: 'oder Buchung?' },
@@ -313,16 +316,17 @@ function buildHotelRoomDetailPage(item: CollectionSeedItem, industryKey: Industr
       data: {
         eyebrow: 'Ausstattung',
         headline: { plain: 'Zum', accent: 'Wohlfühlen.' },
-        body: summary || 'Hochwertige Betten, regionale Materialien und Blick ins Tal oder in den Wald.',
+        body: asString(item.data.description) || summary || 'Hochwertige Betten, regionale Materialien und Blick ins Tal oder in den Wald.',
         image: image || '',
         cta: { label: 'Alle Zimmer', link: { type: 'page', href: '/zimmer' } }
       }
     },
+    ...collectionDetailEnhancementSections(item, `room-${item.id}`, 3),
     {
       id: `room-${item.id}-cta`,
       sectionKey: 'global.contactCta',
       visible: true,
-      sortOrder: 3,
+      sortOrder: 20,
       data: {
         eyebrow: 'Buchen',
         headline: { plain: 'Dieses', accent: 'Zimmer?' },
@@ -375,11 +379,12 @@ function buildTourDetailPage(item: CollectionSeedItem, industryKey: IndustryKey,
         cta: { label: 'Alle Touren', link: { type: 'page', href: '/touren' } }
       }
     },
+    ...collectionDetailEnhancementSections(item, `tour-${item.id}`, 3),
     {
       id: `tour-${item.id}-cta`,
       sectionKey: 'global.contactCta',
       visible: true,
-      sortOrder: 3,
+      sortOrder: 20,
       data: {
         eyebrow: 'Buchen',
         headline: { plain: 'Diese Tour', accent: 'anfragen?' },
@@ -418,10 +423,24 @@ function buildHotelOfferDetailPage(item: CollectionSeedItem, industryKey: Indust
       }
     },
     {
+      id: `offer-${item.id}-body`,
+      sectionKey: 'global.textImage',
+      visible: true,
+      sortOrder: 2,
+      data: {
+        eyebrow: 'Paketdetails',
+        headline: { plain: 'Was', accent: 'enthalten ist.' },
+        body: asString(item.data.description) || summary,
+        image,
+        cta: { label: 'Alle Angebote', link: { type: 'page', href: '/angebote' } }
+      }
+    },
+    ...collectionDetailEnhancementSections(item, `offer-${item.id}`, 3),
+    {
       id: `offer-${item.id}-cta`,
       sectionKey: 'global.contactCta',
       visible: true,
-      sortOrder: 2,
+      sortOrder: 20,
       data: {
         eyebrow: 'Paket',
         headline: { plain: 'Jetzt', accent: 'anfragen.' },
@@ -468,16 +487,17 @@ function buildMenuItemDetailPage(item: CollectionSeedItem, industryKey: Industry
       data: {
         eyebrow: 'Preis',
         headline: { plain: price || 'Auf Anfrage', accent: '' },
-        body: summary || 'Hausgemacht, saisonal und mit Liebe zum Detail.',
+        body: asString(item.data.description) || summary || 'Hausgemacht, saisonal und mit Liebe zum Detail.',
         image: '',
         cta: { label: 'Zur Speisekarte', link: { type: 'page', href: '/speisekarte' } }
       }
     },
+    ...collectionDetailEnhancementSections(item, `dish-${item.id}`, 3),
     {
       id: `dish-${item.id}-cta`,
       sectionKey: 'global.contactCta',
       visible: true,
-      sortOrder: 3,
+      sortOrder: 20,
       data: {
         eyebrow: 'Reservierung',
         headline: { plain: 'Dieses Gericht', accent: 'am Tisch?' },
@@ -520,10 +540,24 @@ function buildDiningExperienceDetailPage(
       }
     },
     {
+      id: `exp-${item.id}-body`,
+      sectionKey: 'global.textImage',
+      visible: true,
+      sortOrder: 2,
+      data: {
+        eyebrow: 'Erlebnis',
+        headline: { plain: 'So wird der', accent: 'Abend rund.' },
+        body: asString(item.data.description) || summary,
+        image,
+        cta: { label: 'Alle Erlebnisse', link: { type: 'page', href: '/erlebnisse' } }
+      }
+    },
+    ...collectionDetailEnhancementSections(item, `exp-${item.id}`, 3),
+    {
       id: `exp-${item.id}-cta`,
       sectionKey: 'global.contactCta',
       visible: true,
-      sortOrder: 2,
+      sortOrder: 20,
       data: {
         eyebrow: 'Mitmachen',
         headline: { plain: 'Platz', accent: 'sichern.' },
@@ -548,6 +582,132 @@ function buildDiningExperienceDetailPage(
       sections
     )
   };
+}
+
+function collectionDetailEnhancementSections(item: CollectionSeedItem, idPrefix: string, startSortOrder: number): SectionInstance[] {
+  const sections: SectionInstance[] = [];
+  const facts = collectionFacts(item);
+  if (facts.length > 0) {
+    sections.push({
+      id: `${idPrefix}-facts`,
+      sectionKey: 'global.keyFactsGrid',
+      visible: true,
+      sortOrder: startSortOrder + sections.length,
+      data: {
+        eyebrow: 'Auf einen Blick',
+        headline: { plain: 'Alles Wichtige', accent: 'klar.' },
+        items: facts
+      }
+    });
+  }
+
+  const gallery = collectionGallery(item);
+  if (gallery.length > 0) {
+    sections.push({
+      id: `${idPrefix}-gallery`,
+      sectionKey: 'global.galleryGrid',
+      visible: true,
+      sortOrder: startSortOrder + sections.length,
+      data: {
+        eyebrow: 'Eindruck',
+        headline: { plain: 'Bilder, die', accent: 'Orientierung geben.' },
+        images: gallery
+      }
+    });
+  }
+
+  const videoUrl = asString(item.data.videoUrl);
+  if (videoUrl) {
+    sections.push({
+      id: `${idPrefix}-video`,
+      sectionKey: 'global.videoEmbed',
+      visible: true,
+      sortOrder: startSortOrder + sections.length,
+      data: {
+        eyebrow: 'Video',
+        headline: { plain: 'Noch naeher', accent: 'dran.' },
+        embedUrl: videoUrl,
+        caption: item.title
+      }
+    });
+  }
+
+  return sections;
+}
+
+function collectionFacts(item: CollectionSeedItem): { icon: string; title: string; detail: string }[] {
+  const labels: Record<string, string> = {
+    category: 'Kategorie',
+    price: 'Preis',
+    priceFrom: 'Preis ab',
+    duration: 'Dauer',
+    capacity: 'Kapazitaet',
+    scheduleInfo: 'Ablauf',
+    sizeSqm: 'Groesse',
+    occupancy: 'Belegung',
+    bedType: 'Bett',
+    view: 'Ausblick',
+    travelPeriod: 'Zeitraum',
+    distance: 'Distanz',
+    elevationGain: 'Hoehenmeter',
+    difficulty: 'Level',
+    season: 'Saison',
+    meetingPoint: 'Treffpunkt',
+    preparation: 'Vorbereitung',
+    aftercare: 'Danach',
+    problemStatement: 'Ausgangslage',
+    solutionSummary: 'Loesung',
+    serviceArea: 'Region',
+    location: 'Ort',
+    projectType: 'Projekt',
+    targetAudience: 'Zielgruppe',
+    coveredByInsurance: 'Abrechnung',
+    role: 'Rolle',
+    weekday: 'Tag',
+    time: 'Uhrzeit',
+    level: 'Level',
+    trainer: 'Trainer:in',
+    guestNote: 'Gaestehinweis',
+    bookingHint: 'Buchung'
+  };
+  return Object.entries(labels)
+    .map(([key, title]) => ({ icon: '•', title, detail: factValue(item.data[key]) }))
+    .filter((fact) => fact.detail)
+    .slice(0, 8);
+}
+
+function factValue(value: unknown): string {
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number') return String(value);
+  if (Array.isArray(value)) {
+    return value
+      .map((entry) => {
+        if (typeof entry === 'string') return entry;
+        if (entry && typeof entry === 'object' && 'value' in entry) return String((entry as { value?: unknown }).value ?? '');
+        return '';
+      })
+      .filter(Boolean)
+      .join(', ');
+  }
+  return '';
+}
+
+function collectionGallery(item: CollectionSeedItem): { url: string; alt?: string }[] {
+  const raw = item.data.images;
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .map((entry) => {
+      if (typeof entry === 'string') return { url: entry, alt: item.title };
+      if (entry && typeof entry === 'object') {
+        const record = entry as { url?: unknown; image?: unknown; src?: unknown; alt?: unknown };
+        return {
+          url: asString(record.url) || asString(record.image) || asString(record.src),
+          alt: asString(record.alt) || item.title
+        };
+      }
+      return { url: '', alt: '' };
+    })
+    .filter((entry) => entry.url);
 }
 
 function collectionSeo(item: CollectionSeedItem, fallbackTitle: string, fallbackDescription = ''): Record<string, unknown> {

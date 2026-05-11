@@ -404,8 +404,27 @@ function CollectionFieldEditor({
     return <TextArea label={field.label} value={text(value)} onChange={onChange} />;
   }
 
+  if (
+    field.type === 'text' ||
+    field.type === 'url' ||
+    field.type === 'phone' ||
+    field.type === 'email' ||
+    field.type === 'date' ||
+    field.type === 'time'
+  ) {
+    return <TextField label={field.label} value={text(value)} onChange={onChange} />;
+  }
+
   if (field.type === 'image') {
     return <ImageFieldEditor label={field.label} value={value} tenantSlug={tenantSlug} onChange={onChange} />;
+  }
+
+  if (field.type === 'gallery') {
+    return <CollectionGalleryFieldEditor label={field.label} value={value} tenantSlug={tenantSlug} onChange={onChange} />;
+  }
+
+  if (field.type === 'link') {
+    return <LinkTargetEditor label={field.label} linkValue={value} seed={seed} onLinkChange={onChange} />;
   }
 
   if (field.type === 'cta') {
@@ -495,7 +514,144 @@ function CollectionFieldEditor({
     );
   }
 
+  if (field.type === 'group') {
+    const current = isRecord(value) ? value : {};
+    return (
+      <div className="cms-list is-wide">
+        <span>{field.label}</span>
+        <div className="cms-field-grid">
+          {(field.fields ?? []).map((child) => (
+            <CollectionFieldEditor
+              key={child.key}
+              field={child}
+              value={current[child.key]}
+              seed={seed}
+              tenantSlug={tenantSlug}
+              onChange={(next) => onChange({ ...current, [child.key]: next })}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (field.type === 'repeater') {
+    const items = arrayRecords(value);
+    return (
+      <div className="cms-list is-wide">
+        <span>{field.label}</span>
+        {items.map((item, index) => (
+          <div className="cms-repeat-item" key={index}>
+            <div className="cms-repeat-toolbar">
+              <button
+                type="button"
+                className="button secondary"
+                onClick={() => onChange(items.filter((_, itemIndex) => itemIndex !== index))}
+              >
+                Eintrag entfernen
+              </button>
+            </div>
+            {(field.itemFields ?? []).map((itemField) => (
+              <CollectionFieldEditor
+                key={`${index}-${itemField.key}`}
+                field={itemField}
+                value={item[itemField.key]}
+                seed={seed}
+                tenantSlug={tenantSlug}
+                onChange={(next) => {
+                  const cloned = items.map((entry) => ({ ...entry }));
+                  cloned[index] = { ...cloned[index], [itemField.key]: next };
+                  onChange(cloned);
+                }}
+              />
+            ))}
+          </div>
+        ))}
+        <button
+          type="button"
+          className="button secondary"
+          onClick={() => onChange([...items, createDefaultData(field.itemFields ?? [])])}
+        >
+          Eintrag hinzufuegen
+        </button>
+      </div>
+    );
+  }
+
   return <TextField label={field.label} value={text(value)} onChange={onChange} />;
+}
+
+function CollectionGalleryFieldEditor({
+  label,
+  value,
+  tenantSlug,
+  onChange
+}: {
+  label: string;
+  value: unknown;
+  tenantSlug: string | null;
+  onChange: (value: unknown) => void;
+}) {
+  const items = galleryItems(value);
+  function update(index: number, patch: Partial<{ url: string; alt: string }>) {
+    onChange(items.map((item, itemIndex) => (itemIndex === index ? { ...item, ...patch } : item)));
+  }
+  return (
+    <div className="cms-list is-wide">
+      <span>{label}</span>
+      {items.map((item, index) => (
+        <div className="cms-repeat-item" key={index}>
+          <div className="cms-repeat-toolbar">
+            <button type="button" className="button secondary" onClick={() => onChange(items.filter((_, i) => i !== index))}>
+              Bild entfernen
+            </button>
+          </div>
+          <ImageFieldEditor
+            label={`Bild ${index + 1}`}
+            value={item.url}
+            tenantSlug={tenantSlug}
+            onChange={(next) => update(index, { url: String(next) })}
+          />
+          <TextField label={`Bild ${index + 1} Alt-Text`} value={item.alt} onChange={(next) => update(index, { alt: next })} />
+        </div>
+      ))}
+      <button type="button" className="button secondary" onClick={() => onChange([...items, { url: '', alt: '' }])}>
+        Bild hinzufuegen
+      </button>
+    </div>
+  );
+}
+
+function createDefaultData(fields: readonly FieldDefinition[]): Record<string, unknown> {
+  return Object.fromEntries(fields.map((field) => [field.key, defaultValueForField(field)]));
+}
+
+function defaultValueForField(field: FieldDefinition): unknown {
+  if (field.type === 'boolean') return false;
+  if (field.type === 'repeater' || field.type === 'gallery' || field.type === 'collectionReferenceList') return [];
+  if (field.type === 'splitHeading') return { plain: '', accent: '' };
+  if (field.type === 'cta') return { label: '', link: { type: 'page', pageKey: 'home', href: '/' } };
+  if (field.type === 'group') return createDefaultData(field.fields ?? []);
+  if (field.type === 'number') return 0;
+  return '';
+}
+
+function arrayRecords(value: unknown): Record<string, unknown>[] {
+  return Array.isArray(value) ? value.filter(isRecord) : [];
+}
+
+function galleryItems(value: unknown): { url: string; alt: string }[] {
+  if (!Array.isArray(value)) return [];
+  return value.map((entry) => {
+    if (typeof entry === 'string') return { url: entry, alt: '' };
+    if (isRecord(entry)) {
+      return {
+        url: text(entry.url) || text(entry.src) || text(entry.image),
+        alt: text(entry.alt) || text(entry.caption)
+      };
+    }
+    return { url: '', alt: '' };
+  });
 }
 
 function toolbarBusy(status: EditorStatus): boolean {

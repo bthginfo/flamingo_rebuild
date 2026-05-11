@@ -1,6 +1,6 @@
 {
   "_readme": "Diese Datei ist eine Vorlage fuer KI + Mensch. Alle Schluessel mit Unterstrich (_) werden beim Import automatisch entfernt — die KI darf sie also als Hilfe behalten, bis zur finalen Ausgabe.",
-  "_workflow": "1) Branche/Stil im CRM-Dialog waehlen (legt Demo-Seed fest). 2) Nur die Felder ausfuellen, die ihr ueberschreiben wollt. 3) JSON beim Tenant anlegen einfuegen oder als Datei waehlen. Sicher: tenantName + global.brand + global.contact (+ navigation). riskant: komplette pages/collections ersetzen — nur wenn die Struktur exakt zur Registry passt.",
+  "_workflow": "1) Branche/Stil im CRM-Dialog waehlen (legt Demo-Seed fest). 2) Nur die Felder ausfuellen, die ihr ueberschreiben wollt. 3) JSON beim Tenant anlegen einfuegen oder als Datei waehlen. Sicher: tenantName + global.brand + global.contact (+ navigation). Fortgeschritten: collections gezielt ersetzen, wenn alle Items die Registry-Felder nutzen. Das CMS reichert Demo-Seeds automatisch mit den branchenspezifischen Feldern an.",
 
   "tenantName": "",
 
@@ -27,6 +27,26 @@
 
   "styleKey": "",
   "_styleKey_options": ["classic", "modern", "bold"],
+
+  "_collection_field_examples": {
+    "restaurant.menuItem": ["category", "price", "ingredients", "allergens", "dietaryTags", "pairingRecommendation", "videoUrl"],
+    "restaurant.diningExperience": ["duration", "price", "capacity", "scheduleInfo", "included", "videoUrl"],
+    "hotel.room": ["images", "sizeSqm", "occupancy", "bedType", "view", "priceFrom", "amenities", "videoUrl"],
+    "hotel.hotelOffer": ["travelPeriod", "priceFrom", "included", "videoUrl"],
+    "tourism.tour": ["duration", "distance", "elevationGain", "difficulty", "season", "price", "meetingPoint", "included", "requirements", "packingList", "videoUrl"],
+    "salon.treatment": ["category", "duration", "priceFrom", "preparation", "aftercare", "videoUrl"],
+    "salon.look": ["images", "styleTags", "relatedServices", "videoUrl"],
+    "tradesman.tradeService": ["problemStatement", "solutionSummary", "serviceArea", "videoUrl"],
+    "tradesman.referenceProject": ["images", "location", "projectType", "duration", "servicesIncluded", "customerQuote", "videoUrl"],
+    "consulting.consultingService": ["targetAudience", "problemTypes", "deliverables", "duration"],
+    "consulting.caseStudy": ["industry", "challenge", "approach", "results", "metrics", "testimonial", "videoUrl"],
+    "medical.treatment": ["indications", "procedure", "preparation", "aftercare", "coveredByInsurance", "duration", "videoUrl"],
+    "medical.doctor": ["role", "specialties", "bio", "languages", "consultationHours", "videoUrl"],
+    "fitness.fitnessClass": ["category", "level", "duration", "schedule", "goals", "equipmentNeeded", "videoUrl"],
+    "fitness.trainer": ["role", "specialties", "bio", "certifications", "videoUrl"],
+    "wedding.scheduleItem": ["time", "location", "guestNote", "videoUrl"],
+    "wedding.accommodation": ["location", "priceFrom", "distance", "bookingHint", "mapsUrl", "videoUrl"]
+  },
 
   "pages": null,
   "collections": null

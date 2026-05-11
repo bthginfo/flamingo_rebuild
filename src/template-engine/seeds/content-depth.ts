@@ -123,20 +123,21 @@ export function deepenDemoSeed(seed: SiteSeed): SiteSeed {
   for (const collection of industry.collections) {
     ensureCollectionItems(collections, collection, seed.industryKey);
   }
+  const enrichedCollections = enrichCollectionItems(collections, industry.collections, seed.industryKey);
 
   const idsByCollection = new Map<string, string[]>();
-  for (const item of collections) {
+  for (const item of enrichedCollections) {
     idsByCollection.set(item.collectionKey, [...(idsByCollection.get(item.collectionKey) ?? []), item.id]);
   }
 
   return {
     ...seed,
-    collections,
+    collections: enrichedCollections,
     pages: seed.pages.map((page) => {
       const deepCollection = DEEP_COLLECTION_BY_INDUSTRY[seed.industryKey];
       const deepSection = DEEP_SECTION_BY_INDUSTRY[seed.industryKey];
       const deepIds = idsByCollection.get(deepCollection) ?? [];
-      const newsIds = latestNewsIds(collections);
+      const newsIds = latestNewsIds(enrichedCollections);
       const sections = page.sections.map((section) => {
         const collectionKey = SECTION_COLLECTION.get(section.sectionKey);
         const ids = collectionKey ? idsByCollection.get(collectionKey) : undefined;
@@ -191,6 +192,31 @@ export function deepenDemoSeed(seed: SiteSeed): SiteSeed {
       };
     })
   };
+}
+
+function enrichCollectionItems(
+  items: readonly CollectionSeedItem[],
+  definitions: readonly CollectionDefinition[],
+  industry: IndustryKey
+): CollectionSeedItem[] {
+  const definitionsByKey = new Map(definitions.map((definition) => [definition.key, definition]));
+  const seenByCollection = new Map<string, number>();
+  return items.map((item) => {
+    const definition = definitionsByKey.get(item.collectionKey);
+    if (!definition) return item;
+    const index = seenByCollection.get(item.collectionKey) ?? 0;
+    seenByCollection.set(item.collectionKey, index + 1);
+    const data = { ...item.data };
+    for (const field of definition.fields) {
+      if (field.key === 'title' || field.key === 'slug' || field.key === 'seo') continue;
+      const current = data[field.key];
+      const emptyArray = Array.isArray(current) && current.length === 0;
+      if (current === undefined || current === null || current === '' || emptyArray) {
+        data[field.key] = valueForField(field, definition, industry, item.title, index);
+      }
+    }
+    return { ...item, data };
+  });
 }
 
 function insertAfterHeader(sections: readonly SiteSeed['pages'][number]['sections'][number][], insert: SiteSeed['pages'][number]['sections'][number]) {
@@ -264,14 +290,124 @@ function valueForField(
   if (field.key === 'publishedAt') return `2026-0${(index % 6) + 1}-15`;
   if (field.key === 'author') return 'Flamingo Redaktion';
   if (field.key === 'readTime') return `${3 + (index % 4)} Min.`;
+  if (field.key === 'videoUrl') return '';
+  if (field.key === 'images') return galleryFor(industry, index);
+  if (field.key === 'priceFrom') return priceFromFor(collection.key, index);
+  if (field.key === 'duration') return durationFor(collection.key, index);
+  if (field.key === 'capacity') return ['bis 8 Personen', '12 bis 24 Gaeste', 'exklusiv buchbar'][index % 3];
+  if (field.key === 'allergens') return ['enthaelt Gluten', 'enthaelt Milchprodukte', 'auf Wunsch erklaeren wir alle Allergene am Tisch'][index % 3];
+  if (field.key === 'dietaryTags') return ['vegetarisch moeglich', 'saisonal', 'hausgemacht'][index % 3];
+  if (field.key === 'pairingRecommendation') return ['Mineralischer Weisswein oder alkoholfreier Verjus-Spritz', 'Leichter Rotwein mit kuehler Frucht', 'Hausgemachte Limonade mit Kraeutern'][index % 3];
+  if (field.key === 'sizeSqm') return ['28 qm', '36 qm', '52 qm', '64 qm'][index % 4];
+  if (field.key === 'occupancy') return ['1-2 Personen', '2 Personen', '2-4 Personen', 'bis 5 Personen'][index % 4];
+  if (field.key === 'bedType') return ['King Size', 'Queen Size', 'Twin moeglich', 'Familienbett plus Schlafsofa'][index % 4];
+  if (field.key === 'view') return ['Gartenblick', 'Altstadtblick', 'Panoramafenster', 'Ruhiger Innenhof'][index % 4];
+  if (field.key === 'travelPeriod') return ['ganzjaehrig buchbar', 'Sonntag bis Donnerstag', 'April bis Oktober', 'Feiertage auf Anfrage'][index % 4];
+  if (field.key === 'distance') return collection.key === 'tour' ? ['6 km', '9 km', '14 km', '3 km'][index % 4] : ['5 Gehminuten', '1,2 km', 'Shuttle empfohlen'][index % 3];
+  if (field.key === 'elevationGain') return ['180 hm', '420 hm', '760 hm', 'kaum Steigung'][index % 4];
+  if (field.key === 'difficulty') return ['leicht', 'moderat', 'sportlich', 'familienfreundlich'][index % 4];
+  if (field.key === 'season') return ['Fruehjahr bis Herbst', 'ganzjaehrig', 'Sommer', 'Winter bei guter Lage'][index % 4];
+  if (field.key === 'meetingPoint') return ['Haupteingang', 'Talstation', 'Marktplatz', 'direkt vor Ort'][index % 4];
+  if (field.key === 'preparation') return preparationFor(collection.key);
+  if (field.key === 'aftercare') return aftercareFor(collection.key);
+  if (field.key === 'problemStatement') return 'Viele Anfragen starten mit Unsicherheit bei Aufwand, Material und Timing. Wir machen den Ablauf frueh konkret.';
+  if (field.key === 'solutionSummary') return 'Vor-Ort-Check, klare Empfehlung, transparente Etappen und saubere Uebergabe ohne offene Punkte.';
+  if (field.key === 'serviceArea') return 'Region, Umland und kurzfristige Einsaetze nach Verfuegbarkeit.';
+  if (field.key === 'location') return ['Innenstadt', 'Am See', 'Altbauviertel', 'Weingut', 'Studio'][index % 5];
+  if (field.key === 'projectType') return ['Sanierung', 'Umbau', 'Wartung', 'Neubau', 'Modernisierung'][index % 5];
+  if (field.key === 'customerQuote') return 'Wir wussten zu jedem Zeitpunkt, was als Naechstes passiert und warum.';
+  if (field.key === 'targetAudience') return 'Teams und Entscheider, die Klarheit vor Tempo setzen und dann konsequent umsetzen wollen.';
+  if (field.key === 'problemTypes') return 'Positionierung, Priorisierung, Wachstum, Prozesse und Entscheidungen mit zu wenig Datenbasis.';
+  if (field.key === 'challenge') return 'Das Team hatte gute Einzelinitiativen, aber kein gemeinsames Bild von Prioritaeten, Wirkung und naechstem Schritt.';
+  if (field.key === 'approach') return 'Wir haben Interviews, Datenpunkte und Marktlogik in einen klaren Entscheidungsrahmen gebracht und daraus umsetzbare Sprints abgeleitet.';
+  if (field.key === 'results') return 'Das Ergebnis war weniger Abstimmungsaufwand, bessere Entscheidungen und ein Fahrplan, der im Alltag wirklich nutzbar blieb.';
+  if (field.key === 'testimonial') return 'Die Zusammenarbeit hat Komplexitaet reduziert, ohne die wichtigen Details zu verlieren.';
+  if (field.key === 'procedure') return 'Nach einer kurzen Anamnese klaeren wir Ziel, Ablauf und moegliche Alternativen. Danach erhalten Patientinnen und Patienten eine verstaendliche Empfehlung.';
+  if (field.key === 'coveredByInsurance') return ['Kasse nach Indikation', 'Privatleistung', 'Kasse und Privat', 'Bitte vorab klaeren'][index % 4];
+  if (field.key === 'role') return ['Leitung', 'Spezialist:in', 'Coach', 'Gastgeber:in'][index % 4];
+  if (field.key === 'languages') return 'Deutsch, Englisch';
+  if (field.key === 'consultationHours') return 'Sprechzeiten nach Vereinbarung, Akuttermine je nach Verfuegbarkeit.';
+  if (field.key === 'schedule') return 'Mehrmals pro Woche mit festen Slots und klarer Empfehlung fuer den Einstieg.';
+  if (field.key === 'certifications') return 'Zertifizierte Ausbildung, laufende Fortbildungen und dokumentierte Praxiserfahrung.';
+  if (field.key === 'guestNote') return 'Bitte plant ein paar Minuten Puffer ein; wir fuehren euch vor Ort gut durch den Ablauf.';
+  if (field.key === 'bookingHint') return 'Nennt bei der Buchung den Anlass, damit das Kontingent korrekt zugeordnet wird.';
+  if (field.key === 'mapsUrl') return 'https://www.google.com/maps';
   if (field.key === 'weekday') return ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'][index % 6];
   if (field.key === 'time') return ['08:00', '10:30', '13:00', '16:30', '18:00', '20:00'][index % 6];
   if (field.key === 'level') return ['Einsteiger', 'Alle Level', 'Fortgeschritten', 'Performance'][index % 4];
   if (field.key === 'trainer') return ['Mara', 'Noah', 'Lina', 'Ben', 'Elif', 'Tom'][index % 6];
   if (field.key === 'cta') return { label: 'Mehr erfahren', link: { type: 'page', href: collection.slugPrefix } };
+  if (field.type === 'gallery') return galleryFor(industry, index);
+  if (field.type === 'repeater') return repeaterValueFor(field, collection.key, index);
   if (field.type === 'boolean') return false;
   if (field.type === 'number') return index + 1;
   return field.required ? title : '';
+}
+
+function repeaterValueFor(field: FieldDefinition, collectionKey: string, index: number): Record<string, string>[] {
+  const values = listValuesFor(field.key, collectionKey, index);
+  const itemFields = field.itemFields ?? [];
+  if (itemFields.length === 1 && itemFields[0]?.key === 'value') {
+    return values.map((value) => ({ value }));
+  }
+  if (field.key === 'metrics') {
+    return [
+      { label: 'Time to clarity', value: '10 Tage' },
+      { label: 'Prioritaeten', value: '3 klare Sprints' },
+      { label: 'Entscheidungsrunde', value: '1 Board-Format' }
+    ];
+  }
+  return values.map((value) => ({ title: value, body: value, label: value }));
+}
+
+function listValuesFor(fieldKey: string, collectionKey: string, index: number): string[] {
+  const map: Record<string, string[]> = {
+    ingredients: ['saisonal eingekauft', 'hausgemacht vorbereitet', 'fein abgeschmeckt'],
+    included: ['persoenliche Einordnung', 'klare Empfehlung', 'saubere Vorbereitung'],
+    amenities: ['Naturmaterialien', 'ruhige Lage', 'WLAN', 'hochwertige Pflegeprodukte'],
+    requirements: ['normale Grundfitness', 'wetterfeste Kleidung', 'pünktlicher Treffpunkt'],
+    packingList: ['Wasserflasche', 'leichte Jacke', 'Sonnenschutz', 'feste Schuhe'],
+    deliverables: ['Entscheidungsvorlage', 'priorisierte Roadmap', 'Workshop-Dokumentation'],
+    indications: ['Erstabklaerung', 'Verlaufskontrolle', 'gezielte Diagnostik'],
+    specialties: ['Beratung', 'Praxisroutine', 'ruhige Kommunikation'],
+    goals: ['stabiler Einstieg', 'messbarer Fortschritt', 'bessere Technik'],
+    equipmentNeeded: ['Handtuch', 'Trinkflasche', 'bequeme Kleidung']
+  };
+  return map[fieldKey] ?? [`${humanize(collectionKey)} Detail ${index + 1}`, 'gut planbar', 'klar erklaert'];
+}
+
+function galleryFor(industry: IndustryKey, index: number): { url: string; alt: string }[] {
+  const images = IMAGE_BY_INDUSTRY[industry];
+  return [0, 1, 2].map((offset) => ({
+    url: images[(index + offset) % images.length],
+    alt: `${industry} Bild ${offset + 1}`
+  }));
+}
+
+function priceFromFor(collectionKey: string, index: number): string {
+  if (collectionKey === 'room') return ['ab 148 Euro', 'ab 186 Euro', 'ab 224 Euro'][index % 3];
+  if (collectionKey === 'hotelOffer') return ['ab 290 Euro p. P.', 'ab 420 Euro fuer 2 Naechte', 'auf Anfrage'][index % 3];
+  if (collectionKey === 'treatment') return ['ab 48 Euro', 'ab 92 Euro', 'ab 160 Euro'][index % 3];
+  if (collectionKey === 'accommodation') return ['ab 99 Euro', 'ab 135 Euro', 'auf Anfrage'][index % 3];
+  return ['ab 120 Euro', 'ab 240 Euro', 'auf Anfrage'][index % 3];
+}
+
+function durationFor(collectionKey: string, index: number): string {
+  if (collectionKey === 'tour') return ['3 Stunden', 'halber Tag', 'ganzer Tag'][index % 3];
+  if (collectionKey === 'fitnessClass') return ['45 Minuten', '60 Minuten', '75 Minuten'][index % 3];
+  if (collectionKey === 'consultingService') return ['2 Wochen', '4 Wochen', '1 Workshop-Tag'][index % 3];
+  if (collectionKey === 'scheduleItem') return ['30 Minuten', '60 Minuten', 'flexibel'][index % 3];
+  return ['45 Minuten', '90 Minuten', 'nach Vereinbarung'][index % 3];
+}
+
+function preparationFor(collectionKey: string): string {
+  if (collectionKey === 'treatment') return 'Bitte bringe Wunschbilder und bisherige Pflegeprodukte mit, damit die Beratung konkret wird.';
+  return 'Vorab klaeren wir Ziel, Zeitfenster und relevante Unterlagen, damit der Termin ohne Umwege starten kann.';
+}
+
+function aftercareFor(collectionKey: string): string {
+  if (collectionKey === 'treatment') return 'Du erhaeltst eine klare Pflegeempfehlung, damit Farbe, Schnitt und Finish laenger stark bleiben.';
+  return 'Nach dem Termin bekommst du die wichtigsten Hinweise kompakt zusammengefasst.';
 }
 
 function deepEyebrow(industry: IndustryKey, pageTitle: string): string {
