@@ -78,6 +78,13 @@ export const globalSections: readonly SectionDefinition[] = [
       field.splitHeading('headline', 'Überschrift'),
       field.richText('body', 'Text', { required: true }),
       field.image('image', 'Bild'),
+      {
+        key: 'imageSide',
+        label: 'Bild-Seite',
+        type: 'select',
+        options: ['rechts', 'links'],
+        helpText: '„rechts“: Text links, Bild rechts (Standard). „links“: Bild links, Text rechts.'
+      },
       field.cta('cta', 'Button')
     ]
   },
@@ -92,6 +99,31 @@ export const globalSections: readonly SectionDefinition[] = [
       field.text('eyebrow', 'Eyebrow'),
       field.splitHeading('headline', 'Überschrift'),
       field.gallery('images', 'Bilder', { required: true })
+    ]
+  },
+  {
+    key: 'global.imageCarousel',
+    label: 'Bild-Karussell',
+    industries: 'all',
+    styles: 'all',
+    allowedPageKinds: ['core', 'custom', 'collectionDetail'],
+    repeatable: true,
+    fields: [
+      field.text('eyebrow', 'Eyebrow'),
+      field.splitHeading('headline', 'Überschrift'),
+      field.textarea('intro', 'Einleitung'),
+      field.repeater(
+        'slides',
+        'Folien',
+        [
+          field.image('image', 'Bild', { required: true }),
+          field.text('alt', 'Alt-Text'),
+          field.text('title', 'Titel'),
+          field.textarea('body', 'Bildunterschrift'),
+          field.cta('cta', 'Button (optional)')
+        ],
+        { required: true, helpText: 'Mehrere Folien — im Frontend mit Vor/Zurück und Punkten steuerbar.' }
+      )
     ]
   },
   {

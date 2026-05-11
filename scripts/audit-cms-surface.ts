@@ -15,7 +15,7 @@ const rendererSectionFields: Record<string, readonly string[]> = {
   'global.pageHeader': ['eyebrow', 'headline', 'subline', 'image'],
   'global.introBlock': ['eyebrow', 'headline', 'body', 'facts'],
   'global.richArticle': ['eyebrow', 'headline', 'content'],
-  'global.textImage': ['eyebrow', 'headline', 'body', 'image', 'cta'],
+  'global.textImage': ['eyebrow', 'headline', 'body', 'image', 'imageSide', 'cta'],
   'global.mapContact': [
     'eyebrow',
     'headline',
@@ -30,6 +30,7 @@ const rendererSectionFields: Record<string, readonly string[]> = {
     'conversionHighlights'
   ],
   'global.galleryGrid': ['eyebrow', 'headline', 'images'],
+  'global.imageCarousel': ['eyebrow', 'headline', 'intro', 'slides'],
   'global.actionBar': ['useOpeningHours', 'statusOverride', 'primaryCta', 'secondaryCta'],
   'global.testimonials': ['eyebrow', 'headline', 'items'],
   'global.newsTeaser': ['eyebrow', 'headline', 'intro', 'limit', 'items', 'cta'],

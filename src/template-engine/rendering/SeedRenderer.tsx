@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, type CSSProperties } from 'react';
+import { useState, useEffect, type CSSProperties } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { PageInstance, SectionInstance, StyleKey } from '../model';
 import { resolveCtaLinkHref } from '../link-resolution';
 import { sectionAnchorId } from '../section-anchor';
@@ -172,6 +173,16 @@ function SectionRenderer({
       return <MapContactSection section={section} seed={seed} domSectionId={domSectionId} />;
     case 'global.galleryGrid':
       return <GalleryGridSection section={section} domSectionId={domSectionId} />;
+    case 'global.imageCarousel':
+      return (
+        <ImageCarouselSection
+          section={section}
+          styleKey={styleKey}
+          previewBasePath={previewBasePath}
+          seed={seed}
+          domSectionId={domSectionId}
+        />
+      );
     case 'global.actionBar':
       return (
         <ActionBar section={section} previewBasePath={previewBasePath} seed={seed} domSectionId={domSectionId} />
@@ -403,25 +414,175 @@ function TextImageSection({
   const headline = asSplit(section.data.headline);
   const image = asString(section.data.image);
   const body = asString(section.data.body);
+  const sideRaw = asString(section.data.imageSide).toLowerCase();
+  const imageLeft = sideRaw === 'links' || sideRaw === 'left';
+
+  const textBlock = (
+    <div>
+      <p className="eyebrow">{asString(section.data.eyebrow)}</p>
+      <h2 className="tenant-section-title">
+        <SplitHeading plain={headline.plain} accent={headline.accent} />
+      </h2>
+      <div className="tenant-body-text">{body}</div>
+      <CtaButton value={section.data.cta} previewBasePath={previewBasePath} seed={seed} />
+    </div>
+  );
+  const visual = image ? (
+    <div className="tenant-split__visual">
+      <div className="tenant-split__visual-frame">
+        <Image src={image} alt="" fill className="tenant-split__visual-img" sizes="(max-width: 900px) 100vw, 45vw" unoptimized />
+      </div>
+    </div>
+  ) : null;
 
   return (
     <section className="tenant-section" id={domSectionId}>
       <div className="shell tenant-split">
-        <div>
-          <p className="eyebrow">{asString(section.data.eyebrow)}</p>
+        {imageLeft && visual ? (
+          <>
+            {visual}
+            {textBlock}
+          </>
+        ) : (
+          <>
+            {textBlock}
+            {visual}
+          </>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function ImageCarouselSection({
+  section,
+  styleKey,
+  previewBasePath,
+  seed,
+  domSectionId
+}: {
+  section: SectionInstance;
+  styleKey: StyleKey;
+  previewBasePath: string;
+  seed: SiteSeed;
+  domSectionId: string;
+}) {
+  const headline = asSplit(section.data.headline);
+  const slides = arrayItems(section.data.slides)
+    .map((row) => ({
+      image:
+        asString(row.image) ||
+        (isRecord(row.image) ? asString((row.image as Record<string, unknown>).url) : ''),
+      alt: asString(row.alt),
+      title: asString(row.title),
+      body: asString(row.body),
+      cta: row.cta
+    }))
+    .filter((row) => Boolean(row.image));
+
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    setIndex((i) => Math.min(i, Math.max(0, slides.length - 1)));
+  }, [slides.length]);
+
+  const hasHeadline = Boolean(headline.plain || headline.accent);
+  const showNav = slides.length > 1;
+  const safeIndex = slides.length === 0 ? 0 : Math.min(index, slides.length - 1);
+
+  const go = (delta: number) => {
+    if (slides.length === 0) return;
+    setIndex((i) => (i + delta + slides.length) % slides.length);
+  };
+
+  return (
+    <section
+      className={`tenant-section tenant-carousel-section tenant-carousel-section--${styleKey}`}
+      id={domSectionId}
+    >
+      <div className="shell">
+        {asString(section.data.eyebrow) ? <p className="eyebrow">{asString(section.data.eyebrow)}</p> : null}
+        {hasHeadline ? (
           <h2 className="tenant-section-title">
             <SplitHeading plain={headline.plain} accent={headline.accent} />
           </h2>
-          <div className="tenant-body-text">{body}</div>
-          <CtaButton value={section.data.cta} previewBasePath={previewBasePath} seed={seed} />
-        </div>
-        {image ? (
-          <div className="tenant-split__visual">
-            <div className="tenant-split__visual-frame">
-              <Image src={image} alt="" fill className="tenant-split__visual-img" sizes="(max-width: 900px) 100vw, 45vw" unoptimized />
-            </div>
-          </div>
         ) : null}
+        {asString(section.data.intro) ? <p className="tenant-section-intro">{asString(section.data.intro)}</p> : null}
+
+        {slides.length === 0 ? (
+          <p className="tenant-carousel__empty">Für dieses Karussell sind noch keine Folien mit Bild hinterlegt.</p>
+        ) : (
+          <div
+            className="tenant-carousel"
+            role="region"
+            aria-roledescription="Karussell"
+            aria-label={asString(headline.plain) || asString(section.data.eyebrow) || 'Bilder'}
+          >
+            {showNav ? (
+              <button
+                type="button"
+                className="tenant-carousel__nav tenant-carousel__nav--prev"
+                onClick={() => go(-1)}
+                aria-label="Vorherige Folie"
+              >
+                <ChevronLeft size={26} strokeWidth={2} aria-hidden />
+              </button>
+            ) : null}
+            <div className="tenant-carousel__viewport">
+              <div
+                className="tenant-carousel__track"
+                style={{ transform: `translateX(-${safeIndex * 100}%)` }}
+              >
+                {slides.map((row, i) => (
+                  <article className="tenant-carousel__slide" key={`${row.image}-${i}`} aria-hidden={i !== safeIndex}>
+                    <figure className="tenant-carousel__figure">
+                      <div className="tenant-carousel__frame">
+                        <Image
+                          src={row.image}
+                          alt={row.alt || row.title || 'Karussell-Bild'}
+                          fill
+                          className="tenant-carousel__img"
+                          sizes="(max-width: 900px) 100vw, min(960px, 92vw)"
+                          priority={i === 0}
+                          unoptimized
+                        />
+                      </div>
+                      <figcaption className="tenant-carousel__caption">
+                        {row.title ? <h3 className="tenant-carousel__title">{row.title}</h3> : null}
+                        {row.body ? <p className="tenant-carousel__body">{row.body}</p> : null}
+                        <CtaButton value={row.cta} previewBasePath={previewBasePath} seed={seed} />
+                      </figcaption>
+                    </figure>
+                  </article>
+                ))}
+              </div>
+            </div>
+            {showNav ? (
+              <button
+                type="button"
+                className="tenant-carousel__nav tenant-carousel__nav--next"
+                onClick={() => go(1)}
+                aria-label="Nächste Folie"
+              >
+                <ChevronRight size={26} strokeWidth={2} aria-hidden />
+              </button>
+            ) : null}
+            {showNav ? (
+              <div className="tenant-carousel__dots">
+                {slides.map((_, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    aria-current={i === safeIndex ? 'true' : undefined}
+                    className={`tenant-carousel__dot${i === safeIndex ? ' tenant-carousel__dot--active' : ''}`}
+                    onClick={() => setIndex(i)}
+                    aria-label={`Folie ${i + 1}`}
+                  />
+                ))}
+              </div>
+            ) : null}
+          </div>
+        )}
       </div>
     </section>
   );

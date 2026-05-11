@@ -3457,6 +3457,170 @@ a {
   margin-top: auto;
 }
 
+.tenant-carousel-section {
+  padding-block: clamp(40px, 5vw, 72px);
+}
+
+.tenant-carousel {
+  position: relative;
+  margin-top: 8px;
+}
+
+.tenant-carousel__empty {
+  margin: 12px 0 0;
+  color: var(--tenant-muted);
+  font-size: 0.95rem;
+}
+
+.tenant-carousel__viewport {
+  overflow: hidden;
+  border-radius: var(--tenant-radius-md, 20px);
+  border: 1px solid var(--tenant-line);
+  background: color-mix(in oklab, var(--tenant-bg), #fff 35%);
+}
+
+.tenant-preview--bold .tenant-carousel__viewport {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.tenant-carousel__track {
+  display: flex;
+  width: 100%;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tenant-carousel__track {
+    transition: none;
+  }
+}
+
+.tenant-carousel__slide {
+  flex: 0 0 100%;
+  min-width: 0;
+}
+
+.tenant-carousel__figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.tenant-carousel__frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-bottom: 1px solid var(--tenant-line);
+}
+
+.tenant-carousel__img {
+  object-fit: cover;
+}
+
+.tenant-carousel__caption {
+  padding: 18px 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tenant-carousel__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.tenant-carousel__body {
+  margin: 0;
+  color: var(--tenant-muted);
+  line-height: 1.55;
+  font-size: 0.95rem;
+  white-space: pre-line;
+}
+
+.tenant-carousel__caption .tenant-button {
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
+.tenant-carousel__nav {
+  position: absolute;
+  top: 38%;
+  transform: translateY(-50%);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid var(--tenant-line);
+  background: color-mix(in oklab, var(--tenant-bg), #fff 55%);
+  color: var(--tenant-fg);
+  cursor: pointer;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.12);
+}
+
+.tenant-preview--bold .tenant-carousel__nav {
+  background: rgba(15, 23, 42, 0.55);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.tenant-carousel__nav:hover {
+  border-color: color-mix(in oklab, var(--tenant-accent), transparent 40%);
+}
+
+.tenant-carousel__nav--prev {
+  left: 6px;
+}
+
+.tenant-carousel__nav--next {
+  right: 6px;
+}
+
+@media (max-width: 640px) {
+  .tenant-carousel__nav {
+    width: 38px;
+    height: 38px;
+  }
+
+  .tenant-carousel__nav--prev {
+    left: 4px;
+  }
+
+  .tenant-carousel__nav--next {
+    right: 4px;
+  }
+}
+
+.tenant-carousel__dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.tenant-carousel__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  border: 1px solid var(--tenant-line);
+  padding: 0;
+  background: color-mix(in oklab, var(--tenant-bg), #fff 50%);
+  cursor: pointer;
+}
+
+.tenant-carousel__dot--active {
+  background: var(--tenant-accent);
+  border-color: color-mix(in oklab, var(--tenant-accent), transparent 20%);
+  transform: scale(1.15);
+}
+
 .tenant-card,
 .tenant-quote {
   overflow: hidden;

@@ -339,7 +339,35 @@ export function restaurantSeed(styleKey: StyleKey): SiteSeed {
               { url: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?auto=format&fit=crop&w=1200&q=80', alt: 'Pasta' }
             ]
           }),
-          section('gallery-scroller', 'global.scrollerHighlights', 4, {
+          section('gallery-carousel', 'global.imageCarousel', 4, {
+            eyebrow: 'Stimmung',
+            headline: { plain: 'Ein Abend', accent: 'in Bildern.' },
+            intro: 'Wischen oder Pfeile: dasselbe Karussell steuern Sie vollständig im CMS (Folien, Texte, Links).',
+            slides: [
+              {
+                image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1400&q=82',
+                alt: 'Gäste im Restaurant',
+                title: 'Tisch im Saal',
+                body: 'Abendlicht, Leinen, Gespräch — der Raum, in dem unsere Gäste am längsten bleiben.',
+                cta: { label: 'Reservieren', link: { type: 'page', href: '/kontakt' } }
+              },
+              {
+                image: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=1400&q=82',
+                alt: 'Bar mit Flaschen',
+                title: 'Bar & Aperitivo',
+                body: 'Kurze Wege zwischen Küche und Bar — perfekt für den ersten Drink.',
+                cta: { label: 'Speisekarte', link: { type: 'page', href: '/speisekarte' } }
+              },
+              {
+                image: 'https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=1400&q=82',
+                alt: 'Ofen und Pizza',
+                title: 'Holzofen',
+                body: 'Neapel-Technik, lokaler Teig — Bild links/rechts steuern Sie bei „Text mit Bild“.',
+                cta: { label: 'Erlebnisse', link: { type: 'page', href: '/erlebnisse' } }
+              }
+            ]
+          }),
+          section('gallery-scroller', 'global.scrollerHighlights', 5, {
             eyebrow: 'Küche & Saal',
             headline: { plain: 'Hinter den', accent: 'Kulissen.' },
             intro: 'Wo gekocht, gegossen und gelacht wird — ein Blick in unsere Räume.',
@@ -364,12 +392,12 @@ export function restaurantSeed(styleKey: StyleKey): SiteSeed {
               }
             ]
           }),
-          section('gallery-deep', 'restaurant.deepDives', 5, {
+          section('gallery-deep', 'restaurant.deepDives', 6, {
             eyebrow: 'Kulinarik',
             headline: { plain: 'Details', accent: 'die zählen.' },
             intro: 'Produzenten, Saison und Pairings — tiefer als die reine Galerie.'
           }),
-          section('gallery-cta', 'global.contactCta', 6, {
+          section('gallery-cta', 'global.contactCta', 7, {
             eyebrow: 'Reservierung',
             headline: { plain: 'Selbst', accent: 'vorbeischauen?' },
             subline: 'Wir freuen uns, wenn Sie live statt nur auf Fotos neugierig werden.',
@@ -411,6 +439,7 @@ export function restaurantSeed(styleKey: StyleKey): SiteSeed {
             body:
               'Unsere Manufaktur arbeitet in kleinen Chargen: Teigruhe über Nacht, Saucen aus dem Sud, Kräuter aus dem eigenen Hochbeet. Gäste schauen gern in die offene Küche — wir erklären Schritte am Tresen und lassen probieren, wenn es passt.',
             image: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80',
+            imageSide: 'links',
             cta: { label: 'Stellen & Praktika', link: { type: 'page', href: '/kontakt' } }
           }),
           section('about-film', 'global.richArticle', 4, {

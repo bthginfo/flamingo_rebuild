@@ -10,6 +10,7 @@ const globalAllowed = [
   'global.actionBar',
   'global.textImage',
   'global.galleryGrid',
+  'global.imageCarousel',
   'global.testimonials',
   'global.faq',
   'global.contactCta',

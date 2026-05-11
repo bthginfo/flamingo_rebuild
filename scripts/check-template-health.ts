@@ -10,6 +10,7 @@ const premiumSections = new Set([
   'global.trustLogos',
   'global.bentoHighlights',
   'global.scrollerHighlights',
+  'global.imageCarousel',
   'global.iconHighlights',
   'global.storyTimeline',
   'global.mediaSpotlight',
